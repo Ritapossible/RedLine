@@ -35,21 +35,21 @@ agree on it?
 - [x] **Mutation check** (`tests/mutation_check.py`): 46 of 46 mutants
       killed.
 
-## Phase 2 - On chain (Studio done; Bradbury in progress)
+## Phase 2 - On chain (done, with two Bradbury misses recorded)
 
 Done when each transaction below is on Studio and Bradbury with a published
 record, misses included.
 
 | # | Transaction | Expected | Studio | Bradbury |
 | --- | --- | --- | --- | --- |
-| 1 | page rebuilt, every pinned word kept | kept, no model | kept, no model | |
-| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 100) | |
-| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 99, 100, 100), refunded | |
-| 4 | page deleted: 404 three checks running | gone, refund, no model | gone, refunded, no model | |
-| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | |
-| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | |
-| 7 | a passage of GitHub's real terms page | kept, word for word | kept, word for word | |
-| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | |
+| 1 | page rebuilt, every pinned word kept | kept, no model | kept, no model | kept, no model |
+| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 100) | **no round** (finalized with no votes); paid at end |
+| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 99, 100, 100), refunded | breach ×3 (narrowed 90, 95, 90), refunded |
+| 4 | page deleted: 404 three checks running | gone, refund, no model | gone, refunded, no model | absent ×2, then absent at the end: refunded from the first absence |
+| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | breach (removed, 95) |
+| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | breach (narrowed, 100) |
+| 7 | a passage of GitHub's real terms page | kept, word for word | kept, word for word | kept, word for word |
+| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | refused at pinning |
 
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.
@@ -66,6 +66,10 @@ repository's `live` branch and are edited mid-run.
       how often real pages disagree on presence over a week.
 - [ ] **Appeal.** Appeal a breach on Studio and record what the treasury
       receives.
+- [ ] **Bradbury reruns** of the two cases that did not complete there: the
+      reworded check (finalized with no votes) and three absences running.
+- [ ] **A runner that resumes**: the scenario's waits are in-process, so a
+      paused container stalls it; resume from the record instead.
 
 ## Phase 4 - Product (later)
 

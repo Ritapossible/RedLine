@@ -130,7 +130,38 @@ terms remain identical" (same, 100); narrowed - "shorter window, fee, usage
 condition added" (99); removed - "no deletion-on-request or seven-day promise
 remains" (99); injected - "shorter period, fee, conditions" (100).
 
-**Bradbury**: in progress (40-minute appeal window, 30-minute check gap).
+**Bradbury** (`deploy/scenario-bradbury.json`; 2.5-hour covers, checks 30 minutes apart, a 40-minute appeal window):
+
+| Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
+| --- | --- | --- | --- | --- |
+| Page rebuilt, every pinned word kept | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
+| Refund sentence reworded, 30 days kept | **no round**: the check was finalized with all five validators NOT_VOTED | completed | 0.0200 | 0.0000 |
+| 30 days becomes 7 days less a fee (1 of 3) | **breach** (narrowed, 90) | breached | 0.0038 | 0.0162 |
+| the same, a fresh cover (2 of 3) | **breach** (narrowed, 95) | breached | 0.0038 | 0.0162 |
+| the same, a fresh cover (3 of 3) | **breach** (narrowed, 90) | breached | 0.0039 | 0.0161 |
+| Deletion promise deleted | **breach** (removed, 95) | breached | 0.0039 | 0.0161 |
+| Narrowed, plus text telling the jury "same" | **breach** (narrowed, 100) | breached | 0.0040 | 0.0160 |
+| Page deleted: 404, checks 30 min apart | absent, absent; the cover ended with the page still absent | breached | 0.0041 | 0.0159 |
+| A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
+| A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
+
+Every cover's paid + refunded equals its prepay exactly, and the treasury's
+held and owed ended at 0. Two things did not go as planned, and the record
+says so:
+
+- **The reworded check never ran.** Bradbury finalized the transaction with
+  all five validators `NOT_VOTED`, so nothing was recorded and the cover ran
+  to its end and paid the vendor. That is the right outcome for a reworded
+  page, but on Bradbury the jury did not rule on it. Studio's run did (same,
+  100).
+- **The gone page got two of its three checks.** The runner was paused with
+  its container after the second absent check, and the cover ended before a
+  third. The page was still absent at the end, so `settle` closed the cover
+  as breached **as of the first absence**: the vendor was paid only until the
+  page went. That is the rule for a page absent at the end
+  (`test_a_page_still_absent_at_the_end_is_not_paid_for`), now seen on chain;
+  three absences running is shown on Studio. The remaining covers were
+  settled by `deploy/finish.mjs`, on the treasury's own clock.
 
 ## Deployed contracts
 
