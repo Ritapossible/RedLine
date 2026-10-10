@@ -1,0 +1,9 @@
+{
+  "name": "redline-deploy",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "genlayer-js": "^1.1.8",
+    "viem": "^2.21.0"
+  }
+}

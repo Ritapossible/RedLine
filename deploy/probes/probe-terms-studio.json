@@ -1,0 +1,187 @@
+{
+  "network": "studio",
+  "address": "0x3fBBF20e39E0FF5d92162b00207ecE4A332D7025",
+  "recorded_at": "2026-10-10T11:53:19.526Z",
+  "out": {
+    "get https://stripe.com/legal/ssa": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xe31190dedfc7cee7669e0222be3cd78d4d48c1da51c90dbad564037e7bfadc5f",
+      "result": {
+        "status": 200,
+        "len": 127265,
+        "digest": "80824b487568a4c7",
+        "present": true,
+        "head": "legal stripe services agreement overview & faqs general terms service terms user bank account debit authorizations prohi"
+      }
+    },
+    "get https://www.anthropic.com/legal/commercial-terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xa9092d803c5dcfc3534a1d44fcb185532590e30160aa83732be72913cc4c0a91",
+      "result": {
+        "status": 200,
+        "len": 25902,
+        "digest": "4fa5761c1ff443bc",
+        "present": true,
+        "head": "skip to main content skip to footer research policy commitments learn news try claude commercial terms of service effect"
+      }
+    },
+    "get https://docs.github.com/en/site-policy/github-terms/github-terms-of-service": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xc79430aeb4f1515370295adee3854017e338b505895feac6c54f014af90027b9",
+      "result": {
+        "status": 200,
+        "len": 48710,
+        "digest": "bad7c94acc3d1f4a",
+        "present": true,
+        "head": "skip to main content skip to content github docs search or ask copilot / menu collapse sidebar expand sidebar home site "
+      }
+    },
+    "get https://www.cloudflare.com/terms/": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x6ad6d25dd9aa29cd927cc4cd8d460478ba6f8f2072cc2a026561f2e72b30159a",
+      "result": {
+        "status": 200,
+        "len": 46431,
+        "digest": "6282f65a7fc55f89",
+        "present": true,
+        "head": "log in sign up languages english english (united kingdom) deutsch español (latinoamérica) español (españa) français ital"
+      }
+    },
+    "get https://vercel.com/legal/terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x6f70f0ca4fb58baa23cac7143c1223438b08097f95b9e76aab7240efb9ed2c0d",
+      "result": {
+        "status": 200,
+        "len": 52599,
+        "digest": "ca2d8b81d8b49d4f",
+        "present": true,
+        "head": "skip to content copy wordmark copy logo download brand assets brand guidelines products agent stack ai sdk ai gateway sa"
+      }
+    },
+    "get-present https://stripe.com/legal/ssa": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x8ea55183ac17d4cf711314e6c502f22072e8309dcc2e9aa005ee0284dbec6b1e",
+      "result": {
+        "status": 200,
+        "len": 127265,
+        "digest": "80824b487568a4c7",
+        "present": true,
+        "head": "legal stripe services agreement overview & faqs general terms service terms user bank account debit authorizations prohi"
+      }
+    },
+    "get-present https://www.anthropic.com/legal/commercial-terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x4f02730ba74145e0c9deaf036b3cc257e771e9149a4b3b9670000c5e66b52909",
+      "result": {
+        "status": 200,
+        "len": 25902,
+        "digest": "4fa5761c1ff443bc",
+        "present": true,
+        "head": "skip to main content skip to footer research policy commitments learn news try claude commercial terms of service effect"
+      }
+    },
+    "get-present https://docs.github.com/en/site-policy/github-terms/github-terms-of-service": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xcbe135f5849c4fb01367462830c5af5bfacb57c463e1c097e4841441baee29e2",
+      "result": {
+        "status": 200,
+        "len": 48710,
+        "digest": "bad7c94acc3d1f4a",
+        "present": true,
+        "head": "skip to main content skip to content github docs search or ask copilot / menu collapse sidebar expand sidebar home site "
+      }
+    },
+    "get-present https://www.cloudflare.com/terms/": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x7e02fa8ffa155195718a964cea726b3556d89a915aad7576d76617de8b385830",
+      "result": {
+        "status": 200,
+        "len": 46431,
+        "digest": "6282f65a7fc55f89",
+        "present": true,
+        "head": "log in sign up languages english english (united kingdom) deutsch español (latinoamérica) español (españa) français ital"
+      }
+    },
+    "get-present https://vercel.com/legal/terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x857f9c081e465045575fd6a9f1a9744fb0ff86a343e8673a3b7cf9408bc583c3",
+      "result": {
+        "status": 200,
+        "len": 52599,
+        "digest": "ca2d8b81d8b49d4f",
+        "present": true,
+        "head": "skip to content copy wordmark copy logo download brand assets brand guidelines products agent stack ai sdk ai gateway sa"
+      }
+    },
+    "render https://stripe.com/legal/ssa": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x83bfb4d5e515585d54063788e1ddf0d36ab3e99687c09a4243a772271dfb1c7e",
+      "result": {
+        "status": 200,
+        "len": 126988,
+        "digest": "15776c516f5944d3",
+        "present": true,
+        "head": "legal stripe services agreement overview & faqs general terms service terms user bank account debit authorizations prohi"
+      }
+    },
+    "render https://www.anthropic.com/legal/commercial-terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xda697a8d6a44a5bc6b89c42f18dc6a54bcd0ddfa80162051a0c0a2568be75132",
+      "result": {
+        "status": 200,
+        "len": 25833,
+        "digest": "01a82a362d81a4e5",
+        "present": true,
+        "head": "skip to main content skip to footer research policy commitments learn news try claude commercial terms of service effect"
+      }
+    },
+    "render https://docs.github.com/en/site-policy/github-terms/github-terms-of-service": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0xa326b45d7b8f89b2a77bc8b28fc1e14bb8bfda126b970e1293af4bdcfa257f6c",
+      "result": {
+        "status": 200,
+        "len": 46099,
+        "digest": "02c4711dc622fe04",
+        "present": true,
+        "head": "skip to main content skip to content github docs search or ask copilot / menu home site policy github terms github terms"
+      }
+    },
+    "render https://www.cloudflare.com/terms/": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x11963e407cf50a552491b968494cdea5ef286c26339eff9377e182d5b90465a2",
+      "result": {
+        "status": 200,
+        "len": 40121,
+        "digest": "15b31588d5dd3975",
+        "present": true,
+        "head": "log in customer contracts cloudflare self-serve subscription agreement last updated september 12, 2025 please read the f"
+      }
+    },
+    "render https://vercel.com/legal/terms": {
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x14e62f2cdd7cb7f4be5c1305af4780f96308a5e5fc5e22078d773ee4a3274561",
+      "result": {
+        "status": 200,
+        "len": 50597,
+        "digest": "5be7f697bbe4449b",
+        "present": true,
+        "head": "skip to content products resources enterprise pricing get a demo log in sign up terms of service last updated june 1, 20"
+      }
+    }
+  }
+}

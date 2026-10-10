@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+# contracts/build/ is committed: it is the exact artifact deployed, so a
+# reviewer can verify deployed bytecode against source without a build step.
+
+# Node / frontend
+node_modules/
+.next/
+dist/
+build/
+!contracts/build/
+!contracts/build/*.py
+
+# Local config and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+keys/
+deployments.local.json
+
+# OS
+.DS_Store
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+
+# Deploy working files
+deploy/node_modules/
+deploy/last_receipt.json
+deploy/probe_surface.json
+deploy/probe_contract.py
+deploy/bisect*.mjs
+deploy/try_file.mjs
+deploy/mkprefix.py
+frontend/e2e-*.png

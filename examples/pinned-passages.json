@@ -1,0 +1,10 @@
+[
+  {
+    "id": "refund",
+    "text": "You may cancel at any time within 30 days of purchase and receive a full refund of any unused prepaid credit, with no questions asked."
+  },
+  {
+    "id": "deletion",
+    "text": "When you ask us in writing to delete your data, Acme permanently deletes all of your customer data, including backups, within 7 days of the request."
+  }
+]
