@@ -146,7 +146,8 @@ remains" (99); injected - "shorter period, fee, conditions" (100).
 | A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
 Every cover's paid + refunded equals its prepay exactly, and the treasury's
-held and owed ended at 0. Two things did not go as planned, and the record
+held, owed and balance ended at 0 once the withdrawals finalised. Two things
+did not go as planned, and the record
 says so:
 
 - **The reworded check never ran.** Bradbury finalized the transaction with

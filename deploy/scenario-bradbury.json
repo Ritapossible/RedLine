@@ -669,7 +669,7 @@
     ]
   },
   "verified": {
-    "at": "2026-10-10T21:43:58.777Z",
+    "at": "2026-10-10T22:14:44.472Z",
     "covers": {
       "unchanged": {
         "id": 0,
@@ -807,8 +807,8 @@
     "books": {
       "held": "0",
       "owed": "0",
-      "balance": "200000000000000000",
-      "balanced": false
+      "balance": "0",
+      "balanced": true
     },
     "all_add_up": true
   },
