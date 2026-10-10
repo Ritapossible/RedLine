@@ -34,6 +34,7 @@ const ACCEPT = STUDIO ? 1200 : 3600;
 const CDN_WAIT = 360; // raw.githubusercontent.com caches for up to 300 s
 const OUT = process.env.OUT ?? `scenario-${network}.json`;
 const LIVE = process.env.LIVE_CLONE; // a clone of this repository's `live` branch
+const PREFIX = process.env.LIVE_PREFIX ?? ""; // so two runs can edit separate pages at once
 const buyer = clientFor(network, "agent");
 const vendor = clientFor(network, "vendor");
 const checker = clientFor(network, "principal");
@@ -60,7 +61,7 @@ const CASES = [
   { name: "real-bogus", url: GITHUB, passages: [{ id: "billing", text: GITHUB_PASSAGE.replace("non-refundable", "refundable on request") }], expect: "unpinned" },
 ];
 const ONLY = (process.env.ONLY ?? "").split(",").filter(Boolean);
-const cases = CASES.filter((c) => !ONLY.length || ONLY.includes(c.name));
+const cases = CASES.filter((c) => !ONLY.length || ONLY.includes(c.name)).map((c) => (c.file ? { ...c, file: PREFIX + c.file } : c));
 
 const log = [];
 const record = { network, treasury, watcher, appeal_seconds: APPEAL, coverage_seconds: COVER, check_gap_seconds: GAP, started: new Date().toISOString(), cases: {}, checks: [], log };
@@ -161,13 +162,36 @@ console.log(`\nedited pages served after ${await served(next)}s; waiting ${CDN_W
 await sleep(CDN_WAIT * 1000);
 
 // 5. Check every page once; the gone page twice more, a gap apart.
+const pendingOf = (id) => readView(checker, watcher, "pending_of", [treasury, id]);
+
+/** Request a check, then see it through: the watcher observes the page by
+ *  itself; a round that does not agree is retried inside the window; a
+ *  window that closes without an agreed observation is expired (contested). */
 async function checkOnce(c, label) {
   const id = ids[c.name];
+  const want = (record.cases[c.name].checks?.length ?? 0) + 1;
   const o = await tx(checker, watcher, "check", [treasury, id], label);
-  const rec = (await readUntil(() => recordOf(id), (r) => Number(r.seq ?? 0) >= (record.cases[c.name].checks?.length ?? 0) + 1, { seconds: 600 })).value;
-  record.cases[c.name].checks = [...(record.cases[c.name].checks ?? []), { tx: o.hash, consensus: o.consensus, ...rec }];
-  console.log(`    record: ${JSON.stringify(rec)}`);
-  return rec;
+  const entry = { tx: o.hash, consensus: o.consensus, retries: [], expired: null };
+  const p = (await readUntil(() => pendingOf(id), (x) => Number(x.seq ?? 0) >= want, { seconds: 300 })).value;
+  const due = Number(p.due ?? 0);
+  const recorded = () => recordOf(id);
+  for (;;) {
+    const got = await readUntil(recorded, (r) => Number(r.seq ?? 0) >= want, { seconds: STUDIO ? 90 : 420, every: 10 });
+    if (Number(got.value.seq ?? 0) >= want) { Object.assign(entry, got.value); break; }
+    const now = Number((await cover(id)).now);
+    if (now <= due - (STUDIO ? 20 : 120)) {
+      const r = await tx(checker, watcher, "observe", [treasury, id], `${label}: observe again`);
+      entry.retries.push({ tx: r.hash, consensus: r.consensus, leader: r.leader });
+      continue;
+    }
+    if (now <= due) { await sleep((due - now + 5) * 1000); continue; }
+    const e = await tx(checker, watcher, "expire", [treasury, id], `${label}: expire`);
+    entry.expired = { tx: e.hash, consensus: e.consensus };
+  }
+  record.cases[c.name].checks = [...(record.cases[c.name].checks ?? []), entry];
+  save();
+  console.log(`    record: ${JSON.stringify({ seq: entry.seq, page: entry.page, kind: entry.kind, reading: entry.reading, confidence: entry.confidence, reason: entry.reason, retries: entry.retries.length, expired: !!entry.expired })}`);
+  return entry;
 }
 console.log("\nChecks");
 const active = cases.filter((c) => c.expect !== "unpinned");

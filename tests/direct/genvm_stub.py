@@ -202,6 +202,8 @@ class Runtime:
                 if uri not in rt.web:
                     raise Exception("NondetException: unreachable %s" % uri)
                 found = rt.web[uri]
+                if callable(found):  # a page that answers differently on each fetch
+                    found = found()
                 if isinstance(found, int):
                     return _Response(b"Not Found", found)
                 return _Response(found)

@@ -90,7 +90,7 @@ def test_it_fits_bradburys_gas_cap(pair):
 
 
 def test_the_fetch_is_inline_in_every_closure(watcher):
-    for name in ("pin", "check"):
+    for name in ("pin", "observe"):
         _body, leader, validator = closures(watcher, name)
         for closure in (leader, validator):
             assert "gl.nondet.web.get(uri)" in closure
@@ -101,7 +101,7 @@ def test_the_fetch_is_inline_in_every_closure(watcher):
 def test_pinning_runs_no_model_and_checking_asks_only_about_missing_passages(watcher):
     _body, leader, validator = closures(watcher, "pin")
     assert "exec_prompt" not in leader and "exec_prompt" not in validator
-    _body, leader, validator = closures(watcher, "check")
+    _body, leader, validator = closures(watcher, "observe")
     for closure in (leader, validator):
         before_model = closure[: closure.index("exec_prompt")]
         assert "passage_present(_text, _p[1])" in before_model and "continue" in before_model
@@ -110,7 +110,7 @@ def test_pinning_runs_no_model_and_checking_asks_only_about_missing_passages(wat
 def test_validators_compare_what_is_on_the_page_exactly_and_the_finding_through_the_rule(watcher):
     _body, _leader, validator = closures(watcher, "pin")
     assert 'str(_theirs.get("page", "")) == _page and list(_theirs.get("found", [])) == _found' in validator
-    _body, _leader, validator = closures(watcher, "check")
+    _body, _leader, validator = closures(watcher, "observe")
     assert 'str(_theirs.get("page", "")) != _page' in validator
     assert "_leader_present != _mine_present" in validator
     assert "jury_agrees(leader_kind=" in validator

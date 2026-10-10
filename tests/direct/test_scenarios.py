@@ -20,7 +20,12 @@ transactions the product rests on, plus every way a cover can end:
 9. The watcher becomes unreadable after reporting a breach: the treasury
    still refunds on its own clock. With nothing reported: the vendor is paid.
 10. A page absent once, then back: accrual pauses and resumes.
-11. Validators that disagree record nothing.
+11. Validators that disagree: the request stays open, anyone may retry it,
+    and once its window closes it is recorded as contested - which counts
+    like an absent page. Once is a pause; the next agreed check clears it.
+12. A page shown one way to some readers and another way to others
+    (cloaking): every round fails to agree, three contested checks running
+    end the cover, refunded from the first.
 Every GEN funded ends credited exactly once, and is withdrawn.
 """
 
@@ -146,6 +151,7 @@ def scenario(suffix):
     i_split = active("disagree", 9)
     i_bricked = active("bricked", 20)
     i_quiet = active("quiet", 21)
+    i_cloak = active("cloaked", 22)
     started = rt.now
     tx("accept twice", T, "accept", i_unchanged, sender=VENDOR)
     tx("check too early", W, "check", T, i_late, sender=OTHER)
@@ -183,6 +189,19 @@ def scenario(suffix):
     rt.jury = disagreeing
     check("11 disagree", i_split)
     rt.jury = scripted_model
+    out["11 disagree: open"] = json.loads(w.pending_of(T, i_split))
+    tx("11 expire too early", W, "expire", T, i_split, sender=OTHER)
+
+    # 12. Cloaking: the pinned text on one fetch, a narrowed page on the next.
+    flips = {"n": 0}
+
+    def cloaked():
+        flips["n"] += 1
+        return page("terms-v1-rebuilt.html") if flips["n"] % 2 else page("terms-narrowed.html")
+
+    rt.web[url(22)] = cloaked
+    check("12 cloaked 1", i_cloak)
+    tx("12 observe again", W, "observe", T, i_cloak, sender=BUYER)  # anyone may retry; it fails again
 
     # 4. Gone: 404 three checks running, each a gap apart.
     rt.web[url(4)] = 404
@@ -196,20 +215,34 @@ def scenario(suffix):
     out["10 blink: held"] = cover(i_blink).get("held")
 
     rt.now += GAP
+    tx("11 expire", W, "expire", T, i_split, sender=BUYER)
+    out["11 contested: record"] = record(i_split)
+    out["11 contested: held"] = cover(i_split).get("held")
+    rt.web[url(9)] = page("terms-v1-rebuilt.html")
+    check("11 agreed later", i_split)
+    out["11 after"] = cover(i_split)
+    tx("12 observe after the window", W, "observe", T, i_cloak, sender=BUYER)
+    tx("12 expire 1", W, "expire", T, i_cloak, sender=BUYER)
+    check("12 cloaked 2", i_cloak)
     check("4 gone 2", i_gone)
     rt.web[url(8)] = page("terms-v1-rebuilt.html")
     check("10 blink: back", i_blink)
     out["10 blink: after"] = cover(i_blink)
     rt.now += GAP
     rt.web[url(4)] = 503  # an outage counts as absent too
+    tx("12 expire 2", W, "expire", T, i_cloak, sender=BUYER)
+    check("12 cloaked 3", i_cloak)
     check("4 gone 3", i_gone)
     check("4 after gone", i_gone)
 
     # Breaches wait out their appeal window, then settle refunds the rest.
+    rt.now += GAP // 2 + 1
+    tx("12 expire 3", W, "expire", T, i_cloak, sender=BUYER)
+    out["12 cloaked: record"] = record(i_cloak)
     rt.contracts.pop(W)  # 9. the watcher becomes unreadable
     rt.now += APPEAL
     for label, i in [("1", i_unchanged), ("2", i_reworded), ("3a", i_narrow[0]), ("3b", i_narrow[1]), ("3c", i_narrow[2]),
-                     ("4", i_gone), ("5", i_removed), ("6", i_injected), ("9", i_bricked), ("10", i_blink), ("11", i_split)]:
+                     ("4", i_gone), ("5", i_removed), ("6", i_injected), ("9", i_bricked), ("10", i_blink), ("11", i_split), ("12", i_cloak)]:
         before = owed()
         tx("settle " + label, T, "settle", i, sender=OTHER)
         after = owed()
@@ -226,7 +259,7 @@ def scenario(suffix):
     out["states"] = [cover(i)["state"] for i in range(int(json.loads(t.status())["covers"]))]
     out["covers"] = {i: cover(i) for i in range(int(json.loads(t.status())["covers"]))}
     out["indices"] = {"unchanged": i_unchanged, "reworded": i_reworded, "narrowed": i_narrow, "gone": i_gone, "removed": i_removed,
-                      "injected": i_injected, "complete": i_complete, "blink": i_blink, "disagree": i_split,
+                      "injected": i_injected, "complete": i_complete, "blink": i_blink, "disagree": i_split, "cloaked": i_cloak,
                       "bricked": i_bricked, "quiet": i_quiet, "bogus": i_bogus, "down": i_down, "cancel": i_cancel, "late": i_late}
     out["owed"] = owed()
     out["status before withdraw"] = json.loads(t.status())
@@ -296,7 +329,7 @@ def test_1_a_rebuilt_page_with_every_word_kept_runs_no_model_and_moves_nothing(r
     r = readable
     rec = r["1 unchanged: record"]
     assert (rec["kind"], rec["reason"], r["1 unchanged: model calls"]) == ("kept", "word_for_word", 0)
-    assert "may run from" in r["1 again at once"]
+    assert "is still open" in r["1 again at once"] or "may be requested from" in r["1 again at once"]
     assert r["cover 1"]["state"] == "active" and r["credited 1"]["buyer"] == 0
     assert r["covers"][r["indices"]["unchanged"]]["state"] == "completed"
 
@@ -331,7 +364,7 @@ def test_4_a_page_gone_three_checks_running_refunds_without_a_model(readable):
     r = readable
     assert [r["4 gone %d: record" % k]["kind"] for k in (1, 2, 3)] == ["absent", "absent", "gone"]
     assert sum(r["4 gone %d: model calls" % k] for k in (1, 2, 3)) == 0
-    assert "may run from" in r["4 gone too soon"]
+    assert "may be requested from" in r["4 gone too soon"]
     assert "already ended in a gone" in r["4 after gone"]
     held = r["4 after one absence"]["held"]
     assert held["kind"] == "absent"
@@ -369,11 +402,26 @@ def test_10_a_page_absent_once_pauses_accrual_and_resumes(readable):
     assert r["covers"][r["indices"]["blink"]]["state"] == "completed"
 
 
-def test_11_validators_that_disagree_record_nothing(readable):
+def test_11_a_round_that_does_not_agree_is_retried_then_recorded_as_contested(readable):
     r = readable
-    assert r["11 disagree"].startswith("refused")
-    assert r["11 disagree: record"] == {}
-    assert r["covers"][r["indices"]["disagree"]]["state"] == "completed"
+    assert r["11 disagree"] == "ok" and r["11 disagree: open"]["seq"] == 1  # the request is recorded
+    assert "open until" in r["11 expire too early"]
+    rec = r["11 contested: record"]
+    assert (rec["page"], rec["kind"], rec["streak"]) == ("contested", "absent", 1)
+    assert r["11 contested: held"]["kind"] == "absent"  # the vendor's accrual is held
+    assert r["11 agreed later: record"]["kind"] == "kept" and "held" not in r["11 after"]
+    c = r["covers"][r["indices"]["disagree"]]
+    assert (c["state"], c["paid"]) == ("completed", AMOUNT)  # one bad round cost the honest vendor nothing
+
+
+def test_12_a_cloaked_page_cannot_keep_the_vendor_paid(readable):
+    r = readable
+    assert r["12 cloaked 1"] == "ok" and r["12 observe again"].startswith("refused")
+    assert "expire records it as contested" in r["12 observe after the window"]
+    rec = r["12 cloaked: record"]
+    assert (rec["page"], rec["kind"], rec["streak"]) == ("contested", "gone", 3)
+    c = r["covers"][r["indices"]["cloaked"]]
+    assert c["state"] == "breached" and c["paid"] == AMOUNT * 1000 // COVER  # refunded from the first contested check
 
 
 def test_every_gen_is_credited_exactly_once_and_withdrawn(readable):
@@ -389,6 +437,7 @@ def test_every_gen_is_credited_exactly_once_and_withdrawn(readable):
 
 
 def test_messages_that_fail_are_only_the_ones_meant_to(readable):
-    # The pin of a page that never answered is the only message that may fail.
+    # The pin of a page that never answered, and the observations of rounds
+    # that did not agree (case 11 once, the cloaked page three times).
     failed = readable["failed messages"]
-    assert all(m[2] == "pin" for m in failed) and len(failed) == 1
+    assert sorted(m[2] for m in failed) == ["observe"] * 4 + ["pin"]

@@ -226,6 +226,10 @@ BREACH_READINGS = (READ_NARROWED, READ_REMOVED)
 PAGE_READ = "read"  # 2xx: the page answered with a body
 PAGE_MISSING = "missing"  # 404/410: the server says the page is not there
 PAGE_UNREAD = "unread"  # no answer: network error, 5xx, 429
+# No agreed observation by the end of the window: validators could not agree
+# on what the page says (a page shown differently to different readers), or
+# no round completed. Counted exactly like a page that does not answer.
+PAGE_CONTESTED = "contested"
 MISSING_STATUS = (404, 410)
 
 # A hesitant breach is not a breach: the vendor keeps earning unless a right
@@ -524,11 +528,21 @@ def outstanding(cover):
 # --------------------------------------------------------------------------
 
 
-def check_gap_error(previous, *, now, gap):
-    """Why the page may not be checked again yet ("" if it may). Checks are
-    spaced so that three absences span real time, not one outage."""
-    if previous and int(now) < int(previous["at"]) + int(gap):
-        return "the page was checked at %d; the next check may run from %d" % (int(previous["at"]), int(previous["at"]) + int(gap))
+def observe_window(gap):
+    """How long a requested check stays open for an agreed observation: half
+    the gap, so a contested check is settled before the next may be asked."""
+    return max(30, int(gap) // 2)
+
+
+def request_error(*, pending, last_request_at, now, gap, end):
+    """Why a check may not be requested now ("" if it may)."""
+    if pending:
+        return "a check requested at %d is still open until %d; observe it, or expire it after that" % (
+            int(pending["requested_at"]), int(pending["due"]))
+    if last_request_at and int(now) < int(last_request_at) + int(gap):
+        return "a check was requested at %d; the next may be requested from %d" % (int(last_request_at), int(last_request_at) + int(gap))
+    if int(now) + observe_window(gap) > int(end):
+        return "too close to the end of the cover for a check to be observed"
     return ""
 
 
@@ -704,10 +718,12 @@ def read_answer(raw):
 class RedLineWatcher(gl.Contract):
     release: str
     records: TreeMap[str, str]
+    pending: TreeMap[str, str]
+    last_request: TreeMap[str, u256]
     checks: u256
 
     def __init__(self):
-        self.release = "redline-watcher/1"
+        self.release = "redline-watcher/2"
         self.checks = u256(0)
 
     def _now(self) -> int:
@@ -778,24 +794,70 @@ class RedLineWatcher(gl.Contract):
         self.records[self._key(source, cover_id) + ":pin"] = json.dumps({"page": page, "found": found, "ok": ok, "reason": reason, "at": now})
         gl.get_contract_at(Address(source)).emit(on="accepted").note_pin(int(cover_id), ok, now, reason[:200])
 
+    def _record(self, source: str, cover_id: int, key: str, previous: dict, pending: dict, page: str, finding: dict, at: int) -> None:
+        """Record one check, close its request, and report it to the treasury."""
+        record = next_record(previous, seq=int(pending["seq"]), page=page, finding=finding, now=at)
+        self.records[key] = json.dumps(record)
+        self.pending[key] = ""
+        self.checks = u256(int(self.checks) + 1)
+        gl.get_contract_at(Address(source)).emit(on="accepted").note_check(
+            int(cover_id), int(record["seq"]), str(record["kind"]), int(record["at"]), int(record["since"])
+        )
+
     @gl.public.write
     def check(self, treasury: str, cover_id: int) -> None:
-        """Check the page of an active cover. Anyone may call it, at most once
-        per ``check_gap_seconds`` per cover."""
+        """Request a check of an active cover's page. Anyone may call it, at
+        most once per ``check_gap_seconds``. Deterministic: it always records
+        the request, and the watcher sends itself ``observe`` at once."""
         source = str(treasury).lower()
         cover = self._cover(source, cover_id)
         if cover["state"] != COVER_ACTIVE:
             raise Exception("[EXPECTED] the cover is not active")
         now = self._now()
-        if now > int(cover["end"]):
-            raise Exception("[EXPECTED] the cover has ended; settle closes it")
         key = self._key(source, cover_id)
         previous = json.loads(self.records.get(key, "{}"))
         if previous.get("kind") in ENDS_COVER:
             raise Exception("[EXPECTED] this cover already ended in a %s; settle closes it" % previous["kind"])
-        wait = check_gap_error(previous, now=now, gap=int(cover["check_gap_seconds"]))
+        pending = json.loads(self.pending.get(key, "") or "{}")
+        gap = int(cover["check_gap_seconds"])
+        wait = request_error(pending=pending, last_request_at=int(self.last_request.get(key, u256(0))), now=now, gap=gap, end=int(cover["end"]))
         if wait:
             raise Exception("[EXPECTED] " + wait)
+        self.pending[key] = json.dumps({"seq": int(previous.get("seq", 0)) + 1, "requested_at": now, "due": now + observe_window(gap)})
+        self.last_request[key] = u256(now)
+        gl.get_contract_at(self.address).emit(on="accepted").observe(source, int(cover_id))
+
+    @gl.public.write
+    def expire(self, treasury: str, cover_id: int) -> None:
+        """Close a request that got no agreed observation in its window. It is
+        recorded as contested, which counts like a page that did not answer."""
+        source = str(treasury).lower()
+        key = self._key(source, cover_id)
+        pending = json.loads(self.pending.get(key, "") or "{}")
+        if not pending:
+            raise Exception("[EXPECTED] no check is open for this cover")
+        if self._now() <= int(pending["due"]):
+            raise Exception("[EXPECTED] the check is open until %d; observe it until then" % int(pending["due"]))
+        previous = json.loads(self.records.get(key, "{}"))
+        self._record(source, cover_id, key, previous, pending, PAGE_CONTESTED, {}, int(pending["requested_at"]))
+
+    @gl.public.write
+    def observe(self, treasury: str, cover_id: int) -> None:
+        """Fetch the page for the open request and decide what it shows. Sent by
+        the watcher when a check is requested; anyone may send it again while
+        the request is open, if a round did not agree."""
+        source = str(treasury).lower()
+        key = self._key(source, cover_id)
+        pending = json.loads(self.pending.get(key, "") or "{}")
+        if not pending:
+            raise Exception("[EXPECTED] no check is open for this cover; request one with check")
+        now = self._now()
+        if now > int(pending["due"]):
+            raise Exception("[EXPECTED] the check closed at %d; expire records it as contested" % int(pending["due"]))
+        cover = self._cover(source, cover_id)
+        if cover["state"] != COVER_ACTIVE:
+            raise Exception("[EXPECTED] the cover is not active")
+        previous = json.loads(self.records.get(key, "{}"))
         uri = str(cover["url"])
         passages = [[str(p["id"]), str(p["text"])] for p in cover["passages"]]
 
@@ -876,18 +938,17 @@ class RedLineWatcher(gl.Contract):
         finding = decoded.get("finding", {}) if page == PAGE_READ else {}
         if page == PAGE_READ and finding.get("kind") not in (CHECK_KEPT, CHECK_BREACH):
             finding = {"kind": CHECK_KEPT, "passage": "", "reading": READ_CANNOT_TELL, "confidence": 0, "reason": "unreadable_answer"}
-        seq = int(previous.get("seq", 0)) + 1
-        record = next_record(previous, seq=seq, page=page, finding=finding, now=now)
-        self.records[key] = json.dumps(record)
-        self.checks = u256(int(self.checks) + 1)
-        gl.get_contract_at(Address(source)).emit(on="accepted").note_check(
-            int(cover_id), int(record["seq"]), str(record["kind"]), int(record["at"]), int(record["since"])
-        )
+        self._record(source, cover_id, key, previous, pending, page, finding, now)
 
     @gl.public.view
     def record_of(self, treasury: str, cover_id: int) -> str:
         """The latest check of a cover, or {}."""
         return self.records.get(self._key(treasury, cover_id), "{}")
+
+    @gl.public.view
+    def pending_of(self, treasury: str, cover_id: int) -> str:
+        """The open check request of a cover, or {}."""
+        return self.pending.get(self._key(treasury, cover_id), "") or "{}"
 
     @gl.public.view
     def pin_of(self, treasury: str, cover_id: int) -> str:

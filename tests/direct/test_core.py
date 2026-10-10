@@ -278,12 +278,6 @@ def test_whatever_happens_every_gen_of_a_prepay_is_credited_exactly_once(seed):
 # --- the watcher's rules -----------------------------------------------------
 
 
-def test_checks_are_spaced_by_the_gap():
-    assert core.check_gap_error({}, now=T0, gap=600) == ""
-    assert "may run from %d" % (T0 + 600) in core.check_gap_error({"at": T0}, now=T0 + 599, gap=600)
-    assert core.check_gap_error({"at": T0}, now=T0 + 600, gap=600) == ""
-
-
 def test_three_absences_running_are_gone_and_a_read_page_breaks_the_streak():
     r1 = core.next_record({}, seq=1, page="missing", finding={}, now=T0)
     r2 = core.next_record(r1, seq=2, page="unread", finding={}, now=T0 + 600)
@@ -320,3 +314,27 @@ def test_the_first_passage_ruled_a_breach_decides():
     assert core.decide([same, cut])["passage"] == "deletion"
     assert core.decide([present])["reason"] == "word_for_word"
     assert core.decide([same])["kind"] == "kept"
+
+
+# --- requests: a check always ends in a record ------------------------------
+
+
+def test_the_observation_window_is_half_the_gap():
+    assert core.observe_window(1800) == 900 and core.observe_window(60) == 30
+
+
+def test_a_request_needs_no_open_one_the_gap_and_room_before_the_end():
+    end = T0 + 3000
+    assert core.request_error(pending={}, last_request_at=0, now=T0, gap=600, end=end) == ""
+    open_one = {"requested_at": T0, "due": T0 + 300}
+    assert "still open until %d" % (T0 + 300) in core.request_error(pending=open_one, last_request_at=T0, now=T0 + 10, gap=600, end=end)
+    assert "may be requested from %d" % (T0 + 600) in core.request_error(pending={}, last_request_at=T0, now=T0 + 599, gap=600, end=end)
+    assert core.request_error(pending={}, last_request_at=T0, now=T0 + 600, gap=600, end=end) == ""
+    assert "too close to the end" in core.request_error(pending={}, last_request_at=0, now=end - 299, gap=600, end=end)
+
+
+def test_a_contested_check_counts_like_an_absent_page():
+    r1 = core.next_record({}, seq=1, page="contested", finding={}, now=T0)
+    r2 = core.next_record(r1, seq=2, page="contested", finding={}, now=T0 + 600)
+    r3 = core.next_record(r2, seq=3, page="unread", finding={}, now=T0 + 1200)
+    assert [r["kind"] for r in (r1, r2, r3)] == ["absent", "absent", "gone"] and r3["since"] == T0

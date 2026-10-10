@@ -226,6 +226,10 @@ BREACH_READINGS = (READ_NARROWED, READ_REMOVED)
 PAGE_READ = "read"  # 2xx: the page answered with a body
 PAGE_MISSING = "missing"  # 404/410: the server says the page is not there
 PAGE_UNREAD = "unread"  # no answer: network error, 5xx, 429
+# No agreed observation by the end of the window: validators could not agree
+# on what the page says (a page shown differently to different readers), or
+# no round completed. Counted exactly like a page that does not answer.
+PAGE_CONTESTED = "contested"
 MISSING_STATUS = (404, 410)
 
 # A hesitant breach is not a breach: the vendor keeps earning unless a right
@@ -524,11 +528,21 @@ def outstanding(cover):
 # --------------------------------------------------------------------------
 
 
-def check_gap_error(previous, *, now, gap):
-    """Why the page may not be checked again yet ("" if it may). Checks are
-    spaced so that three absences span real time, not one outage."""
-    if previous and int(now) < int(previous["at"]) + int(gap):
-        return "the page was checked at %d; the next check may run from %d" % (int(previous["at"]), int(previous["at"]) + int(gap))
+def observe_window(gap):
+    """How long a requested check stays open for an agreed observation: half
+    the gap, so a contested check is settled before the next may be asked."""
+    return max(30, int(gap) // 2)
+
+
+def request_error(*, pending, last_request_at, now, gap, end):
+    """Why a check may not be requested now ("" if it may)."""
+    if pending:
+        return "a check requested at %d is still open until %d; observe it, or expire it after that" % (
+            int(pending["requested_at"]), int(pending["due"]))
+    if last_request_at and int(now) < int(last_request_at) + int(gap):
+        return "a check was requested at %d; the next may be requested from %d" % (int(last_request_at), int(last_request_at) + int(gap))
+    if int(now) + observe_window(gap) > int(end):
+        return "too close to the end of the cover for a check to be observed"
     return ""
 
 
