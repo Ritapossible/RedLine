@@ -1,0 +1,49 @@
+{
+  "network": "bradbury",
+  "address": "0x22B8a023B96D0bE28295DB348935cc7108E063Bc",
+  "recorded_at": "2026-10-10T12:06:09.867Z",
+  "out": {
+    "get-present https://stripe.com/legal/ssa": {
+      "consensus": "AGREE",
+      "leader": "return",
+      "hash": "0x0ba09c8cf220cff977e319eece7c9372106916d80efc2536ad1928c0d87495cb",
+      "result": ""
+    },
+    "get-present https://www.anthropic.com/legal/commercial-terms": {
+      "consensus": "AGREE",
+      "leader": "return",
+      "hash": "0xdee424129ab4643e941c22c8d6e5b1e03e514301885da0684f3c74d1200c4baa",
+      "result": {
+        "status": 200,
+        "len": 25965,
+        "digest": "f67f43a1ff455d79",
+        "present": true,
+        "head": "skip to main content skip to footer research policy commitments learn news try claude commercial terms of service effect"
+      }
+    },
+    "get-present https://docs.github.com/en/site-policy/github-terms/github-terms-of-service": {
+      "consensus": "AGREE",
+      "leader": "return",
+      "hash": "0x26c4e8a039ea527e73e6cba7b1ae2d8b0077dfada38a03bb31c4135f4cac6197",
+      "result": {
+        "status": 200,
+        "len": 48710,
+        "digest": "bad7c94acc3d1f4a",
+        "present": true,
+        "head": "skip to main content skip to content github docs search or ask copilot / menu collapse sidebar expand sidebar home site "
+      }
+    },
+    "get-present https://www.cloudflare.com/terms/": {
+      "consensus": "AGREE",
+      "leader": "return",
+      "hash": "0x4f17509b2e61fd84c805b8cb2d34fd6850fd6d15a163c8d1ed02fb47e0df8451",
+      "result": ""
+    },
+    "get-present https://vercel.com/legal/terms": {
+      "consensus": "AGREE",
+      "leader": "return",
+      "hash": "0x7577e33f26afdb8e628bf3deff995c0183444ea82ebc55ee30ed61a090128079",
+      "result": ""
+    }
+  }
+}
