@@ -1645,14 +1645,3 @@ textarea {
 .docs .small a {
   color: var(--red-text);
 }
-.nav-docs-sm {
-  display: none;
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 14px;
-}
-@media (max-width: 900px) {
-  .nav-docs-sm {
-    display: inline;
-  }
-}

@@ -22,16 +22,10 @@ export function SiteHeader() {
         <nav className="nav-links" aria-label="Main">
           <a href="#/#how">How it works</a>
           <a href="#/#record">On chain</a>
-          <a href={href({ name: "docs", page: "introduction" })} aria-current={route.name === "docs" ? "page" : undefined}>
-            Docs
-          </a>
           <a href={href({ name: "covers" })} aria-current={inApp ? "page" : undefined}>
             Covers
           </a>
         </nav>
-        <a className="nav-docs-sm" href={href({ name: "docs", page: "introduction" })}>
-          Docs
-        </a>
         <a className="btn-ghost-pill" href={inApp ? href({ name: "new" }) : href({ name: "covers" })}>
           {inApp ? "Open a cover" : "Open the app"} <ArrowUpRight />
         </a>
