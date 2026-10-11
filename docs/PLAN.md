@@ -38,20 +38,21 @@ agree on it?
 ## Phase 2 - On chain (done)
 
 Done when each transaction below is on Studio and Bradbury with a published
-record, misses included. Current contracts: `deploy/scenario-studio.json`,
-`deploy/scenario-bradbury.json`. The first run, on watcher 1, is in
-`deploy/scenario-*-v1.json`; its two Bradbury misses are rerun here.
+record, misses included. Both networks ran all eight on the current
+contracts: `deploy/scenario-studio.json`, `deploy/scenario-bradbury.json`,
+0 failed checks each. Earlier runs: `deploy/scenario-*-v1.json`,
+`deploy/scenario-bradbury-rerun.json`.
 
 | # | Transaction | Expected | Studio | Bradbury |
 | --- | --- | --- | --- | --- |
 | 1 | page rebuilt, every pinned word kept | kept, no model | kept, no model | kept, no model |
-| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 99) | kept (same, 99) |
-| 3 | 30 days -> 7 days less a fee | breach (narrowed), refund | breach ×3 (narrowed 95, 99, 100), refunded | breach (narrowed, 100), one observation retried, refunded |
+| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 95) | kept (same, 99) |
+| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 99, 96, 95), refunded | breach ×3 (narrowed 95, 95, 90), refunded |
 | 4 | page deleted: 404 three checks running | gone, refund, no model | absent, absent, gone; refunded, no model | absent, absent, gone; refunded, no model |
-| 5 | deletion promise deleted | breach (removed) | breach (removed, 98) | (first run: breach, removed 95) |
-| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | (first run: breach, narrowed 100) |
-| 7 | a passage of GitHub's real terms page | kept, word for word | kept, no model | (first run: kept) |
-| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | (first run: refused at pinning) |
+| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | breach (removed, 100) |
+| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 99) | breach (narrowed, 100) |
+| 7 | a passage of GitHub's real terms page | kept, word for word | kept, no model | kept, no model |
+| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | refused at pinning |
 
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.
@@ -72,8 +73,11 @@ repository's `live` branch and are edited mid-run.
       receives.
 - [x] **Bradbury reruns** of the two cases that did not complete there, on
       the new watcher: reworded kept (same, 99); absent, absent, gone.
-- [ ] **A runner that resumes**: the scenario's waits are in-process, so a
-      paused container stalls it; resume from the record instead.
+- [x] **A runner that resumes.** `deploy/scenario.mjs` decides every step
+      from the chain and its record, and waits until times on the chain's
+      clock. Tested by killing the Studio run twice - mid-opening (right
+      after a cover was opened, before its id was saved) and mid-checks -
+      and resuming: three runs, no transaction sent twice, 0 failed checks.
 
 ## Phase 4 - Product (later)
 

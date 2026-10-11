@@ -18,6 +18,12 @@
 //
 // Verdicts are RECORDED, every one; the mechanics they must produce are CHECKED.
 //
+// Resumable: every step decides what to do from the chain and the record
+// (deploy/scenario-<network>.json), and every wait is until a time on the
+// chain's clock. Run it again after it stops - a crash, a paused container -
+// and it carries on: nothing is opened, accepted, checked or settled twice.
+// RESET=1 starts a fresh record instead.
+//
 //   node scenario.mjs [studio|bradbury]
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -63,21 +69,25 @@ const CASES = [
 const ONLY = (process.env.ONLY ?? "").split(",").filter(Boolean);
 const cases = CASES.filter((c) => !ONLY.length || ONLY.includes(c.name)).map((c) => (c.file ? { ...c, file: PREFIX + c.file } : c));
 
-const log = [];
-const record = { network, treasury, watcher, appeal_seconds: APPEAL, coverage_seconds: COVER, check_gap_seconds: GAP, started: new Date().toISOString(), cases: {}, checks: [], log };
-let failures = 0;
+const fresh = { network, treasury, watcher, appeal_seconds: APPEAL, coverage_seconds: COVER, check_gap_seconds: GAP,
+  started: new Date().toISOString(), cases: {}, checks: [], log: [], runs: [] };
+const prior = !process.env.RESET && fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, "utf8")) : null;
+const record = prior && prior.treasury === treasury && !prior.finished ? prior : fresh;
+record.runs.push({ at: new Date().toISOString(), resumed: record !== fresh });
+const log = record.log;
 const save = () => fs.writeFileSync(OUT, JSON.stringify(record, null, 2) + "\n");
 
+/** A check of the mechanics. Idempotent by label: a resumed run replaces its own earlier verdict. */
 function check(label, actual, expected) {
   const ok = String(actual) === String(expected);
-  if (!ok) failures++;
   console.log(`  ${ok ? "ok  " : "FAIL"} ${label}: ${actual}${ok ? "" : `  (expected ${expected})`}`);
+  record.checks = record.checks.filter((c) => c.check !== label);
   record.checks.push({ check: label, actual: String(actual), expected: String(expected), ok });
   save();
 }
 async function tx(client, address, fn, args, label, value = 0n) {
   const o = await sendTx(client, address, fn, args, label, value);
-  log.push({ tx: label, hash: o.hash, consensus: o.consensus, leader: o.leader });
+  log.push({ tx: label, hash: o.hash, consensus: o.consensus, leader: o.leader, at: new Date().toISOString() });
   console.log(`  - ${label}: ${o.applied ? "applied" : o.refused ? "refused" : o.consensus}  ${o.hash}`);
   save();
   return o;
@@ -87,11 +97,24 @@ const exact = (raw) => JSON.parse(String(raw).replace(/(:\s*)(-?\d{15,})/g, '$1"
 const readExact = async (address, fn, args = []) => exact(await checker.readContract({ address, functionName: fn, args }));
 const cover = (id) => readExact(treasury, "get_cover", [id]);
 const recordOf = (id) => readView(checker, watcher, "record_of", [treasury, id]);
+const pendingOf = (id) => readView(checker, watcher, "pending_of", [treasury, id]);
 const owedTo = async (who) => BigInt(await readView(checker, treasury, "owed_to", [who]));
+const chainNow = async () => Number((await readExact(treasury, "status")).now ?? 0) || Number((await cover(0)).now);
 const raw = async (file) => {
   const r = await fetch(RAW + file + ".html", { cache: "no-store" });
   return r.status === 200 ? await r.text() : r.status;
 };
+
+/** Wait until the chain's clock reaches t, re-reading it at least once a
+ *  minute, so time lost to a pause is not waited twice. */
+async function until(t, why) {
+  for (let announced = false; ; ) {
+    const left = t - (await chainNow());
+    if (left <= 0) return;
+    if (!announced) { console.log(`  waiting ${left}s ${why}`); announced = true; }
+    await sleep(Math.min(left, 60) * 1000);
+  }
+}
 
 /** Put the live pages in the given versions with one push; null deletes. */
 function publish(versions, message) {
@@ -124,129 +147,167 @@ async function served(versions) {
   }
 }
 
-console.log(`treasury ${treasury}, watcher ${watcher} on ${network}; appeal ${APPEAL}s, cover ${COVER}s, gap ${GAP}s`);
+console.log(`treasury ${treasury}, watcher ${watcher} on ${network}; appeal ${APPEAL}s, cover ${COVER}s, gap ${GAP}s` +
+  (record === fresh ? "" : `  (resuming the record from ${record.started})`));
+const ids = Object.fromEntries(Object.entries(record.cases).filter(([, c]) => c.id !== undefined).map(([k, c]) => [k, c.id]));
 
-// 1. Every live page at version 1.
-const v1 = Object.fromEntries(cases.filter((c) => c.file).map((c) => [c.file, "terms-v1.html"]));
-publish(v1, "Reset the live pages to version 1");
-console.log(`live pages at version 1 after ${await served(v1)}s`);
-
-// 2. Open every cover; the treasury asks the watcher to pin each one.
-const ids = {};
-for (const c of cases) {
-  const url = c.url ?? RAW + c.file + ".html";
-  const passages = c.passages ?? PINNED;
-  const before = Number((await readView(checker, treasury, "status")).covers);
-  const o = await tx(buyer, treasury, "open_cover", [vendorAddr, url, JSON.stringify(passages), COVER, ACCEPT, GAP], `${c.name}: open`, PREPAY);
-  if (!o.applied) throw new Error(`${c.name}: open failed`);
-  await readUntil(async () => Number((await readView(checker, treasury, "status")).covers), (n) => n > before, { seconds: 300 });
-  ids[c.name] = before;
-  record.cases[c.name] = { id: before, url, passages: passages.map((p) => p.id), expect: c.expect, open_tx: o.hash };
-}
-console.log("\nPinning (sent by the treasury itself)");
-for (const c of cases) {
-  const s = (await readUntil(() => cover(ids[c.name]), (x) => x.state !== "pinning", { seconds: STUDIO ? 300 : 2700, every: 10 })).value;
-  record.cases[c.name].pinned = s.state;
-  check(`${c.name}: pinned`, s.state, c.expect === "unpinned" ? "refunded" : "offered");
-}
-
-// 3. The vendor accepts.
-for (const c of cases.filter((c) => c.expect !== "unpinned")) await tx(vendor, treasury, "accept", [ids[c.name]], `${c.name}: accept`);
-for (const c of cases.filter((c) => c.expect !== "unpinned")) {
-  const s = (await readUntil(() => cover(ids[c.name]), (x) => x.state === "active", { seconds: 300 })).value;
-  record.cases[c.name].start = s.start;
-  record.cases[c.name].end = s.end;
-}
-
-// 4. The vendor edits its pages.
-const next = Object.fromEntries(cases.filter((c) => c.file).map((c) => [c.file, c.next]));
-publish(next, "The vendor edits its terms");
-console.log(`\nedited pages served after ${await served(next)}s; waiting ${CDN_WAIT}s more so every edge has them`);
-await sleep(CDN_WAIT * 1000);
-
-// 5. Check every page once; the gone page twice more, a gap apart.
-const pendingOf = (id) => readView(checker, watcher, "pending_of", [treasury, id]);
-
-/** Request a check, then see it through: the watcher observes the page by
- *  itself; a round that does not agree is retried inside the window; a
- *  window that closes without an agreed observation is expired (contested). */
-async function checkOnce(c, label) {
-  const id = ids[c.name];
-  const want = (record.cases[c.name].checks?.length ?? 0) + 1;
-  const o = await tx(checker, watcher, "check", [treasury, id], label);
-  const entry = { tx: o.hash, consensus: o.consensus, retries: [], expired: null };
-  const p = (await readUntil(() => pendingOf(id), (x) => Number(x.seq ?? 0) >= want, { seconds: 300 })).value;
-  const due = Number(p.due ?? 0);
-  const recorded = () => recordOf(id);
-  for (;;) {
-    const got = await readUntil(recorded, (r) => Number(r.seq ?? 0) >= want, { seconds: STUDIO ? 90 : 420, every: 10 });
-    if (Number(got.value.seq ?? 0) >= want) { Object.assign(entry, got.value); break; }
-    const now = Number((await cover(id)).now);
-    if (now <= due - (STUDIO ? 20 : 120)) {
-      const r = await tx(checker, watcher, "observe", [treasury, id], `${label}: observe again`);
-      entry.retries.push({ tx: r.hash, consensus: r.consensus, leader: r.leader });
-      continue;
-    }
-    if (now <= due) { await sleep((due - now + 5) * 1000); continue; }
-    const e = await tx(checker, watcher, "expire", [treasury, id], `${label}: expire`);
-    entry.expired = { tx: e.hash, consensus: e.consensus };
+// 1. Open every cover at version 1 of its page. A cover whose open was sent
+//    but not recorded is found on chain by its URL, never opened twice.
+if (!record.opened) {
+  const v1 = Object.fromEntries(cases.filter((c) => c.file && ids[c.name] === undefined).map((c) => [c.file, "terms-v1.html"]));
+  if (Object.keys(v1).length) {
+    publish(v1, "Reset the live pages to version 1");
+    console.log(`live pages at version 1 after ${await served(v1)}s`);
   }
-  record.cases[c.name].checks = [...(record.cases[c.name].checks ?? []), entry];
+  for (const c of cases) {
+    if (ids[c.name] !== undefined) continue;
+    const url = c.url ?? RAW + c.file + ".html";
+    const passages = c.passages ?? PINNED;
+    const taken = new Set(Object.values(ids));
+    const count = async () => Number((await readExact(treasury, "status")).covers);
+    if (record.cases[c.name]?.open_tx) {
+      for (let i = (await count()) - 1; i >= 0; i--) {
+        const cv = await cover(i);
+        if (!taken.has(i) && cv.url === url && JSON.stringify(cv.passages.map((p) => p.id)) === JSON.stringify(passages.map((p) => p.id))) { ids[c.name] = i; break; }
+      }
+    }
+    if (ids[c.name] === undefined) {
+      const before = await count();
+      record.cases[c.name] = { url, passages: passages.map((p) => p.id), expect: c.expect };
+      const o = await tx(buyer, treasury, "open_cover", [vendorAddr, url, JSON.stringify(passages), COVER, ACCEPT, GAP], `${c.name}: open`, PREPAY);
+      record.cases[c.name].open_tx = o.hash;
+      save();
+      if (!o.applied) throw new Error(`${c.name}: open failed`);
+      await readUntil(count, (n) => n > before, { seconds: 300 });
+      for (let i = (await count()) - 1; i >= before; i--) if ((await cover(i)).url === url && !taken.has(i)) { ids[c.name] = i; break; }
+    }
+    record.cases[c.name].id = ids[c.name];
+    save();
+  }
+  record.opened = true;
   save();
-  console.log(`    record: ${JSON.stringify({ seq: entry.seq, page: entry.page, kind: entry.kind, reading: entry.reading, confidence: entry.confidence, reason: entry.reason, retries: entry.retries.length, expired: !!entry.expired })}`);
+}
+
+// 2. Pinning (sent by the treasury itself), then the vendor accepts.
+console.log("\nPinning and acceptance");
+for (const c of cases) {
+  const id = ids[c.name];
+  let s = await cover(id);
+  if (s.state === "pinning") s = (await readUntil(() => cover(id), (x) => x.state !== "pinning", { seconds: STUDIO ? 300 : 2700, every: 10 })).value;
+  if (record.cases[c.name].pinned === undefined) {
+    record.cases[c.name].pinned = s.state === "active" ? "offered" : s.state;
+    check(`${c.name}: pinned`, record.cases[c.name].pinned, c.expect === "unpinned" ? "refunded" : "offered");
+  }
+  if (c.expect !== "unpinned" && s.state === "offered") {
+    await tx(vendor, treasury, "accept", [id], `${c.name}: accept`);
+    s = (await readUntil(() => cover(id), (x) => x.state === "active", { seconds: 300 })).value;
+  }
+  if (s.start !== undefined) Object.assign(record.cases[c.name], { start: s.start, end: s.end });
+  save();
+}
+
+// 3. The vendor edits its pages (once), and every CDN edge is given time to serve them.
+const next = Object.fromEntries(cases.filter((c) => c.file).map((c) => [c.file, c.next]));
+if (!record.edited_at) {
+  publish(next, "The vendor edits its terms");
+  console.log(`\nedited pages served after ${await served(next)}s`);
+  record.edited_at = await chainNow();
+  save();
+}
+await until(Number(record.edited_at) + CDN_WAIT, "so every edge serves the edited pages");
+
+// 4. Checks. A check already recorded is never repeated; one requested but
+//    not yet observed is resumed (observe again inside its window, expire
+//    after it); one the clock no longer allows is recorded as skipped.
+async function checkOnce(c, k, label) {
+  const id = ids[c.name];
+  const done = record.cases[c.name].checks ?? [];
+  if (done.length >= k) return done[k - 1];
+  const want = k; // the watcher numbers checks per cover from 1
+  const entry = { label, retries: [], expired: null };
+  let rec = await recordOf(id);
+  let p = await pendingOf(id);
+  if (Number(rec.seq ?? 0) < want && Number(p.seq ?? 0) !== want) {
+    const s = await cover(id);
+    if (s.state !== "active") {
+      entry.skipped = `the cover is ${s.state}`;
+    } else {
+      const o = await tx(checker, watcher, "check", [treasury, id], label);
+      entry.tx = o.hash;
+      entry.consensus = o.consensus;
+      if (!o.applied) entry.skipped = "the request was refused (" + o.consensus + ")";
+      else p = (await readUntil(() => pendingOf(id), (x) => Number(x.seq ?? 0) >= want, { seconds: 300 })).value;
+    }
+  }
+  if (!entry.skipped) {
+    entry.requested_at = Number(p.requested_at ?? rec.at ?? 0);
+    const due = Number(p.due ?? 0);
+    for (;;) {
+      rec = (await readUntil(() => recordOf(id), (r) => Number(r.seq ?? 0) >= want, { seconds: STUDIO ? 90 : 420, every: 10 })).value;
+      if (Number(rec.seq ?? 0) >= want) { Object.assign(entry, rec); break; }
+      const now = await chainNow();
+      if (now <= due - (STUDIO ? 20 : 120)) {
+        const r = await tx(checker, watcher, "observe", [treasury, id], `${label}: observe again`);
+        entry.retries.push({ tx: r.hash, consensus: r.consensus, leader: r.leader });
+        continue;
+      }
+      if (now <= due) { await until(due + 5, "for the observation window to close"); continue; }
+      const e = await tx(checker, watcher, "expire", [treasury, id], `${label}: expire`);
+      entry.expired = { tx: e.hash, consensus: e.consensus };
+    }
+  }
+  record.cases[c.name].checks = [...done, entry];
+  save();
+  console.log(`    ${entry.skipped ? "skipped: " + entry.skipped : "record: " + JSON.stringify({ seq: entry.seq, page: entry.page, kind: entry.kind, reading: entry.reading, confidence: entry.confidence, reason: entry.reason, retries: entry.retries.length, expired: !!entry.expired })}`);
   return entry;
 }
 console.log("\nChecks");
 const active = cases.filter((c) => c.expect !== "unpinned");
 for (const c of active) {
-  const rec = await checkOnce(c, `${c.name}: check`);
-  if (c.expect !== "gone") check(`${c.name}: ${rec.kind}${rec.reading ? ` (${rec.reading} ${rec.confidence})` : ""}`, rec.kind, c.expect);
+  const rec = await checkOnce(c, 1, `${c.name}: check`);
+  if (c.expect !== "gone") check(`${c.name}: first check`, rec.kind ?? rec.skipped, c.expect);
 }
 const gone = active.find((c) => c.expect === "gone");
 if (gone) {
   for (let k = 2; k <= 3; k++) {
-    const last = record.cases.gone.checks.at(-1).at;
-    const pause = last + GAP + 15 - Number((await cover(ids.gone)).now);
-    if (pause > 0) { console.log(`  waiting ${pause}s for the next check of the gone page`); await sleep(pause * 1000); }
-    await checkOnce(gone, `gone: check ${k}`);
+    const last = record.cases[gone.name].checks.at(-1);
+    if ((record.cases[gone.name].checks.length) < k) await until(Number(last.requested_at ?? last.at) + GAP + 15, `for check ${k} of the gone page`);
+    await checkOnce(gone, k, `gone: check ${k}`);
   }
-  const kinds = record.cases.gone.checks.map((r) => r.kind).join(",");
-  check("gone: absent, absent, gone", kinds, "absent,absent,gone");
+  check("gone: absent, absent, gone", record.cases[gone.name].checks.map((r) => r.kind ?? "skipped").join(","), "absent,absent,gone");
 }
 
-// 6. Breaches wait out their appeal window, then settle refunds the rest.
-const breached = active.filter((c) => ["breach", "gone"].includes(c.expect));
-const lastNote = Math.max(...breached.map((c) => Number(record.cases[c.name].checks.at(-1).at)));
-const wait = lastNote + APPEAL + 15 - Number((await cover(ids[active[0].name])).now);
-if (wait > 0) { console.log(`\nwaiting ${wait}s for the appeal window`); await sleep(wait * 1000); }
-for (const c of breached) {
-  const b0 = await owedTo(buyerAddr);
-  await tx(checker, treasury, "settle", [ids[c.name]], `${c.name}: settle`);
-  const s = (await readUntil(() => cover(ids[c.name]), (x) => x.state !== "active", { seconds: 300 })).value;
-  Object.assign(record.cases[c.name], { state: s.state, paid: s.paid, refunded: s.refunded, closed_as_of: s.closed_as_of });
-  check(`${c.name}: closed as breached, paid + refunded = prepay`, `${s.state}/${BigInt(s.paid) + BigInt(s.refunded) === PREPAY}`, "breached/true");
-  check(`${c.name}: the buyer got the unearned rest`, (await owedTo(buyerAddr)) - b0 > 0n, true);
+// 5. Settle: breaches once their appeal window has passed, the rest once
+//    their cover has ended; anything already closed is left alone.
+console.log("\nSettling");
+for (const c of active) {
+  const id = ids[c.name];
+  let s = await cover(id);
+  if (s.state === "active") {
+    const breach = ["breach", "gone"].includes(c.expect);
+    const lastAt = Number(record.cases[c.name].checks?.at(-1)?.at ?? 0);
+    await until(breach && lastAt ? lastAt + APPEAL + 15 : Number(s.end) + APPEAL + 15, `to settle ${c.name}`);
+    await tx(checker, treasury, "settle", [id], `${c.name}: settle`);
+    s = (await readUntil(() => cover(id), (x) => x.state !== "active", { seconds: 600, every: 10 })).value;
+  }
+  Object.assign(record.cases[c.name], { state: s.state, paid: s.paid, refunded: s.refunded ?? "0", closed_as_of: s.closed_as_of ?? null });
+  const want = c.expect === "kept" ? "completed" : "breached";
+  check(`${c.name}: closed ${want}, paid + refunded = prepay`, `${s.state}/${BigInt(s.paid) + BigInt(s.refunded ?? 0) === PREPAY}`, `${want}/true`);
+  if (want === "completed") check(`${c.name}: the vendor earned the whole prepay`, String(s.paid), String(PREPAY));
 }
-
-// 7. The rest run to their end and pay the vendor in full.
-const kept = active.filter((c) => c.expect === "kept");
-const endAt = Math.max(...kept.map((c) => Number(record.cases[c.name].end))) + APPEAL + 15;
-const toEnd = endAt - Number((await cover(ids[kept[0].name])).now);
-if (toEnd > 0) { console.log(`\nwaiting ${toEnd}s for the covers to end`); await sleep(toEnd * 1000); }
-for (const c of kept) {
-  await tx(checker, treasury, "settle", [ids[c.name]], `${c.name}: settle at the end`);
-  const s = (await readUntil(() => cover(ids[c.name]), (x) => x.state !== "active", { seconds: 300 })).value;
+for (const c of cases.filter((c) => c.expect === "unpinned")) {
+  const s = await cover(ids[c.name]);
   Object.assign(record.cases[c.name], { state: s.state, paid: s.paid, refunded: s.refunded ?? "0" });
-  check(`${c.name}: completed, the vendor earned the prepay`, `${s.state}/${s.paid}`, `completed/${PREPAY}`);
 }
 
-// 8. Withdraw, and the books.
+// 6. Withdraw, and the books.
 const status = await readExact(treasury, "status");
 record.status = status;
 check("the treasury holds exactly what is owed (nothing left in covers)", `${BigInt(status.held)}/${BigInt(status.balance) === BigInt(status.owed)}`, "0/true");
 for (const [client, addr, who] of [[vendor, vendorAddr, "vendor"], [buyer, buyerAddr, "buyer"]]) {
   if ((await owedTo(addr)) > 0n) check(`${who} withdraws`, (await tx(client, treasury, "withdraw", [], `${who}: withdraw`)).applied, true);
 }
+const failures = record.checks.filter((c) => !c.ok).length;
 record.finished = new Date().toISOString();
 record.failures = failures;
 save();

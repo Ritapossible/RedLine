@@ -117,55 +117,57 @@ prepay exactly once.
 
 ## The on-chain record
 
-Run on the current contracts (watcher `redline-watcher/2`, where every check
-ends in a record). Every cover's paid + refunded equals its prepay exactly,
-read back from chain with exact integers (`deploy/verify.mjs`), and after
-both parties withdrew, each treasury's held, owed and balance were all 0.
+Both networks ran every case on the current contracts (watcher
+`redline-watcher/2`, where every check ends in a record), with 0 failed
+checks. Every cover's paid + refunded equals its prepay exactly, read back
+from chain with exact integers (`deploy/verify.mjs`), and after both parties
+withdrew, each treasury's held, owed and balance were all 0.
 
 **Studio** (`deploy/scenario-studio.json`; prepay 0.02 GEN each, 40-minute
-covers, checks 4 minutes apart, a 5-minute appeal window). 0 failed checks.
+covers, checks 4 minutes apart, a 5-minute appeal window). The runner was
+killed twice on purpose - once right after a cover was opened but before its
+id was saved, once in the middle of the checks - and resumed each time:
+three runs, no transaction sent twice.
 
 | Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
 | --- | --- | --- | --- | --- |
 | Page rebuilt (new build id, nonce, date), every pinned word kept | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
-| Refund sentence reworded, 30 days kept | **kept** (same, 99) | completed | 0.0200 | 0.0000 |
-| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 95) | breached | 0.0047 | 0.0153 |
-| the same, a fresh cover (2 of 3) | **breach** (narrowed, 99) | breached | 0.0049 | 0.0152 |
-| the same, a fresh cover (3 of 3) | **breach** (narrowed, 100) | breached | 0.0051 | 0.0149 |
-| Deletion promise deleted | **breach** (removed, 98) | breached | 0.0053 | 0.0147 |
-| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 100) | breached | 0.0055 | 0.0145 |
-| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0057 | 0.0143 |
+| Refund sentence reworded, 30 days kept | **kept** (same, 95) | completed | 0.0200 | 0.0000 |
+| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 99) | breached | 0.0051 | 0.0149 |
+| the same, a fresh cover (2 of 3) | **breach** (narrowed, 96) | breached | 0.0053 | 0.0147 |
+| the same, a fresh cover (3 of 3) | **breach** (narrowed, 95) | breached | 0.0054 | 0.0146 |
+| Deletion promise deleted | **breach** (removed, 99) | breached | 0.0056 | 0.0144 |
+| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 99) | breached | 0.0057 | 0.0143 |
+| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0059 | 0.0141 |
 | A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
 **Bradbury** (`deploy/scenario-bradbury.json`; 75-minute covers, checks 20
-minutes apart, a 40-minute appeal window). The two cases that did not
-complete on the first run, with two controls. 0 failed checks.
+minutes apart, a 40-minute appeal window).
 
 | Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
 | --- | --- | --- | --- | --- |
 | Page rebuilt (new build id, nonce, date), every pinned word kept | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | Refund sentence reworded, 30 days kept | **kept** (same, 99) | completed | 0.0200 | 0.0000 |
-| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 100); 1 observation retried | breached | 0.0046 | 0.0154 |
-| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0048 | 0.0152 |
+| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 95) | breached | 0.0031 | 0.0169 |
+| the same, a fresh cover (2 of 3) | **breach** (narrowed, 95) | breached | 0.0031 | 0.0169 |
+| the same, a fresh cover (3 of 3) | **breach** (narrowed, 90) | breached | 0.0033 | 0.0167 |
+| Deletion promise deleted | **breach** (removed, 100) | breached | 0.0035 | 0.0165 |
+| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 100) | breached | 0.0037 | 0.0163 |
+| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0041 | 0.0159 |
+| A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
+| A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
-The narrowed check on Bradbury is the new design at work: its first
-observation round did not land, the runner sent `observe` again inside the
-window, and the retry ruled. Under the first watcher that check would have
-recorded nothing.
+The jury's own words, from the records: reworded - "identical refund policy stated" (same, 95) on Studio, "same 30-day cancellation and full unused-credit " (same, 99) on
+Bradbury; narrowed - "shorter period, fee added, usage condition" (narrowed, 95); removed - "no deletion promise found" (removed, 100); the page that told the jury to answer
+"same" - "shorter period, processing fee, new condition" (narrowed, 100).
 
-The jury's own words, from the records: reworded - "identical right,
-reworded but equally favourable" (same, 99, Studio) and "same 30-day full
-refund without conditions" (same, 99, Bradbury); narrowed - "shorter
-period, fee, condition" (100); removed - "current allows retention as acme
-considers necessary" (98).
-
-**The first run** (watcher `redline-watcher/1`, `deploy/scenario-*-v1.json`)
-had the same results on Studio. On Bradbury two cases did not complete: the
-reworded check was finalised with all five validators `NOT_VOTED`, so
-nothing was recorded; and the runner was paused after the gone page's second
-absence. Both are rerun above. The first of them is why a check now always
-ends in a record.
+**Earlier runs**, kept for the record: `deploy/scenario-*-v1.json` (watcher
+1; on Bradbury the reworded check was finalised with all five validators
+`NOT_VOTED` and recorded nothing - the reason a check now always ends in a
+record) and `deploy/scenario-bradbury-rerun.json` (watcher 2, the two cases
+that did not complete the first time, where a narrowed check's first
+observation did not land and the runner's retry inside the window ruled).
 
 ## Deployed contracts
 
@@ -186,8 +188,8 @@ ends in a record.
   shows different things to different validators no longer keeps being paid:
   its checks are recorded as contested and end the cover (THREAT-MODEL T11).
 - **Redirects are not measured.** Pin the final URL of the terms page.
-- **The jury sample is small.** The narrowed case ran three times on Studio
-  and once more on Bradbury; that is a check of the mechanics, not a rate.
+- **The jury sample is small.** The narrowed case ran three times on each
+  network; that is a check of the mechanics, not a rate.
 
 ## Run it
 
@@ -198,6 +200,9 @@ python3 tests/mutation_check.py         # 52 mutants; all must be killed
 cd deploy && npm install
 REDLINE_KEYS=<keys dir> node deploy.mjs studio
 REDLINE_KEYS=<keys dir> LIVE_CLONE=<clone of the live branch> node scenario.mjs studio
+# The runner is resumable: run it again after any stop and it carries on from
+# the chain and its record, never sending a step twice. RESET=1 starts over.
+REDLINE_KEYS=<keys dir> node verify.mjs studio   # every cover, exact, from chain
 ```
 
 ## Layout

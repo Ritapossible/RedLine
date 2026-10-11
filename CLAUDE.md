@@ -24,6 +24,8 @@ python3 tests/mutation_check.py       # every mutant must be killed
 cd deploy && npm install              # once
 REDLINE_KEYS=<dir with principal.key agent.key vendor.key> node deploy.mjs studio
 REDLINE_KEYS=... LIVE_CLONE=<clone of the live branch> node scenario.mjs studio
+# resumable: run it again after any stop and it carries on (RESET=1 starts over)
+REDLINE_KEYS=... node verify.mjs studio   # exact on-chain check of every cover
 ```
 
 ## Hard rules (each learned on chain)
