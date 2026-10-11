@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { APP_ROUTES, href, useApp } from "./state";
 import { AppBar, SiteHeader } from "./components/Header";
 import { Logo } from "./components/Logo";
@@ -5,6 +6,10 @@ import { Home } from "./views/Home";
 import { Covers } from "./views/Covers";
 import { NewCover } from "./views/NewCover";
 import { CoverView } from "./views/CoverView";
+import { Spinner } from "./components/ui";
+
+// The docs carry the markdown renderer and every document; load them on demand.
+const Docs = lazy(() => import("./views/Docs").then((m) => ({ default: m.Docs })));
 
 const REPO = "https://github.com/Ritapossible/RedLine";
 
@@ -21,6 +26,11 @@ export function App() {
       {inApp && <AppBar />}
       <main id="main">
         {route.name === "home" && <Home />}
+        {route.name === "docs" && (
+          <Suspense fallback={<div className="empty"><Spinner /></div>}>
+            <Docs />
+          </Suspense>
+        )}
         {inApp && (
           <div className="wrap app-main" key={network}>
             {route.name === "covers" && <Covers />}
@@ -40,6 +50,13 @@ export function App() {
             <a href={href({ name: "covers" })}>Covers</a>
             <a href={href({ name: "new" })}>Open a cover</a>
             <a href="#/#how">How it works</a>
+          </div>
+          <div>
+            <h4>Docs</h4>
+            <a href={href({ name: "docs", page: "introduction" })}>Introduction</a>
+            <a href={href({ name: "docs", page: "user-guide" })}>User guide</a>
+            <a href={href({ name: "docs", page: "integration" })}>Integration</a>
+            <a href={href({ name: "docs", page: "roadmap" })}>Roadmap</a>
           </div>
           <div>
             <h4>Build</h4>

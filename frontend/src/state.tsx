@@ -4,7 +4,12 @@ import { loadBurner, makeClient, type Client, type Wallet } from "./chain/wallet
 import { useExternalWallet, type ExternalWallet } from "./chain/useExternalWallet";
 import { networkIdOfChain } from "./chain/appkit";
 
-export type Route = { name: "home" } | { name: "covers" } | { name: "cover"; id: number } | { name: "new" };
+export type Route =
+  | { name: "home" }
+  | { name: "covers" }
+  | { name: "cover"; id: number }
+  | { name: "new" }
+  | { name: "docs"; page: string; anchor?: string };
 
 export const APP_ROUTES = new Set(["covers", "cover", "new"]);
 
@@ -14,6 +19,8 @@ export function parseRoute(hash: string): Route {
   if (m) return { name: "cover", id: Number(m[1]) };
   if (path === "/app" || path === "/app/") return { name: "covers" };
   if (path === "/app/new") return { name: "new" };
+  const doc = path.match(/^\/docs(?:\/([a-z0-9-]+))?(?:\/([^/]+))?\/?$/);
+  if (doc) return { name: "docs", page: doc[1] ?? "introduction", anchor: doc[2] ? decodeURIComponent(doc[2]) : undefined };
   return { name: "home" };
 }
 
@@ -27,6 +34,8 @@ export function href(r: Route): string {
       return `#/app/cover/${r.id}`;
     case "new":
       return "#/app/new";
+    case "docs":
+      return `#/docs/${r.page}${r.anchor ? `/${encodeURIComponent(r.anchor)}` : ""}`;
   }
 }
 

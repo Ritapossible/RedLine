@@ -83,9 +83,11 @@ and agree on them (`deploy/probes/`):
    closes a breached cover once its appeal window has passed, and closes a
    finished cover at its end. `withdraw` sends what each party is owed.
 
-Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). What could go wrong
+The full documentation, from the introduction to the roadmap, is in
+[docs/](docs/README.md) and on the site's Docs page. Details:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). What could go wrong
 and what stops it: [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md). What is next:
-[docs/PLAN.md](docs/PLAN.md).
+[docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Design decisions
 
@@ -239,7 +241,7 @@ tests/          mutation_check.py
 deploy/         deploy.mjs, scenario.mjs, probes/, and every on-chain record
 examples/       the fictional vendor's terms pages
 frontend/       the web app (Vite, React, genlayer-js)
-docs/           ARCHITECTURE, THREAT-MODEL, PLAN
+docs/           every page of the site's docs (introduction to roadmap), and PLAN
 ```
 
 Built on [GenLayer](https://genlayer.com) with the contract patterns from
