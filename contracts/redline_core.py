@@ -106,6 +106,22 @@ def _id_ok(cid):
     return True
 
 
+def url_error(url):
+    """Why a terms page URL cannot be pinned ("" if it can). Every validator
+    fetches it and it is stored in public, so it must be a plain https address:
+    no query, fragment, user name or password that could carry a secret."""
+    u = str(url).strip()
+    if not u.startswith("https://") or len(u) > MAX_URL:
+        return "the terms page must be an https URL of at most %d characters" % MAX_URL
+    host = u[8:].split("/")[0]
+    for ch in u:
+        if ch.isspace() or ch in "?#" or ord(ch) < 33 or ord(ch) > 126:
+            return "the terms page URL may not contain a query (?), a fragment (#), spaces or non-ASCII characters"
+    if "@" in host or "." not in host or host.startswith(".") or host.endswith("."):
+        return "the terms page URL must name a host, with no user name or password"
+    return ""
+
+
 def cover_errors(*, buyer, vendor, url, passages, value, coverage_seconds, accept_seconds, check_gap_seconds, passage_error):
     """Why a cover cannot be opened ([] if it can). ``passage_error`` is the
     text module's check of one passage, passed in so this module stays free
@@ -116,9 +132,9 @@ def cover_errors(*, buyer, vendor, url, passages, value, coverage_seconds, accep
             errors.append("the buyer and the vendor must differ")
     except RedlineError as exc:
         errors.append(str(exc))
-    u = str(url).strip()
-    if not (u.startswith("https://") or u.startswith("http://")) or len(u) > MAX_URL or " " in u:
-        errors.append("the terms page must be an http(s) URL of at most %d characters" % MAX_URL)
+    e = url_error(url)
+    if e:
+        errors.append(e)
     if not isinstance(passages, list) or not 1 <= len(passages) <= MAX_PASSAGES:
         errors.append("pin 1 to %d passages" % MAX_PASSAGES)
     else:
@@ -365,12 +381,11 @@ def observe_window(gap):
 def request_error(*, pending, last_request_at, now, gap, end):
     """Why a check may not be requested now ("" if it may)."""
     if pending:
-        return "a check requested at %d is still open until %d; observe it, or expire it after that" % (
-            int(pending["requested_at"]), int(pending["due"]))
+        return "a check is open until %d" % int(pending["due"])
     if last_request_at and int(now) < int(last_request_at) + int(gap):
-        return "a check was requested at %d; the next may be requested from %d" % (int(last_request_at), int(last_request_at) + int(gap))
+        return "the next check may be requested from %d" % (int(last_request_at) + int(gap))
     if int(now) + observe_window(gap) > int(end):
-        return "too close to the end of the cover for a check to be observed"
+        return "too close to the end of the cover"
     return ""
 
 

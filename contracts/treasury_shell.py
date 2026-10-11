@@ -44,7 +44,7 @@ class RedLine(gl.Contract):
     def __init__(self, watcher: str, appeal_seconds: int):
         if int(appeal_seconds) < 0 or int(appeal_seconds) > MAX_WINDOW:
             raise Exception("[EXPECTED] the appeal window is 0-%d seconds" % MAX_WINDOW)
-        self.release = "redline/1"
+        self.release = "redline/2"
         self.watcher = normalize_address(watcher, "watcher")
         self.appeal_seconds = u256(int(appeal_seconds))
         self.cover_count = u256(0)

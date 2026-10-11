@@ -104,12 +104,12 @@ def test_pinning_runs_no_model_and_checking_asks_only_about_missing_passages(wat
     _body, leader, validator = closures(watcher, "observe")
     for closure in (leader, validator):
         before_model = closure[: closure.index("exec_prompt")]
-        assert "passage_present(_text, _p[1])" in before_model and "continue" in before_model
+        assert "jury_question(_text, _p[1], _p[2])" in before_model and "continue" in before_model
 
 
 def test_validators_compare_what_is_on_the_page_exactly_and_the_finding_through_the_rule(watcher):
     _body, _leader, validator = closures(watcher, "pin")
-    assert 'str(_theirs.get("page", "")) == _page and list(_theirs.get("found", [])) == _found' in validator
+    assert 'str(_theirs.get("page", "")) == _page and [list(f) for f in _theirs.get("found", [])] == _found' in validator
     _body, _leader, validator = closures(watcher, "observe")
     assert 'str(_theirs.get("page", "")) != _page' in validator
     assert "_leader_present != _mine_present" in validator

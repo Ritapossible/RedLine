@@ -8,8 +8,8 @@ vendor's terms page, records what it found here, and tells the treasury by a
 message (``note_pin``, ``note_check``) that only this contract may send.
 
 **Pinning** (``pin``, sent by the treasury when a cover is funded): every
-validator fetches the page and checks that each pinned passage is on it word
-for word. No model. A page that answers without them refuses the cover.
+validator fetches the page, checks that each pinned passage is on it word
+for word, and fingerprints the text around it. No model. A page that answers without them refuses the cover.
 
 **Checking** has two steps, so that a check always ends in a record:
 
@@ -19,9 +19,13 @@ for word. No model. A page that answers without them refuses the cover.
 - ``observe`` (sent by the watcher; anyone may send it again inside the
   window) fetches the page and, if needed, asks the jury. What it finds:
 
-- every passage still on the page word for word: kept. No model.
-- a passage gone: the jury compares it with the parts of today's page most
-  like it, and answers same, narrowed, removed or cannot_tell. A confident
+- every passage still on the page word for word, with the text around it
+  and every sentence on its subject as they were at pinning
+  (``context_print``): kept. No model.
+- otherwise - a passage gone, or still there but qualified, withdrawn or
+  overridden by text that changed: the jury reads the page (whole, or the
+  parts most like the passage on a long page) and answers same, narrowed,
+  removed or cannot_tell. A confident
   narrowed or removed is a breach; anything else is kept.
 - no page (no answer, or 404/410): absent. ``ABSENT_LIMIT`` absent checks
   running are "gone", which ends the cover like a breach. No model.
@@ -51,7 +55,7 @@ class RedLineWatcher(gl.Contract):
     checks: u256
 
     def __init__(self):
-        self.release = "redline-watcher/2"
+        self.release = "redline-watcher/3"
         self.checks = u256(0)
 
     def _now(self) -> int:
@@ -87,7 +91,7 @@ class RedLineWatcher(gl.Contract):
                 elif 200 <= _status < 300:
                     _page = PAGE_READ
                     _text = page_text(_resp.body or b"")
-                    _found = [p[0] for p in passages if passage_present(_text, p[1])]
+                    _found = [[p[0], context_print(_text, p[1])] for p in passages if passage_present(_text, p[1])]
             except Exception:
                 _page = PAGE_UNREAD
             return json.dumps({"page": _page, "found": _found})
@@ -104,22 +108,22 @@ class RedLineWatcher(gl.Contract):
                 elif 200 <= _status < 300:
                     _page = PAGE_READ
                     _text = page_text(_resp.body or b"")
-                    _found = [p[0] for p in passages if passage_present(_text, p[1])]
+                    _found = [[p[0], context_print(_text, p[1])] for p in passages if passage_present(_text, p[1])]
             except Exception:
                 _page = PAGE_UNREAD
             _theirs = as_dict(leader_result)
-            return str(_theirs.get("page", "")) == _page and list(_theirs.get("found", [])) == _found
+            return str(_theirs.get("page", "")) == _page and [list(f) for f in _theirs.get("found", [])] == _found
 
         decoded = as_dict(gl.vm.run_nondet(leader, validator, compare_user_errors=True))
         page = str(decoded.get("page", PAGE_UNREAD))
         if page == PAGE_UNREAD:
-            raise Exception("[EXPECTED] the page could not be fetched, so nothing was pinned; send pin again before the acceptance deadline")
-        found = [str(f) for f in decoded.get("found", [])]
-        missing = [p[0] for p in passages if p[0] not in found]
+            raise Exception("[EXPECTED] the page did not answer; pin again")
+        prints = {str(f[0]): str(f[1]) for f in decoded.get("found", [])}
+        missing = [p[0] for p in passages if p[0] not in prints]
         ok = page == PAGE_READ and not missing
         reason = "" if ok else ("the page answered 404/410" if page == PAGE_MISSING else "not on the page: " + ", ".join(missing))
         now = self._now()
-        self.records[self._key(source, cover_id) + ":pin"] = json.dumps({"page": page, "found": found, "ok": ok, "reason": reason, "at": now})
+        self.records[self._key(source, cover_id) + ":pin"] = json.dumps({"page": page, "prints": prints, "ok": ok, "reason": reason, "at": now})
         gl.get_contract_at(Address(source)).emit(on="accepted").note_pin(int(cover_id), ok, now, reason[:200])
 
     def _record(self, source: str, cover_id: int, key: str, previous: dict, pending: dict, page: str, finding: dict, at: int) -> None:
@@ -145,7 +149,7 @@ class RedLineWatcher(gl.Contract):
         key = self._key(source, cover_id)
         previous = json.loads(self.records.get(key, "{}"))
         if previous.get("kind") in ENDS_COVER:
-            raise Exception("[EXPECTED] this cover already ended in a %s; settle closes it" % previous["kind"])
+            raise Exception("[EXPECTED] the cover ended in a %s" % previous["kind"])
         pending = json.loads(self.pending.get(key, "") or "{}")
         gap = int(cover["check_gap_seconds"])
         wait = request_error(pending=pending, last_request_at=int(self.last_request.get(key, u256(0))), now=now, gap=gap, end=int(cover["end"]))
@@ -163,9 +167,9 @@ class RedLineWatcher(gl.Contract):
         key = self._key(source, cover_id)
         pending = json.loads(self.pending.get(key, "") or "{}")
         if not pending:
-            raise Exception("[EXPECTED] no check is open for this cover")
+            raise Exception("[EXPECTED] no check is open")
         if self._now() <= int(pending["due"]):
-            raise Exception("[EXPECTED] the check is open until %d; observe it until then" % int(pending["due"]))
+            raise Exception("[EXPECTED] the check is open until %d" % int(pending["due"]))
         previous = json.loads(self.records.get(key, "{}"))
         self._record(source, cover_id, key, previous, pending, PAGE_CONTESTED, {}, int(pending["requested_at"]))
 
@@ -178,16 +182,17 @@ class RedLineWatcher(gl.Contract):
         key = self._key(source, cover_id)
         pending = json.loads(self.pending.get(key, "") or "{}")
         if not pending:
-            raise Exception("[EXPECTED] no check is open for this cover; request one with check")
+            raise Exception("[EXPECTED] no check is open")
         now = self._now()
         if now > int(pending["due"]):
-            raise Exception("[EXPECTED] the check closed at %d; expire records it as contested" % int(pending["due"]))
+            raise Exception("[EXPECTED] the check closed at %d; expire it" % int(pending["due"]))
         cover = self._cover(source, cover_id)
         if cover["state"] != COVER_ACTIVE:
             raise Exception("[EXPECTED] the cover is not active")
         previous = json.loads(self.records.get(key, "{}"))
         uri = str(cover["url"])
-        passages = [[str(p["id"]), str(p["text"])] for p in cover["passages"]]
+        prints = json.loads(self.records.get(key + ":pin", "{}")).get("prints", {})
+        passages = [[str(p["id"]), str(p["text"]), str(prints.get(str(p["id"]), ""))] for p in cover["passages"]]
 
         def leader() -> str:
             _page = PAGE_UNREAD
@@ -207,10 +212,11 @@ class RedLineWatcher(gl.Contract):
                 return json.dumps({"page": _page})
             _results = []
             for _p in passages:
-                if passage_present(_text, _p[1]):
+                _q = jury_question(_text, _p[1], _p[2])
+                if not _q:
                     _results.append({"passage": _p[0], "present": True, "reading": READ_SAME, "confidence": 100, "reason": "word_for_word"})
                     continue
-                _ans = read_answer(gl.nondet.exec_prompt(build_prompt(pinned=_p[1], excerpts=excerpts(_text, _p[1])), response_format="json"))
+                _ans = read_answer(gl.nondet.exec_prompt(_q, response_format="json"))
                 _results.append({"passage": _p[0], "present": False, "reading": _ans["reading"],
                                  "confidence": _ans["confidence"], "reason": _ans["reason"]})
                 if reading_to_kind(_ans["reading"], _ans["confidence"]) == CHECK_BREACH:
@@ -245,12 +251,13 @@ class RedLineWatcher(gl.Contract):
             _mine_present = []
             _own_kind = CHECK_KEPT
             for _p in passages:
-                if passage_present(_text, _p[1]):
+                _q = jury_question(_text, _p[1], _p[2])
+                if not _q:
                     _mine_present.append(_p[0])
                     continue
                 if _finding["kind"] == CHECK_BREACH and _p[0] != _finding.get("passage"):
                     continue  # a breach is judged on the passage the leader ruled
-                _ans = read_answer(gl.nondet.exec_prompt(build_prompt(pinned=_p[1], excerpts=excerpts(_text, _p[1])), response_format="json"))
+                _ans = read_answer(gl.nondet.exec_prompt(_q, response_format="json"))
                 if reading_to_kind(_ans["reading"], _ans["confidence"]) == CHECK_BREACH:
                     _own_kind = CHECK_BREACH
                     break

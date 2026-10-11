@@ -1,20 +1,22 @@
 {
   "studio": {
-    "treasury": "0xb4a65de24d6522bd59ebb26572a4e506370FAE4a",
-    "treasury_tx": "0xd1eceeb5c7250f006e1729f06fe815d7fb6b61e936b6ea877bafec3a2bfca109",
-    "watcher": "0xf7d4005fEf76e9BBd948708859c2de8844E84b79",
-    "watcher_tx": "0x26ac22d2bc5efe5d4eac15cf64ae9e4293a4c1e77e2d46d10aac1728356ccb6c",
+    "treasury": "0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014",
+    "treasury_tx": "0xc561aa0e8a32d05bd2304ca48b55612fc2f22ca9793134e30107e5bad89f9403",
+    "watcher": "0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6",
+    "watcher_tx": "0x696ab65f390ce6bc094decc21c8d3bf0e8edf1b5676ebdd1c1407375917b0318",
     "appeal_seconds": 300,
-    "release": "redline/1",
-    "at": "2026-10-10T22:39:54.961Z"
+    "release": "redline/2",
+    "watcher_release": "redline-watcher/3",
+    "at": "2026-10-11T11:41:22.069Z"
   },
   "bradbury": {
-    "treasury": "0xd54D0A5Cf6a52cb48F499CE76FfAE6E2Dd30C4fF",
-    "treasury_tx": "0xe6fef4fe2c2a4e74aaeac7097143d5b72606a73cecf18d7bc4490ba4f5e673cc",
-    "watcher": "0xb45e2cA545EB09435B0C04E22b563Cd19c5fb97c",
-    "watcher_tx": "0xaf4118c48f6b63bd3670c39c16b6afc76f00d2fd8e5a926aeda2d1a777fc2e78",
+    "treasury": "0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13",
+    "treasury_tx": "0xd14b311f443444d6ea838b6fc74a8f42cac3ffb6bcaa56b7221aaadf0fd72283",
+    "watcher": "0xc512c66A5463039C24Df6de6cedf89Da74B55A65",
+    "watcher_tx": "0x42d22903f56f71f919f89ce50411b3dc25363ca559340bbf4f282846cc9467fa",
     "appeal_seconds": 2400,
-    "release": "redline/1",
-    "at": "2026-10-10T22:40:34.602Z"
+    "release": "redline/2",
+    "watcher_release": "redline-watcher/3",
+    "at": "2026-10-11T11:41:55.301Z"
   }
 }

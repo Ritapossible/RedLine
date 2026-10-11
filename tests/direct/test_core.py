@@ -45,8 +45,15 @@ def test_a_well_formed_cover_opens():
 
 @pytest.mark.parametrize("kw,needle", [
     (dict(vendor=BUYER), "must differ"),
-    (dict(url="ftp://acme.test/terms"), "http(s) URL"),
-    (dict(url="https://acme.test/" + "a" * 300), "http(s) URL"),
+    (dict(url="ftp://acme.test/terms"), "https URL"),
+    (dict(url="http://acme.test/terms"), "https URL"),
+    (dict(url="https://acme.test/" + "a" * 300), "https URL"),
+    (dict(url="https://acme.test/terms?token=s3cret"), "query"),
+    (dict(url="https://acme.test/terms#refunds"), "fragment"),
+    (dict(url="https://acme.test/te rms"), "spaces"),
+    (dict(url="https://acme.test/términos"), "non-ASCII"),
+    (dict(url="https://user:pw@acme.test/terms"), "user name or password"),
+    (dict(url="https://localhost/terms"), "must name a host"),
     (dict(passages=[]), "pin 1 to 4"),
     (dict(passages=PASSAGES * 3), "pin 1 to 4"),
     (dict(passages=[{"id": "x", "text": "short"}]), "at least 40"),
@@ -327,7 +334,7 @@ def test_a_request_needs_no_open_one_the_gap_and_room_before_the_end():
     end = T0 + 3000
     assert core.request_error(pending={}, last_request_at=0, now=T0, gap=600, end=end) == ""
     open_one = {"requested_at": T0, "due": T0 + 300}
-    assert "still open until %d" % (T0 + 300) in core.request_error(pending=open_one, last_request_at=T0, now=T0 + 10, gap=600, end=end)
+    assert "open until %d" % (T0 + 300) in core.request_error(pending=open_one, last_request_at=T0, now=T0 + 10, gap=600, end=end)
     assert "may be requested from %d" % (T0 + 600) in core.request_error(pending={}, last_request_at=T0, now=T0 + 599, gap=600, end=end)
     assert core.request_error(pending={}, last_request_at=T0, now=T0 + 600, gap=600, end=end) == ""
     assert "too close to the end" in core.request_error(pending={}, last_request_at=0, now=end - 299, gap=600, end=end)

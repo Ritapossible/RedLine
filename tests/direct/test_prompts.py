@@ -17,7 +17,7 @@ def test_the_jury_sees_the_pinned_passage_and_the_page_and_one_question():
     p = prompt_for("terms-narrowed.html")
     assert REFUND in p and "7 days of purchase" in p.lower()
     assert '"same" | "narrowed" | "removed" | "cannot_tell"' in p
-    assert "Do not judge whether the change is fair" in p
+    assert "not whether a change is fair" in p
 
 
 def test_a_page_cannot_close_its_block_or_open_a_new_one():
@@ -49,3 +49,13 @@ def test_confidence_is_clamped_and_never_raises():
     assert read_answer('{"reading": "narrowed", "confidence": 400}')["confidence"] == 100
     assert read_answer('{"reading": "narrowed", "confidence": "high"}')["confidence"] == 0
     assert as_dict(object()) == {} and as_dict('"text"') == {}
+
+
+def test_the_jury_is_told_whether_it_sees_the_whole_page_or_excerpts():
+    from redline_prompts import build_prompt
+    whole = build_prompt(pinned="a" * 50, excerpts=["the page"], present=False, whole=True)
+    parts = build_prompt(pinned="a" * 50, excerpts=["one part", "another"], present=False, whole=False)
+    assert "the whole page today" in whole and "These are excerpts" not in whole
+    assert "These are excerpts" in parts and 'answer "cannot_tell", not "removed"' in parts
+    voided = build_prompt(pinned="a" * 50, excerpts=["x"], present=True, whole=True)
+    assert "pinned words are still on the page" in voided and "withdrawn, suspended or overridden" in voided

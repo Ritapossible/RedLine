@@ -111,6 +111,9 @@ def scenario(suffix):
     out["open: bad passages refusal"] = json.loads(t.refusal_of(BUYER))
     tx("open: no value", T, "open_cover", VENDOR, url(90), json.dumps(PASSAGES), COVER, 1800, GAP, sender=BUYER, value=0)
     tx("open: vendor is buyer", T, "open_cover", BUYER, url(90), json.dumps(PASSAGES), COVER, 1800, GAP, sender=BUYER, value=AMOUNT)
+    for bad in ("http://acme.test/terms", "https://acme.test/terms?token=s3cret", "https://user:pw@acme.test/terms", "https://acme.test/terms#x"):
+        tx("open: url " + bad, T, "open_cover", VENDOR, bad, json.dumps(PASSAGES), COVER, 1800, GAP, sender=BUYER, value=AMOUNT)
+        out["open: url refusal " + bad] = json.loads(t.refusal_of(BUYER))["reason"]
     out["refunded after refusals"] = t.owed_to(BUYER)
 
     rt.web[url(91)] = page("terms-v1.html")
@@ -152,6 +155,9 @@ def scenario(suffix):
     i_bricked = active("bricked", 20)
     i_quiet = active("quiet", 21)
     i_cloak = active("cloaked", 22)
+    i_voided = active("voided", 23)
+    i_hidden = active("hidden", 24)
+    i_hidden_style = active("hidden style", 25)
     started = rt.now
     tx("accept twice", T, "accept", i_unchanged, sender=VENDOR)
     tx("check too early", W, "check", T, i_late, sender=OTHER)
@@ -175,6 +181,15 @@ def scenario(suffix):
     out["6 injected: prompt"] = calls[-1]
     rt.web[url(20)] = page("terms-narrowed.html")
     check("9 bricked: breach", i_bricked)
+    # 13. The pinned sentence kept word for word, but voided by a line above it.
+    rt.web[url(23)] = page("terms-voided.html")
+    check("13 voided", i_voided)
+    out["13 voided: prompt"] = calls[-1]
+    # 14. The pinned sentence kept in the HTML, hidden; the visible page narrower.
+    rt.web[url(24)] = page("terms-hidden.html")
+    check("14 hidden", i_hidden)
+    rt.web[url(25)] = page("terms-hidden-style.html")
+    check("14 hidden style", i_hidden_style)
 
     # 11. Validators disagree: the leader reads narrowed, the validator same.
     rt.web[url(9)] = page("terms-narrowed.html")
@@ -242,7 +257,8 @@ def scenario(suffix):
     rt.contracts.pop(W)  # 9. the watcher becomes unreadable
     rt.now += APPEAL
     for label, i in [("1", i_unchanged), ("2", i_reworded), ("3a", i_narrow[0]), ("3b", i_narrow[1]), ("3c", i_narrow[2]),
-                     ("4", i_gone), ("5", i_removed), ("6", i_injected), ("9", i_bricked), ("10", i_blink), ("11", i_split), ("12", i_cloak)]:
+                     ("4", i_gone), ("5", i_removed), ("6", i_injected), ("9", i_bricked), ("10", i_blink), ("11", i_split), ("12", i_cloak),
+                     ("13", i_voided), ("14", i_hidden), ("14s", i_hidden_style)]:
         before = owed()
         tx("settle " + label, T, "settle", i, sender=OTHER)
         after = owed()
@@ -294,13 +310,13 @@ def test_opening_needs_real_passages_a_prepay_and_two_parties(readable):
     r = readable
     assert r["open: bad passages"] == -1 and "at least 40 characters" in r["open: bad passages refusal"]["reason"]
     assert r["open: no value"] == -1 and r["open: vendor is buyer"] == -1
-    assert r["refunded after refusals"] == 2 * AMOUNT  # every refused value credited back
+    assert r["refunded after refusals"] == 6 * AMOUNT  # every refused value credited back (2 + the 4 URLs)
 
 
 def test_a_passage_not_on_the_page_refuses_the_cover_at_once(readable):
     c = readable["pin: passage not on page"]
     assert (c["state"], c["refunded"]) == ("refunded", AMOUNT) and "not on the page: refund" in c["why"]
-    assert readable["pin: passage not on page record"]["found"] == []
+    assert readable["pin: passage not on page record"]["prints"] == {}
 
 
 def test_a_page_that_does_not_answer_pins_nothing_and_cannot_be_accepted(readable):
@@ -338,9 +354,10 @@ def test_2_a_reworded_right_is_kept(readable):
     r = readable
     rec = r["2 reworded: record"]
     assert (rec["kind"], rec["passage"], rec["reading"]) == ("kept", "refund", "same")
-    # Only the reworded passage reaches the jury: once for the leader, once for
-    # the validator the stand-in runs.
-    assert r["2 reworded: model calls"] == 2
+    # The reworded passage reaches the jury, and so does the deletion passage
+    # next to it, whose surroundings changed; both are ruled the same. Twice
+    # each: the leader, and the validator the stand-in runs.
+    assert r["2 reworded: model calls"] == 4
     assert r["credited 2"]["buyer"] == 0 and r["covers"][r["indices"]["reworded"]]["state"] == "completed"
 
 
@@ -365,7 +382,7 @@ def test_4_a_page_gone_three_checks_running_refunds_without_a_model(readable):
     assert [r["4 gone %d: record" % k]["kind"] for k in (1, 2, 3)] == ["absent", "absent", "gone"]
     assert sum(r["4 gone %d: model calls" % k] for k in (1, 2, 3)) == 0
     assert "may be requested from" in r["4 gone too soon"]
-    assert "already ended in a gone" in r["4 after gone"]
+    assert "ended in a gone" in r["4 after gone"]
     held = r["4 after one absence"]["held"]
     assert held["kind"] == "absent"
     c = r["cover 4"]
@@ -376,7 +393,9 @@ def test_4_a_page_gone_three_checks_running_refunds_without_a_model(readable):
 def test_5_a_deleted_promise_is_removed(readable):
     rec = readable["5 removed: record"]
     assert (rec["kind"], rec["passage"], rec["reading"]) == ("breach", "deletion", "removed")
-    assert readable["5 removed: model calls"] == 2  # leader + validator; the refund passage is still word for word
+    # The leader asks about the refund passage (its surroundings changed: same)
+    # and the deletion passage (removed); the validator re-judges only the breach.
+    assert readable["5 removed: model calls"] == 3
     assert readable["cover 5"]["state"] == "breached"
 
 
@@ -386,6 +405,36 @@ def test_6_a_page_cannot_answer_for_the_jury(readable):
     prompt = r["6 injected: prompt"]
     assert prompt.count("=== END CURRENT ===") == 1  # the page's own marker was defused
     assert "= = = end current = = =" in prompt
+
+
+def test_13_a_pinned_sentence_voided_by_text_around_it_is_not_kept(readable):
+    """Grok's case: the sentence stays word for word; a line above withdraws it.
+    Its surroundings changed since pinning, so the jury reads it - and the
+    jury is told words that are withdrawn do not give the right."""
+    r = readable
+    rec = r["13 voided: record"]
+    assert (rec["kind"], rec["passage"], rec["reading"]) == ("breach", "refund", "removed")
+    assert r["13 voided: model calls"] >= 2
+    prompt = r["13 voided: prompt"]
+    assert "pinned words are still on the page" in prompt and "withdrawn" in prompt
+    c = r["cover 13"]
+    assert c["state"] == "breached" and c["paid"] + c["refunded"] == AMOUNT and c["refunded"] > 0
+
+
+def test_14_a_pinned_sentence_kept_only_in_hidden_markup_is_not_kept(readable):
+    r = readable
+    for label, cover_label in (("14 hidden", "cover 14"), ("14 hidden style", "cover 14s")):
+        rec = r[label + ": record"]
+        assert (rec["kind"], rec["passage"], rec["reading"]) == ("breach", "refund", "narrowed"), label
+        assert r[cover_label]["state"] == "breached"
+
+
+def test_a_terms_url_must_be_plain_https(readable):
+    r = readable
+    assert "https URL" in r["open: url refusal http://acme.test/terms"]
+    assert "query" in r["open: url refusal https://acme.test/terms?token=s3cret"]
+    assert "user name or password" in r["open: url refusal https://user:pw@acme.test/terms"]
+    assert "fragment" in r["open: url refusal https://acme.test/terms#x"]
 
 
 def test_9_an_unreadable_watcher_cannot_stop_a_reported_refund_or_the_vendors_pay(readable):
@@ -417,7 +466,7 @@ def test_11_a_round_that_does_not_agree_is_retried_then_recorded_as_contested(re
 def test_12_a_cloaked_page_cannot_keep_the_vendor_paid(readable):
     r = readable
     assert r["12 cloaked 1"] == "ok" and r["12 observe again"].startswith("refused")
-    assert "expire records it as contested" in r["12 observe after the window"]
+    assert "expire it" in r["12 observe after the window"]
     rec = r["12 cloaked: record"]
     assert (rec["page"], rec["kind"], rec["streak"]) == ("contested", "gone", 3)
     c = r["covers"][r["indices"]["cloaked"]]

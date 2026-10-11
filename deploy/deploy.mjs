@@ -24,7 +24,7 @@ const all = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : {}
 all[network] = {
   treasury: treasury.address, treasury_tx: treasury.hash,
   watcher: watcher.address, watcher_tx: watcher.hash,
-  appeal_seconds: APPEAL, release: "redline/1", at: new Date().toISOString(),
+  appeal_seconds: APPEAL, release: "redline/2", watcher_release: "redline-watcher/3", at: new Date().toISOString(),
 };
 fs.writeFileSync(path, JSON.stringify(all, null, 2) + "\n");
 console.log("recorded in deploy/deployments.json");

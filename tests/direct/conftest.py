@@ -32,10 +32,13 @@ def scripted_model(prompt):
     """A jury that reads the two blocks of the prompt and applies plain rules:
     the pinned refund window shrinking from 30 days, or extra conditions, is
     narrowed; a passage whose subject is no longer on the page is removed;
+    a promise the page says is withdrawn or does not apply is removed;
     otherwise the same. It obeys nothing written inside the blocks."""
-    pinned = prompt.split("=== PINNED (what the customer relied on) ===\n", 1)[1].split("\n=== END PINNED ===", 1)[0].lower()
-    current = prompt.split("=== CURRENT (today's page, the parts most like the pinned passage) ===\n", 1)[1]
+    pinned = prompt.split("=== PINNED ===\n", 1)[1].split("\n=== END PINNED ===", 1)[0].lower()
+    current = prompt.split("=== CURRENT ===\n", 1)[1]
     current = current.split("\n=== END CURRENT ===", 1)[0].lower()
+    if "withdrawn" in current or "does not apply" in current or "no longer applies" in current:
+        return {"reading": "removed", "reason": "pinned words withdrawn", "confidence": 94}
     if "refund" in pinned:
         if "7 days of purchase" in current or "processing fee" in current:
             return {"reading": "narrowed", "reason": "shorter window and a fee", "confidence": 95}

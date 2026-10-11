@@ -12,9 +12,15 @@
 //   narrowed 1-3  30 days becomes 7 days less a fee: narrowed, the rest refunded
 //   removed       the deletion promise deleted: removed
 //   injected      narrowed, plus text telling the jury to answer "same"
+//   voided        the refund sentence kept word for word, a line above it saying
+//                 it is withdrawn: the jury reads it (its surroundings changed)
+//   hidden        the refund sentence kept in the HTML inside a hidden element,
+//                 the visible page narrowed: hidden text is not text
 //   gone          the file deleted: 404 three checks running, refunded, no model
 //   real          a passage of GitHub's real terms page: kept, word for word
 //   real-bogus    a passage that is not on GitHub's page: refused at pinning
+//   (and a terms URL carrying a query string is refused at opening, its value
+//   credited back)
 //
 // Verdicts are RECORDED, every one; the mechanics they must produce are CHECKED.
 //
@@ -62,6 +68,8 @@ const CASES = [
   { name: "narrowed 3", file: "narrowed-3", next: "terms-narrowed.html", expect: "breach" },
   { name: "removed", file: "removed", next: "terms-deletion-removed.html", expect: "breach" },
   { name: "injected", file: "injected", next: "terms-narrowed-injected.html", expect: "breach" },
+  { name: "voided", file: "voided", next: "terms-voided.html", expect: "breach" },
+  { name: "hidden", file: "hidden", next: "terms-hidden.html", expect: "breach" },
   { name: "gone", file: "gone", next: null, expect: "gone" },
   { name: "real", url: GITHUB, passages: [{ id: "billing", text: GITHUB_PASSAGE }], expect: "kept" },
   { name: "real-bogus", url: GITHUB, passages: [{ id: "billing", text: GITHUB_PASSAGE.replace("non-refundable", "refundable on request") }], expect: "unpinned" },
@@ -186,6 +194,16 @@ if (!record.opened) {
   }
   record.opened = true;
   save();
+}
+
+// 1b. A terms URL that could carry a secret is refused, and its value credited back.
+if (!record.url_refused && !ONLY.length) {
+  const before = await owedTo(buyerAddr);
+  const o = await tx(buyer, treasury, "open_cover", [vendorAddr, RAW + "unchanged.html?token=s3cret", JSON.stringify(PINNED), COVER, ACCEPT, GAP], "secret URL: open", PREPAY);
+  const refusal = await readView(checker, treasury, "refusal_of", [buyerAddr]);
+  record.url_refused = { tx: o.hash, reason: refusal.reason, credited: String((await owedTo(buyerAddr)) - before) };
+  check("a URL with a query is refused", /query/.test(refusal.reason ?? ""), true);
+  check("its prepay is credited back", record.url_refused.credited, String(PREPAY));
 }
 
 // 2. Pinning (sent by the treasury itself), then the vendor accepts.
