@@ -27,8 +27,10 @@ switch it. Nothing can be signed until the two match.
    passages from it (a 30-day refund and a 7-day data deletion promise).
 2. **Vendor address**: the address the vendor will accept from and be paid
    to. It must be different from yours.
-3. **Terms page URL**: the public page the passages are on. Use its final
-   URL; redirects have not been tested.
+3. **Terms page URL**: the public page the passages are on, as a plain
+   `https` address with no query string (`?…`), fragment (`#…`), user name
+   or password: every validator fetches it and it is stored in public. Use
+   its final URL; redirects have not been tested.
 4. **Pinned passages**: 1 to 4, each with a short name (`refund`,
    `deletion`) and its text, **copied word for word from the page**, 40 to
    600 characters. Spacing, capital letters and typographic variants (curly

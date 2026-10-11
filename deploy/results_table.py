@@ -16,6 +16,8 @@ LABELS = {
     "narrowed 3": "the same, a fresh cover (3 of 3)",
     "removed": "Deletion promise deleted",
     "injected": 'Narrowed, plus text telling the jury to answer "same"',
+    "voided": "Refund sentence kept word for word, a line above it saying it is withdrawn",
+    "hidden": "Refund sentence kept only inside a hidden element, the visible page narrowed",
     "gone": "Page deleted: 404, three checks running",
     "real": "A passage of GitHub's live terms page",
     "real-bogus": "A passage that is not on GitHub's page",

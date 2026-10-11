@@ -11,7 +11,7 @@ two contracts; all you need is their addresses and
 
 The same addresses are in `deploy/deployments.json`, which the app reads.
 
-## Treasury (`RedLine`, release `redline/1`)
+## Treasury (`RedLine`, release `redline/2`)
 
 ### Writes
 
@@ -26,7 +26,8 @@ The same addresses are in `deploy/deployments.json`, which the app reads.
 
 `passages_json` is a JSON list of 1 to 4 `{"id": "...", "text": "..."}`:
 ids are 1-24 letters, digits, `-` or `_`; texts are 40-600 characters after
-normalisation. Every period is 60 seconds to 400 days, and
+normalisation. `url` must be `https`, at most 300 characters, naming a host,
+with no query, fragment, user name, password, spaces or non-ASCII characters. Every period is 60 seconds to 400 days, and
 `3 × check_gap_seconds` must fit in `coverage_seconds`.
 
 ### Views
@@ -38,7 +39,7 @@ normalisation. Every period is 60 seconds to 400 days, and
 | `refusal_of(address)` | `{"reason", "at", "returned"}` for the address's last refused opening, or `{}` |
 | `status()` | `{"release", "watcher", "appeal_seconds", "covers", "held", "owed", "balance"}` |
 
-## Watcher (`RedLineWatcher`, release `redline-watcher/2`)
+## Watcher (`RedLineWatcher`, release `redline-watcher/3`)
 
 Every method takes the treasury address (lower case) and the cover id.
 
@@ -48,7 +49,7 @@ Every method takes the treasury address (lower case) and the cover id.
 | `observe(treasury, cover_id)` | the watcher; anyone may retry inside the window | Fetches the page, asks the jury if needed, records and reports the result. |
 | `expire(treasury, cover_id)` | anyone, after the window | Records an unobserved check as contested. |
 | `pin(treasury, cover_id)` | the treasury; anyone may retry while pinning | Confirms every passage is on the page. |
-| `record_of`, `pending_of`, `pin_of` | views | The latest check, the open request, the pinning result, as JSON (`{}` if none). |
+| `record_of`, `pending_of`, `pin_of` | views | The latest check, the open request, the pinning result (with each passage's surroundings fingerprint), as JSON (`{}` if none). |
 | `status()` | view | `{"release", "checks"}` |
 
 ## Example: open and watch a cover

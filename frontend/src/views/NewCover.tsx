@@ -36,7 +36,11 @@ export function NewCover() {
     const out: string[] = [];
     if (!/^0x[0-9a-fA-F]{40}$/.test(vendor.trim())) out.push("The vendor must be an address (0x and 40 hex characters).");
     else if (sameAddr(vendor.trim(), me)) out.push("The vendor must be a different address from yours.");
-    if (!/^https?:\/\/\S+$/.test(url.trim()) || url.trim().length > 300) out.push("The terms page must be an http(s) URL of at most 300 characters.");
+    const u = url.trim();
+    const host = u.slice(8).split("/")[0];
+    if (!u.startsWith("https://") || u.length > 300) out.push("The terms page must be an https URL of at most 300 characters.");
+    else if (/[?#\s]|[^\x21-\x7e]/.test(u)) out.push("The terms page URL may not contain a query (?), a fragment (#), spaces or non-ASCII characters: it is fetched by every validator and stored in public.");
+    else if (host.includes("@") || !host.includes(".") || host.startsWith(".") || host.endsWith(".")) out.push("The terms page URL must name a host, with no user name or password.");
     const ids = new Set<string>();
     passages.forEach((p, i) => {
       const id = p.id.trim();
@@ -113,7 +117,7 @@ export function NewCover() {
           <Field label="Vendor address" hint="The vendor accepts the cover from this address and is paid to it.">
             <input className="mono" value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="0x…" spellCheck={false} />
           </Field>
-          <Field label="Terms page URL" hint="The public page the passages are on. Pin its final URL; redirects have not been tested.">
+          <Field label="Terms page URL" hint="The public https page the passages are on, with no query string. Pin its final URL; redirects have not been tested.">
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://vendor.com/terms" spellCheck={false} />
           </Field>
 

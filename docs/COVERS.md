@@ -58,8 +58,8 @@ A check is two steps, so that a check **always ends in a record**:
 
 | What the page shows | Recorded as | Model? |
 | --- | --- | --- |
-| Every pinned passage, word for word | kept | no |
-| A passage missing; the jury reads it as **same** | kept | yes |
+| Every pinned passage, word for word, with the text around it and on its subject as at pinning | kept | no |
+| A passage missing, or still there but with its surroundings changed; the jury reads it as **same** | kept | yes |
 | A passage missing; the jury reads it as **narrowed** or **removed** with confidence 70 or more, and validators agree | **breach** | yes |
 | A passage missing; **cannot_tell**, or a breach below 70 | kept | yes |
 | No answer, a 404/410, or any other non-2xx status | absent | no |
@@ -70,9 +70,18 @@ which records the check as **contested**. Contested counts exactly like
 absent: it holds accrual, and three absent-or-contested checks running end
 the cover as gone.
 
-**What the jury sees.** The pinned passage, and at most two windows of
-today's page (about 1,500 characters each) that share the most words with it.
-It answers with a reading, a confidence and a short reason. Text on the page
+**Still there is not enough.** A pinned sentence left word for word but
+voided by a line next to it ("the following is withdrawn") is not kept: its
+surroundings changed, so the jury reads it, and words that are withdrawn or
+overridden do not give the right. Text a reader cannot see (hidden elements,
+`display:none`, hiding classes) is not on the page at all. Dates and numbers
+near a passage do not count as a change.
+
+**What the jury sees.** The pinned passage and today's page: whole if it is
+up to 12,000 characters, otherwise up to three 2,000-character windows led by
+the passage or the text most like it. On excerpts it is told to answer
+cannot_tell rather than removed if they do not show the subject. It answers
+with a reading, a confidence and a short reason. Text on the page
 that tries to instruct the jury is shown to it as page text, inside markers it
 cannot close.
 

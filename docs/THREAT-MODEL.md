@@ -9,7 +9,8 @@ entry names the test or measurement that holds it, and what is left.
 look like a harmless edit.
 
 **Stops it.** Any change to a pinned passage, down to one digit, makes it no
-longer present word for word, and the jury is asked. Rewording that keeps the
+longer present word for word, and the jury is asked. So does any change to
+the text around it or on its subject (T14). Rewording that keeps the
 right is `same`; a shorter period, a fee, a condition or a smaller amount is
 `narrowed`.
 
@@ -52,7 +53,10 @@ texts are data.
 **Attack (or accident).** A new build id, a cookie banner, a date stamp.
 
 **Stops it.** Only the pinned passages are compared, as normalised visible
-text. Markup, scripts, styles, comments, case and spacing are not words.
+text. Markup, scripts, styles, comments, case and spacing are not words. The
+surroundings that must stay as they were (T14) ignore digits and month and
+day names, so a new date stamp next to a passage is not a change, and they
+are measured in words, so a shorter date does not shift them.
 
 **Test.** `test_1_a_rebuilt_page_with_every_word_kept_runs_no_model_and_moves_nothing`,
 `test_a_page_rebuilt_with_new_ids_and_stamps_keeps_every_pinned_passage`;
@@ -173,3 +177,93 @@ checks every active cover on its gap is on the plan.
 **Not measured yet.** Whether `gl.nondet.web.get` follows redirects decides
 whether a vendor moving its terms to a new URL looks absent. Until it is
 measured, pin the final URL.
+
+## T14 - The pinned sentence stays, but is voided (raised by a reviewer)
+
+**Attack.** Leave the pinned sentence on the page word for word and add a
+line above it: "The following is withdrawn and does not apply." Before
+`redline-watcher/3`, a passage present word for word was kept without asking
+anyone, so this paid the vendor for a right the customer no longer had.
+
+**Stops it.** At pinning, every validator fingerprints the passage's
+surroundings (`context_print`): the 60 words either side of every place it
+appears, and every sentence anywhere on the page that shares three or more of
+its long words. A passage is kept without a model only if it is there word
+for word **and** that fingerprint is unchanged. Otherwise the jury reads it,
+told that the pinned words are still on the page but text near them or on
+their subject changed, and that words withdrawn, suspended or overridden by
+other text do not give the right. A second copy of the passage anywhere also
+changes the fingerprint.
+
+**Test.** `test_13_a_pinned_sentence_voided_by_text_around_it_is_not_kept`,
+`test_a_line_that_voids_a_passage_changes_its_surroundings`; mutants
+`voided-passage-kept`, `model-on-every-passage`, `subject-sentences-ignored`,
+`dates-count-as-context`. On chain: the `voided` case.
+
+**Left.** A voiding statement that is more than 60 words away from the
+passage **and** shares fewer than three of its long words (for example "all
+of section 2 is suspended" at the top of a long page) is not seen. The
+honest cost: an edit next to a pinned passage, even a harmless one, sends it
+to the jury, which should rule it the same.
+
+## T15 - The pinned sentence is kept only in hidden markup (raised by a reviewer)
+
+**Attack.** Keep the old sentence in the HTML inside `<div hidden>` or
+`style="display:none"`, and show the customer something narrower.
+
+**Stops it.** Text a reader cannot see is not text: the contents of an
+element marked `hidden` or `aria-hidden="true"`, hidden by an inline style
+(`display:none`, `visibility:hidden`, zero font size or opacity), by a class
+or id that the page's own `<style>` hides, or by a common framework class
+(`hidden`, `d-none`, `sr-only`, `visually-hidden`, `invisible`,
+`screen-reader-text`) are dropped, nested elements included. An element that
+a responsive class shows at some screen size (`hidden md:block`) is kept.
+
+**Test.** `test_14_a_pinned_sentence_kept_only_in_hidden_markup_is_not_kept`,
+`test_text_a_reader_cannot_see_is_not_on_the_page` (11 forms),
+`test_text_a_reader_can_see_stays_on_the_page`; mutants
+`hidden-attribute-is-text`, `aria-hidden-is-text`, `inline-style-is-text`,
+`page-css-is-ignored`, `hiding-class-is-text`, `responsive-class-hidden`,
+`nested-hidden-leaks`. On chain: the `hidden` case.
+
+**Left.** RedLine reads HTML, not a rendered page. A sentence hidden only by
+a rule in an **external** stylesheet, under a class name of the vendor's own,
+with nothing else near it changed, still counts as on the page.
+
+## T16 - A terms URL that carries a secret (raised by a reviewer)
+
+**Attack (or accident).** Pin `https://vendor.example/terms?token=...` or
+`https://user:password@...`. Every validator fetches the URL and it is stored
+in public, so the secret is published.
+
+**Stops it.** The terms URL must be `https`, with no query, fragment, user
+name, password, spaces or non-ASCII characters, and must name a host. Anything
+else is refused at opening and its value credited back. The app checks the
+same rules before anyone signs.
+
+**Test.** `test_a_malformed_cover_is_refused` (9 URL forms),
+`test_a_terms_url_must_be_plain_https`; mutants `http-allowed`,
+`query-allowed`, `userinfo-allowed`. On chain: a cover opened with a query
+string, refused, its prepay credited back.
+
+## T17 - The jury is shown the wrong part of a long page (raised by a reviewer)
+
+**Attack (or accident).** On a long page, a right reworded in different words
+falls outside what the jury is shown; it sees unrelated text and answers
+`removed`, refunding an honest vendor.
+
+**Stops it.** A page of up to 12,000 characters is shown to the jury whole.
+A longer one is shown in up to three 2,000-character windows: the one centred
+on the passage if it is still there, then those sharing the most words with
+it. When it sees excerpts, the jury is told so, and told to answer
+`cannot_tell`, never `removed`, if they do not show where the page covers the
+subject; `cannot_tell` never refunds.
+
+**Test.** `test_a_short_page_is_shown_to_the_jury_whole`,
+`test_a_long_page_is_shown_in_windows_led_by_the_passage_or_its_subject`,
+`test_the_jury_is_told_whether_it_sees_the_whole_page_or_excerpts`; mutants
+`long-page-shown-as-excerpts`, `excerpts-not-flagged`.
+
+**Left.** On a page longer than 12,000 characters, the jury still depends on
+the windows; a model can disregard the instruction. Measuring this is part of
+the jury sample on the roadmap.

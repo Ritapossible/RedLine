@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { href, useApp } from "../state";
 import { ArrowRight, Coins, Doc, Eye, Handshake, Pin, Scale, Shield } from "../components/icons";
-import { rows, summary } from "../lib/record";
+import { rows, studio, summary } from "../lib/record";
 import { formatGen } from "../lib/money";
-import studio from "../../../deploy/scenario-studio.json";
 
 const PINNED =
   "You may cancel at any time within 30 days of purchase and receive a full refund of any unused prepaid credit, with no questions asked.";
 
-const narrowed = (studio as unknown as { verified: { covers: Record<string, { paid: string; refunded: string }> } }).verified.covers["narrowed 1"];
+type Run = {
+  cases: Record<string, { id?: number; checks?: { reading?: string; confidence?: number; reason?: string }[] }>;
+  verified?: { covers: Record<string, { paid: string; refunded: string }> };
+};
+const run = studio as unknown as Run;
+const narrowed = run.verified?.covers["narrowed 1"] ?? { paid: "0", refunded: "0" };
+const narrowedCase = run.cases["narrowed 1"] ?? {};
+const narrowedCheck = narrowedCase.checks?.at(-1) ?? {};
 
 export function Home() {
   const { route } = useApp();
@@ -110,10 +116,11 @@ export function Home() {
           </div>
           <div className="msg">
             <span className="msg-tag">
-              <Scale size={14} /> Jury, Studio cover 12
+              <Scale size={14} /> Jury, Studio cover {narrowedCase.id}
             </span>
             <p>
-              <b className="red">Narrowed</b> · confidence 99 · <span className="muted">shorter window, fee deducted</span>
+              <b className="red">{narrowedCheck.reading === "removed" ? "Removed" : "Narrowed"}</b> · confidence {narrowedCheck.confidence} ·{" "}
+              <span className="muted">{narrowedCheck.reason}</span>
             </p>
           </div>
           <div className="msg msg-right">
@@ -145,6 +152,10 @@ export function Home() {
             <div>
               <h3>A breach needs agreement and confidence</h3>
               <p>A narrowed or removed reading below 70, or one the validators do not share, does not end a cover.</p>
+            </div>
+            <div>
+              <h3>Still there is not enough</h3>
+              <p>A pinned sentence left on the page but voided by a line beside it, or kept only in hidden markup, is read by the jury, not waved through.</p>
             </div>
             <div>
               <h3>Every check ends in a record</h3>

@@ -22,6 +22,23 @@ today's page. If the right is the same, it rules **same** and the cover
 carries on. On chain, a reworded refund sentence with the 30 days kept was
 ruled same on both networks (confidence 95 on Studio, 99 on Bradbury).
 
+## What if the vendor leaves my sentence on the page but adds "this no longer applies"?
+
+It is caught. A passage only counts as kept without a model if the text
+around it and every sentence on its subject are as they were when you pinned
+it. A line like "the following is withdrawn and does not apply" changes that,
+so the jury reads the passage in context, and it is told that words withdrawn
+or overridden by other text do not give the right. On chain this case was
+ruled a breach (see the README's record).
+
+## What if it hides the old sentence in the page's code and shows something else?
+
+Hidden text does not count. Anything inside an element marked hidden,
+styled `display:none` or `visibility:hidden`, or given a hiding class that the
+page's own CSS or a common framework defines, is dropped before the passage
+is looked for. The one case not covered is a sentence hidden only by an
+external stylesheet under a class name of the vendor's own.
+
 ## Can the vendor trick the jury with text on the page?
 
 It was tried: a page that narrowed the refund and also told the jury to
@@ -59,7 +76,8 @@ that found it; everything earned before that stays the vendor's.
 ## What does RedLine not do?
 
 It does not judge fairness, legality or intent, and it does not read
-anything but the one pinned URL. It does not follow redirects reliably
+anything but the one pinned URL, which must be a plain https address with no
+query string, so no secret can ride along in it. It does not follow redirects reliably
 (untested), and it cannot catch a vendor that fools a majority of validators
 the same way every time: that looks exactly like a page that really says
 what they saw. See the [Threat model](THREAT-MODEL.md).

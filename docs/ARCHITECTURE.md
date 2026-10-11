@@ -103,10 +103,21 @@ a breach already reported is not undone by a later check.
 A live terms page is never byte-stable: cookie banners, build ids, nonces,
 "last updated" stamps and A/B variants change the raw HTML on every load.
 RedLine never compares bytes or whole pages. `page_text` drops markup,
-comments and hidden elements (`script`, `style`, `svg`, ...), decodes
-entities, folds typography (curly quotes, non-breaking hyphens and spaces),
-lower-cases and collapses whitespace. A pinned passage is "kept" if its
-normalised form is still a substring of the page's.
+comments and everything a reader would not see: `script`, `style`, `svg` and
+the like, and any element marked `hidden` or `aria-hidden`, hidden by an
+inline style, by a class or id the page's own `<style>` hides, or by a common
+framework hiding class (nested elements included; a responsive class that
+shows it at some size keeps it). It decodes entities, folds typography (curly
+quotes, non-breaking hyphens and spaces), lower-cases and collapses
+whitespace.
+
+A pinned passage is **kept without a model** only if its normalised form is
+still in the page's **and** its surroundings are as they were at pinning
+(`context_print`): a fingerprint of the 60 words either side of every place
+it appears and of every sentence on the page sharing three or more of its
+long words, with digits and month and day names dropped. A sentence left word
+for word but voided by a line next to it, or by a sentence on its subject
+elsewhere, therefore goes to the jury (THREAT-MODEL T14).
 
 Measured before any contract was written (`deploy/probes/`): validators
 fetching five real terms pages (Stripe, Anthropic, GitHub, Cloudflare,
@@ -121,15 +132,21 @@ Vercel)
 ## 5. The jury's one question
 
 The jury runs only for a passage that is no longer on the page word for
-word. It is shown the pinned passage and up to two windows of today's page
-(1,500 characters each) that share the most words with it - chosen
+word, or is but whose surroundings changed. It is shown the pinned passage
+and today's page: whole, if the page is up to 12,000 characters; otherwise
+up to three 2,000-character windows - the one centred on the passage if it
+is still there, then those sharing the most words with it - chosen
 deterministically, so every validator that fetched the same text shows the
-same excerpts. It is never shown anyone's complaint or argument.
+same thing. It is told which case it is in, and that on excerpts which do not
+show the subject it must answer `cannot_tell`, not `removed`. It is never
+shown anyone's complaint or argument.
 
-> Is the right, promise or protection the PINNED passage gave the customer
-> still given by CURRENT? `same` (rewording or moving it is same),
-> `narrowed` (less favourable: a shorter period, a smaller amount, more
-> conditions, fewer cases, more discretion), `removed`, or `cannot_tell`.
+> Does CURRENT, read as a whole, still give the customer the right, promise
+> or protection the PINNED passage gave? `same` (rewording or moving it is
+> same), `narrowed` (less favourable: a shorter period, a smaller amount,
+> more conditions, fewer cases, more discretion), `removed` (no longer given,
+> reversed, or still worded but withdrawn or overridden by other text), or
+> `cannot_tell`.
 
 Both texts come from outside (the passage from the buyer, the page from the
 vendor), so neither can open or close a block of the prompt (`neutralize`
@@ -163,8 +180,11 @@ itself; the open request it leaves is retried, or expired as contested.
 ## 6. Pinning
 
 When a cover is funded, the treasury messages the watcher to pin it. Every
-validator fetches the page and lists which passages are on it word for word;
-they must agree exactly. No model runs. A page that answers without every
+validator fetches the page, lists which passages are on it word for word,
+and fingerprints each one's surroundings; they must agree exactly, and the
+fingerprints are stored with the pin. No model runs. The terms URL must be plain `https` - no
+query, fragment, user name or password - because every validator fetches it
+and it is stored in public. A page that answers without every
 passage refuses the cover and refunds it at once - the buyer cannot pin a
 promise the vendor never made. A page that does not answer pins nothing;
 anyone may send `pin` again, and a cover never pinned refunds at its
