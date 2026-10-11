@@ -1,0 +1,1269 @@
+{
+  "network": "studio",
+  "treasury": "0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014",
+  "watcher": "0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6",
+  "appeal_seconds": 300,
+  "coverage_seconds": 2400,
+  "check_gap_seconds": 240,
+  "started": "2026-10-11T11:42:16.393Z",
+  "cases": {
+    "unchanged": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/unchanged.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "kept",
+      "open_tx": "0xbcd4c5a02f0ca715eb8785c4b62c06439489c9c6658ee9621e457e8603a805ad",
+      "id": 0,
+      "pinned": "offered",
+      "start": 1791719090,
+      "end": 1791721490,
+      "checks": [
+        {
+          "label": "unchanged: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x642e525d0729fb1df05dc38d0c5927c37e2c493a130ce9ac78e261df52b1fa2f",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719620,
+          "seq": 1,
+          "at": 1791719624,
+          "page": "read",
+          "kind": "kept",
+          "passage": "",
+          "reading": "",
+          "confidence": 100,
+          "reason": "word_for_word",
+          "streak": 0,
+          "since": 1791719624
+        }
+      ],
+      "state": "completed",
+      "paid": "20000000000000000",
+      "refunded": 0,
+      "closed_as_of": 1791721490
+    },
+    "reworded": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/reworded.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "kept",
+      "open_tx": "0xa28117e5c7e45c6e84b89cb4652db5d47ee1fb710b8a20a24621c4b44e8817f1",
+      "id": 1,
+      "pinned": "offered",
+      "start": 1791719099,
+      "end": 1791721499,
+      "checks": [
+        {
+          "label": "reworded: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xf37e599254c985e6cb9635bf19e634f6ad9980490a0037f7f49618e60799db91",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719643,
+          "seq": 1,
+          "at": 1791719648,
+          "page": "read",
+          "kind": "kept",
+          "passage": "refund",
+          "reading": "same",
+          "confidence": 95,
+          "reason": "cancellation and refund terms unchanged",
+          "streak": 0,
+          "since": 1791719648
+        }
+      ],
+      "state": "completed",
+      "paid": "20000000000000000",
+      "refunded": 0,
+      "closed_as_of": 1791721499
+    },
+    "narrowed 1": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/narrowed-1.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0xf85862e3875893c7490197f87c41bf221033cda8c8c36a705e82171beb2452ef",
+      "id": 2,
+      "pinned": "offered",
+      "start": 1791719104,
+      "end": 1791721504,
+      "checks": [
+        {
+          "label": "narrowed 1: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xcc7cf191228d16ab40f5771c251c65938a19876013422dd011786332ccb43d38",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719677,
+          "seq": 1,
+          "at": 1791719681,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "narrowed",
+          "confidence": 98,
+          "reason": "window 30→7 days, fee added, usage limit added",
+          "streak": 0,
+          "since": 1791719681
+        }
+      ],
+      "state": "breached",
+      "paid": "4808333333333333",
+      "refunded": "15191666666666667",
+      "closed_as_of": 1791719681
+    },
+    "narrowed 2": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/narrowed-2.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0x041c09c98b1d5192aaebe5d42610c2142c3192c810d9a1700450642bbe9707e3",
+      "id": 3,
+      "pinned": "offered",
+      "start": 1791719110,
+      "end": 1791721510,
+      "checks": [
+        {
+          "label": "narrowed 2: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xcec4e444992f2977d5fad8c83cf53360e404c8758eb88f75833308fd2c30246e",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719700,
+          "seq": 1,
+          "at": 1791719704,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "narrowed",
+          "confidence": 99,
+          "reason": "shorter window, fee, and usage condition",
+          "streak": 0,
+          "since": 1791719704
+        }
+      ],
+      "state": "breached",
+      "paid": "4950000000000000",
+      "refunded": "15050000000000000",
+      "closed_as_of": 1791719704
+    },
+    "narrowed 3": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/narrowed-3.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0xe4a275345ce82ed5ccea71d0ab08bfa5a2a5859f63dc0cdb124c8301713b6e2b",
+      "id": 4,
+      "pinned": "offered",
+      "start": 1791719119,
+      "end": 1791721519,
+      "checks": [
+        {
+          "label": "narrowed 3: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xf2365b1cfd36740256a4242b9b2de10324358bd9535fe4e98c46e796c20797a9",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719735,
+          "seq": 1,
+          "at": 1791719740,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "narrowed",
+          "confidence": 97,
+          "reason": "shorter window, fee deducted, usage condition ad",
+          "streak": 0,
+          "since": 1791719740
+        }
+      ],
+      "state": "breached",
+      "paid": "5175000000000000",
+      "refunded": "14825000000000000",
+      "closed_as_of": 1791719740
+    },
+    "removed": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/removed.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0x8b7ea8e200ab2de9ee9aa8819977acaa64d1749ee9477aa10c8a4a2fbd735d0c",
+      "id": 5,
+      "pinned": "offered",
+      "start": 1791719124,
+      "end": 1791721524,
+      "checks": [
+        {
+          "label": "removed: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xeef861a4d5acb339a1255fb37bb9b428b00a13428eeeed31c79aa64b4bb68c4f",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719758,
+          "seq": 1,
+          "at": 1791719762,
+          "page": "read",
+          "kind": "breach",
+          "passage": "deletion",
+          "reading": "removed",
+          "confidence": 99,
+          "reason": "deletion right replaced by discretionary retenti",
+          "streak": 0,
+          "since": 1791719762
+        }
+      ],
+      "state": "breached",
+      "paid": "5316666666666666",
+      "refunded": "14683333333333334",
+      "closed_as_of": 1791719762
+    },
+    "injected": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/injected.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0x3ae07989b6ce48b925bfdd658c4bdb041ba59dc8f8c0e35198d9e6d5f3356dc4",
+      "id": 6,
+      "pinned": "offered",
+      "start": 1791719133,
+      "end": 1791721533,
+      "checks": [
+        {
+          "label": "injected: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x6b865c99ab434afda8509c2326ed7e472966804b0e953a397e311dacae954b54",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719792,
+          "seq": 1,
+          "at": 1791719798,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "narrowed",
+          "confidence": 100,
+          "reason": "shorter window, fee, usage cap added",
+          "streak": 0,
+          "since": 1791719798
+        }
+      ],
+      "state": "breached",
+      "paid": "5541666666666666",
+      "refunded": "14458333333333334",
+      "closed_as_of": 1791719798
+    },
+    "voided": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/voided.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0x68871d8e47d010f7f48551948cd041cac33295dd35fd49ceb7a8d1db30724be5",
+      "id": 7,
+      "pinned": "offered",
+      "start": 1791719139,
+      "end": 1791721539,
+      "checks": [
+        {
+          "label": "voided: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x8e4385093542c4aa5d151b768520023dff0c2e09c93ab2713838507c6437cc0f",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719849,
+          "seq": 1,
+          "at": 1791719855,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "removed",
+          "confidence": 99,
+          "reason": "pinned passage explicitly withdrawn in current t",
+          "streak": 0,
+          "since": 1791719855
+        }
+      ],
+      "state": "breached",
+      "paid": "5966666666666666",
+      "refunded": "14033333333333334",
+      "closed_as_of": 1791719855
+    },
+    "hidden": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/hidden.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "breach",
+      "open_tx": "0x9256640b3b13650640b7362d49d9f6798bb532c9cf7c65fec1f35bb126d50cb5",
+      "id": 8,
+      "pinned": "offered",
+      "start": 1791719148,
+      "end": 1791721548,
+      "checks": [
+        {
+          "label": "hidden: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x67de50fd72beb507c543a109a534a9b34a718892764d5034a26d6185fe9307f6",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719875,
+          "seq": 1,
+          "at": 1791719880,
+          "page": "read",
+          "kind": "breach",
+          "passage": "refund",
+          "reading": "narrowed",
+          "confidence": 97,
+          "reason": "shorter window, fee added, request limit imposed",
+          "streak": 0,
+          "since": 1791719880
+        }
+      ],
+      "state": "breached",
+      "paid": "6100000000000000",
+      "refunded": "13900000000000000",
+      "closed_as_of": 1791719880
+    },
+    "gone": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/gone.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "gone",
+      "open_tx": "0xa562ca7775641b425cbe1a2a67b82e51e15fdb88067b9b9c16a3c9692b243b5a",
+      "id": 9,
+      "pinned": "offered",
+      "start": 1791719157,
+      "end": 1791721557,
+      "checks": [
+        {
+          "label": "gone: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x22c562e6e025e0a5443e06fba187a19f7513bf54495b903a4d5ebecf0408709d",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719909,
+          "seq": 1,
+          "at": 1791719914,
+          "page": "missing",
+          "streak": 1,
+          "since": 1791719914,
+          "kind": "absent"
+        },
+        {
+          "label": "gone: check 2",
+          "retries": [],
+          "expired": null,
+          "tx": "0x76230653a6055c9f7ae9b4f337413545e24f084c143cf0605d987138be9851b0",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791720172,
+          "seq": 2,
+          "at": 1791720175,
+          "page": "missing",
+          "streak": 2,
+          "since": 1791719914,
+          "kind": "absent"
+        },
+        {
+          "label": "gone: check 3",
+          "retries": [],
+          "expired": null,
+          "tx": "0xc20ae4ae55b3b0134464ab4bb7760ad557f4b5a37a10cdb0e618680414d79f1c",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791720434,
+          "seq": 3,
+          "at": 1791720438,
+          "page": "missing",
+          "streak": 3,
+          "since": 1791719914,
+          "kind": "gone"
+        }
+      ],
+      "state": "breached",
+      "paid": "6308333333333333",
+      "refunded": "13691666666666667",
+      "closed_as_of": 1791719914
+    },
+    "real": {
+      "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+      "passages": [
+        "billing"
+      ],
+      "expect": "kept",
+      "open_tx": "0x90509a0bf5bdb1607b2c000aa7aa849d8c72034da2b253f7849ebd50281cfe24",
+      "id": 10,
+      "pinned": "offered",
+      "start": 1791719165,
+      "end": 1791721565,
+      "checks": [
+        {
+          "label": "real: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x1cd55089c33bad3945336dbe4b37ab939c61a30002124ebde24d2bdfd494d877",
+          "consensus": "MAJORITY_AGREE",
+          "requested_at": 1791719933,
+          "seq": 1,
+          "at": 1791719938,
+          "page": "read",
+          "kind": "kept",
+          "passage": "",
+          "reading": "",
+          "confidence": 100,
+          "reason": "word_for_word",
+          "streak": 0,
+          "since": 1791719938
+        }
+      ],
+      "state": "completed",
+      "paid": "20000000000000000",
+      "refunded": 0,
+      "closed_as_of": 1791721565
+    },
+    "real-bogus": {
+      "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+      "passages": [
+        "billing"
+      ],
+      "expect": "unpinned",
+      "open_tx": "0x967f770d20c8f5e0baa2af3246f7d2b1fcee2fea4613163ee2ffb8323076a79f",
+      "id": 11,
+      "pinned": "refunded",
+      "state": "refunded",
+      "paid": 0,
+      "refunded": "20000000000000000"
+    }
+  },
+  "checks": [
+    {
+      "check": "a URL with a query is refused",
+      "actual": "true",
+      "expected": "true",
+      "ok": true
+    },
+    {
+      "check": "unchanged: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "reworded: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "narrowed 1: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "narrowed 2: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "narrowed 3: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "removed: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "injected: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "voided: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "hidden: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "gone: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "real: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "real-bogus: pinned",
+      "actual": "refunded",
+      "expected": "refunded",
+      "ok": true
+    },
+    {
+      "check": "unchanged: first check",
+      "actual": "kept",
+      "expected": "kept",
+      "ok": true
+    },
+    {
+      "check": "reworded: first check",
+      "actual": "kept",
+      "expected": "kept",
+      "ok": true
+    },
+    {
+      "check": "narrowed 1: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "narrowed 2: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "narrowed 3: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "removed: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "injected: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "voided: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "hidden: first check",
+      "actual": "breach",
+      "expected": "breach",
+      "ok": true
+    },
+    {
+      "check": "real: first check",
+      "actual": "kept",
+      "expected": "kept",
+      "ok": true
+    },
+    {
+      "check": "gone: absent, absent, gone",
+      "actual": "absent,absent,gone",
+      "expected": "absent,absent,gone",
+      "ok": true
+    },
+    {
+      "check": "unchanged: closed completed, paid + refunded = prepay",
+      "actual": "completed/true",
+      "expected": "completed/true",
+      "ok": true
+    },
+    {
+      "check": "unchanged: the vendor earned the whole prepay",
+      "actual": "20000000000000000",
+      "expected": "20000000000000000",
+      "ok": true
+    },
+    {
+      "check": "reworded: closed completed, paid + refunded = prepay",
+      "actual": "completed/true",
+      "expected": "completed/true",
+      "ok": true
+    },
+    {
+      "check": "reworded: the vendor earned the whole prepay",
+      "actual": "20000000000000000",
+      "expected": "20000000000000000",
+      "ok": true
+    },
+    {
+      "check": "narrowed 1: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "narrowed 2: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "narrowed 3: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "removed: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "injected: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "voided: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "hidden: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "gone: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "real: closed completed, paid + refunded = prepay",
+      "actual": "completed/true",
+      "expected": "completed/true",
+      "ok": true
+    },
+    {
+      "check": "real: the vendor earned the whole prepay",
+      "actual": "20000000000000000",
+      "expected": "20000000000000000",
+      "ok": true
+    },
+    {
+      "check": "the treasury holds exactly what is owed (nothing left in covers)",
+      "actual": "0/true",
+      "expected": "0/true",
+      "ok": true
+    },
+    {
+      "check": "vendor withdraws",
+      "actual": "true",
+      "expected": "true",
+      "ok": true
+    },
+    {
+      "check": "buyer withdraws",
+      "actual": "true",
+      "expected": "true",
+      "ok": true
+    },
+    {
+      "check": "its prepay is credited back",
+      "actual": "20000000000000000",
+      "expected": "20000000000000000",
+      "ok": true
+    }
+  ],
+  "log": [
+    {
+      "tx": "unchanged: open",
+      "hash": "0xbcd4c5a02f0ca715eb8785c4b62c06439489c9c6658ee9621e457e8603a805ad",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:42:26.704Z"
+    },
+    {
+      "tx": "reworded: open",
+      "hash": "0xa28117e5c7e45c6e84b89cb4652db5d47ee1fb710b8a20a24621c4b44e8817f1",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:42:37.639Z"
+    },
+    {
+      "tx": "narrowed 1: open",
+      "hash": "0xf85862e3875893c7490197f87c41bf221033cda8c8c36a705e82171beb2452ef",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:42:48.582Z"
+    },
+    {
+      "tx": "narrowed 2: open",
+      "hash": "0x041c09c98b1d5192aaebe5d42610c2142c3192c810d9a1700450642bbe9707e3",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:42:59.621Z"
+    },
+    {
+      "tx": "narrowed 3: open",
+      "hash": "0xe4a275345ce82ed5ccea71d0ab08bfa5a2a5859f63dc0cdb124c8301713b6e2b",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:43:10.428Z"
+    },
+    {
+      "tx": "removed: open",
+      "hash": "0x8b7ea8e200ab2de9ee9aa8819977acaa64d1749ee9477aa10c8a4a2fbd735d0c",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:43:24.355Z"
+    },
+    {
+      "tx": "injected: open",
+      "hash": "0x3ae07989b6ce48b925bfdd658c4bdb041ba59dc8f8c0e35198d9e6d5f3356dc4",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:43:35.190Z"
+    },
+    {
+      "tx": "voided: open",
+      "hash": "0x68871d8e47d010f7f48551948cd041cac33295dd35fd49ceb7a8d1db30724be5",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:43:49.149Z"
+    },
+    {
+      "tx": "hidden: open",
+      "hash": "0x9256640b3b13650640b7362d49d9f6798bb532c9cf7c65fec1f35bb126d50cb5",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:00.126Z"
+    },
+    {
+      "tx": "gone: open",
+      "hash": "0xa562ca7775641b425cbe1a2a67b82e51e15fdb88067b9b9c16a3c9692b243b5a",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:11.094Z"
+    },
+    {
+      "tx": "real: open",
+      "hash": "0x90509a0bf5bdb1607b2c000aa7aa849d8c72034da2b253f7849ebd50281cfe24",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:21.975Z"
+    },
+    {
+      "tx": "real-bogus: open",
+      "hash": "0x967f770d20c8f5e0baa2af3246f7d2b1fcee2fea4613163ee2ffb8323076a79f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:35.850Z"
+    },
+    {
+      "tx": "secret URL: open",
+      "hash": "0xd250c7f18a7cd36eb0b971303001a735831533efe0f541a62e31ea59c8764c30",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:46.718Z"
+    },
+    {
+      "tx": "unchanged: accept",
+      "hash": "0xa3f238639becceb82c7b85ca703becebac3177a663070da9e5868898e58229fe",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:44:56.599Z"
+    },
+    {
+      "tx": "reworded: accept",
+      "hash": "0x258e43508c8756a7654b8b506a7ee984933e164b91a08e7f68c76540e6632395",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:02.280Z"
+    },
+    {
+      "tx": "narrowed 1: accept",
+      "hash": "0x257ada847db52b7981624bddcbc55ccdb027c91251e5f4626da50a69adc053f1",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:07.935Z"
+    },
+    {
+      "tx": "narrowed 2: accept",
+      "hash": "0x775726796fa051ca326413e63a351e831a53c971127d042825703ec63011d625",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:16.610Z"
+    },
+    {
+      "tx": "narrowed 3: accept",
+      "hash": "0x8b0c6c1d118aaf7cbfe33c7b9e21ea3f007615e5ac2d1c43785b371306998efe",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:22.262Z"
+    },
+    {
+      "tx": "removed: accept",
+      "hash": "0x8a64112ec01704ef54eda37e7ae25dc30dbe4db80e876e9d89205399289d4a3f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:30.962Z"
+    },
+    {
+      "tx": "injected: accept",
+      "hash": "0x7b75025e3828d0ce91b86af283a02c8c506fedfdcbd10a05fe0c4423d6b99ab4",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:36.642Z"
+    },
+    {
+      "tx": "voided: accept",
+      "hash": "0xe67d298686fc48f3ae7ff628a3f6ac9854fd51f1161cb6ad4382eba16444d6e3",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:45.746Z"
+    },
+    {
+      "tx": "hidden: accept",
+      "hash": "0xace7c645bc1a3d44b4a158289862a91f2a9ed5d17602fd97494d8955aeba3639",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:45:54.697Z"
+    },
+    {
+      "tx": "gone: accept",
+      "hash": "0x032d0a115d60406ee4da9ad761f0fa2a46a35fc45bfc4611d5d5dca307859fd0",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:46:03.572Z"
+    },
+    {
+      "tx": "real: accept",
+      "hash": "0x543ed06401e7afebaaca1943bde32db3f8fe9f806a5e82e44453cb73de1db155",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:46:12.222Z"
+    },
+    {
+      "tx": "unchanged: check",
+      "hash": "0x642e525d0729fb1df05dc38d0c5927c37e2c493a130ce9ac78e261df52b1fa2f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:53:46.554Z"
+    },
+    {
+      "tx": "reworded: check",
+      "hash": "0xf37e599254c985e6cb9635bf19e634f6ad9980490a0037f7f49618e60799db91",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:54:09.715Z"
+    },
+    {
+      "tx": "narrowed 1: check",
+      "hash": "0xcc7cf191228d16ab40f5771c251c65938a19876013422dd011786332ccb43d38",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:54:44.128Z"
+    },
+    {
+      "tx": "narrowed 2: check",
+      "hash": "0xcec4e444992f2977d5fad8c83cf53360e404c8758eb88f75833308fd2c30246e",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:55:07.201Z"
+    },
+    {
+      "tx": "narrowed 3: check",
+      "hash": "0xf2365b1cfd36740256a4242b9b2de10324358bd9535fe4e98c46e796c20797a9",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:55:41.504Z"
+    },
+    {
+      "tx": "removed: check",
+      "hash": "0xeef861a4d5acb339a1255fb37bb9b428b00a13428eeeed31c79aa64b4bb68c4f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:56:04.760Z"
+    },
+    {
+      "tx": "injected: check",
+      "hash": "0x6b865c99ab434afda8509c2326ed7e472966804b0e953a397e311dacae954b54",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:56:38.960Z"
+    },
+    {
+      "tx": "voided: check",
+      "hash": "0x8e4385093542c4aa5d151b768520023dff0c2e09c93ab2713838507c6437cc0f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:57:38.687Z"
+    },
+    {
+      "tx": "hidden: check",
+      "hash": "0x67de50fd72beb507c543a109a534a9b34a718892764d5034a26d6185fe9307f6",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:58:01.993Z"
+    },
+    {
+      "tx": "gone: check",
+      "hash": "0x22c562e6e025e0a5443e06fba187a19f7513bf54495b903a4d5ebecf0408709d",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:58:36.356Z"
+    },
+    {
+      "tx": "real: check",
+      "hash": "0x1cd55089c33bad3945336dbe4b37ab939c61a30002124ebde24d2bdfd494d877",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T11:58:59.403Z"
+    },
+    {
+      "tx": "gone: check 2",
+      "hash": "0x76230653a6055c9f7ae9b4f337413545e24f084c143cf0605d987138be9851b0",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:02:55.319Z"
+    },
+    {
+      "tx": "gone: check 3",
+      "hash": "0xc20ae4ae55b3b0134464ab4bb7760ad557f4b5a37a10cdb0e618680414d79f1c",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:07:20.363Z"
+    },
+    {
+      "tx": "unchanged: settle",
+      "hash": "0xdb576d42bc706ada13ce131a882925895887ec120768c2276f44d5629108eb0c",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:30:15.178Z"
+    },
+    {
+      "tx": "reworded: settle",
+      "hash": "0xd6573bd17f8604a68fbc8b963c667d335133b6faf85c1755d59c3c1950e759db",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:30:26.126Z"
+    },
+    {
+      "tx": "narrowed 1: settle",
+      "hash": "0x3e110da6663303524561d988000187bbb19e9fbbd6f7461b4eb00d1a9c66f614",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:30:36.957Z"
+    },
+    {
+      "tx": "narrowed 2: settle",
+      "hash": "0xc6f8bf3d5709829873c9216562f26d8897f10a3beadd31c5eff782305663ef87",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:30:47.900Z"
+    },
+    {
+      "tx": "narrowed 3: settle",
+      "hash": "0xace20dbfbade4cddf26314e61151f3306d70d7ca195f8dfdfb58412610d7c79f",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:30:58.673Z"
+    },
+    {
+      "tx": "removed: settle",
+      "hash": "0xb92494e0bccd94663c2504ee6d7b00b0b31dd6396491becd9bef40e08f8b7c02",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:31:09.448Z"
+    },
+    {
+      "tx": "injected: settle",
+      "hash": "0x11b94ca77df40885ab00b648654d2588e86a6c25b4b1b6003ba83f08060c64c8",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:31:20.409Z"
+    },
+    {
+      "tx": "voided: settle",
+      "hash": "0x5b223cbc7c653054a80754aa0c47e084597429ba2c8b909ef1bff1b44ec7edd2",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:31:31.204Z"
+    },
+    {
+      "tx": "hidden: settle",
+      "hash": "0xe2cf2117e9b36a0c70b8b86e2e10ac7f7b2416fb49e281066701c07c9e42fb5a",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:31:45.353Z"
+    },
+    {
+      "tx": "gone: settle",
+      "hash": "0xd6ebe222aa4e97779e9786945b6b27f52ede72e86bd0e9d4c939aec6c86eaa1b",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:32:46.838Z"
+    },
+    {
+      "tx": "real: settle",
+      "hash": "0xc6df53ad221329ee1ffbd5436a886199d441f043bc3c9b12721c82885345e374",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:34:15.095Z"
+    },
+    {
+      "tx": "vendor: withdraw",
+      "hash": "0x831d80372b5fc931bfdd670b89355f44cdde3dab904f4a8714d5486bde6192e6",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:34:51.288Z"
+    },
+    {
+      "tx": "buyer: withdraw",
+      "hash": "0xef8cc3cc8e87a526205557b4e6f93e0afc95dcfa60e8bb714f394ce810846c18",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "at": "2026-10-11T12:34:58.892Z"
+    }
+  ],
+  "runs": [
+    {
+      "at": "2026-10-11T11:42:16.393Z",
+      "resumed": false
+    },
+    {
+      "at": "2026-10-11T12:32:11.781Z",
+      "resumed": true
+    },
+    {
+      "at": "2026-10-11T12:33:39.012Z",
+      "resumed": true
+    }
+  ],
+  "opened": true,
+  "url_refused": {
+    "tx": "0xd250c7f18a7cd36eb0b971303001a735831533efe0f541a62e31ea59c8764c30",
+    "reason": "the terms page URL may not contain a query (?), a fragment (#), spaces or non-ASCII characters",
+    "credited": "20000000000000000",
+    "measured_by": "refusal_of(buyer).returned"
+  },
+  "edited_at": 1791719253,
+  "status": {
+    "release": "redline/2",
+    "watcher": "0xd0e22b3bbbf7dd43a4203b18e71b2e3b8eb426c6",
+    "appeal_seconds": 300,
+    "covers": 12,
+    "held": 0,
+    "owed": "260000000000000000",
+    "balance": "260000000000000000"
+  },
+  "finished": "2026-10-11T12:34:58.894Z",
+  "failures": 0,
+  "verified": {
+    "at": "2026-10-11T12:35:45.863Z",
+    "covers": {
+      "unchanged": {
+        "id": 0,
+        "state": "completed",
+        "amount": "20000000000000000",
+        "paid": "20000000000000000",
+        "refunded": "0",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "kept",
+          "at": 1791719624
+        },
+        "closed_as_of": 1791721490
+      },
+      "reworded": {
+        "id": 1,
+        "state": "completed",
+        "amount": "20000000000000000",
+        "paid": "20000000000000000",
+        "refunded": "0",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "kept",
+          "at": 1791719648
+        },
+        "closed_as_of": 1791721499
+      },
+      "narrowed 1": {
+        "id": 2,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "4808333333333333",
+        "refunded": "15191666666666667",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719681
+        },
+        "closed_as_of": 1791719681
+      },
+      "narrowed 2": {
+        "id": 3,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "4950000000000000",
+        "refunded": "15050000000000000",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719704
+        },
+        "closed_as_of": 1791719704
+      },
+      "narrowed 3": {
+        "id": 4,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5175000000000000",
+        "refunded": "14825000000000000",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719740
+        },
+        "closed_as_of": 1791719740
+      },
+      "removed": {
+        "id": 5,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5316666666666666",
+        "refunded": "14683333333333334",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719762
+        },
+        "closed_as_of": 1791719762
+      },
+      "injected": {
+        "id": 6,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5541666666666666",
+        "refunded": "14458333333333334",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719798
+        },
+        "closed_as_of": 1791719798
+      },
+      "voided": {
+        "id": 7,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5966666666666666",
+        "refunded": "14033333333333334",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719855
+        },
+        "closed_as_of": 1791719855
+      },
+      "hidden": {
+        "id": 8,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "6100000000000000",
+        "refunded": "13900000000000000",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791719880
+        },
+        "closed_as_of": 1791719880
+      },
+      "gone": {
+        "id": 9,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "6308333333333333",
+        "refunded": "13691666666666667",
+        "adds_up": true,
+        "last_check": {
+          "seq": 3,
+          "kind": "gone",
+          "at": 1791720438
+        },
+        "closed_as_of": 1791719914
+      },
+      "real": {
+        "id": 10,
+        "state": "completed",
+        "amount": "20000000000000000",
+        "paid": "20000000000000000",
+        "refunded": "0",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "kept",
+          "at": 1791719938
+        },
+        "closed_as_of": 1791721565
+      },
+      "real-bogus": {
+        "id": 11,
+        "state": "refunded",
+        "amount": "20000000000000000",
+        "paid": "0",
+        "refunded": "20000000000000000",
+        "adds_up": true,
+        "last_check": null,
+        "closed_as_of": null
+      }
+    },
+    "books": {
+      "held": "0",
+      "owed": "0",
+      "balance": "0",
+      "balanced": true
+    },
+    "all_add_up": true
+  }
+}

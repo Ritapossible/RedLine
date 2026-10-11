@@ -21,8 +21,8 @@ deployment step.
 ```bash
 pip install -r requirements-dev.txt
 python3 deploy/build_contract.py      # after any change under contracts/
-python3 -m pytest tests/direct -q     # 494 tests
-python3 tests/mutation_check.py       # 52 mutants, every one must be killed
+python3 -m pytest tests/direct -q     # 526 tests
+python3 tests/mutation_check.py       # 67 mutants, every one must be killed
 ```
 
 The suite runs every scenario through the readable build and through the

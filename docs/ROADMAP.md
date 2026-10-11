@@ -17,9 +17,9 @@ build log is in [PLAN.md](PLAN.md).
 ### Phase 1: the contracts
 
 - Treasury and watcher, built from a pure-Python core.
-- 494 tests run both the readable build and the exact deployed bytes;
+- 526 tests run both the readable build and the exact deployed bytes;
   400 random lifecycles each credit every atto-GEN exactly once.
-- 52 mutants, each weakening one rule, all caught by the tests.
+- 67 mutants, each weakening one rule, all caught by the tests.
 
 ### Phase 2: on chain
 
@@ -36,6 +36,10 @@ build log is in [PLAN.md](PLAN.md).
   validators disagree is recorded as contested and counts as absent.
 - **A resumable runner.** Killed twice on purpose mid-run; resumed with no
   transaction sent twice.
+- **Voided and hidden passages** (raised by a reviewer). A pinned sentence
+  left on the page but withdrawn by a line beside it, or kept only in hidden
+  markup, is no longer kept: refunded on both networks. Terms URLs must be
+  plain https, so no secret can ride in one.
 
 ### Phase 4 (part): the product
 

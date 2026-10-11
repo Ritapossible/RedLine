@@ -33,7 +33,7 @@
 //   node scenario.mjs [studio|bradbury]
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
-import { clientFor, accountFor, sendTx, readView, readUntil } from "./lib.mjs";
+import { clientFor, accountFor, sendTx, readView, readUntil, retry } from "./lib.mjs";
 
 const network = process.argv[2] || "studio";
 const STUDIO = network === "studio";
@@ -102,7 +102,7 @@ async function tx(client, address, fn, args, label, value = 0n) {
 }
 // Amounts in atto-GEN exceed 2^53: parse every long integer as a string, never a float.
 const exact = (raw) => JSON.parse(String(raw).replace(/(:\s*)(-?\d{15,})/g, '$1"$2"'));
-const readExact = async (address, fn, args = []) => exact(await checker.readContract({ address, functionName: fn, args }));
+const readExact = async (address, fn, args = []) => exact(await retry(fn, () => checker.readContract({ address, functionName: fn, args }), 6));
 const cover = (id) => readExact(treasury, "get_cover", [id]);
 const recordOf = (id) => readView(checker, watcher, "record_of", [treasury, id]);
 const pendingOf = (id) => readView(checker, watcher, "pending_of", [treasury, id]);
@@ -198,10 +198,11 @@ if (!record.opened) {
 
 // 1b. A terms URL that could carry a secret is refused, and its value credited back.
 if (!record.url_refused && !ONLY.length) {
-  const before = await owedTo(buyerAddr);
   const o = await tx(buyer, treasury, "open_cover", [vendorAddr, RAW + "unchanged.html?token=s3cret", JSON.stringify(PINNED), COVER, ACCEPT, GAP], "secret URL: open", PREPAY);
-  const refusal = await readView(checker, treasury, "refusal_of", [buyerAddr]);
-  record.url_refused = { tx: o.hash, reason: refusal.reason, credited: String((await owedTo(buyerAddr)) - before) };
+  // What the treasury says it returned with this refusal (the buyer's owed
+  // balance can move at the same time, from a cover refunded at pinning).
+  const refusal = exact(await checker.readContract({ address: treasury, functionName: "refusal_of", args: [buyerAddr] }));
+  record.url_refused = { tx: o.hash, reason: refusal.reason, credited: String(refusal.returned) };
   check("a URL with a query is refused", /query/.test(refusal.reason ?? ""), true);
   check("its prepay is credited back", record.url_refused.credited, String(PREPAY));
 }

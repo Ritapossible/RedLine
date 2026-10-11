@@ -29,10 +29,10 @@ agree on it?
       neutralised, answers read from their fields.
 - [x] Treasury and watcher shells; the treasury never reads the watcher;
       both fit Bradbury's gas cap (about 14 KB each).
-- [x] **Tests** (`tests/direct`, 494): both builds run end to end in a GenVM
+- [x] **Tests** (`tests/direct`, 526): both builds run end to end in a GenVM
       stand-in and must behave identically; 400 random lifecycles each credit
       every GEN of a prepay exactly once.
-- [x] **Mutation check** (`tests/mutation_check.py`): 52 of 52 mutants
+- [x] **Mutation check** (`tests/mutation_check.py`): 67 of 67 mutants
       killed.
 
 ## Phase 2 - On chain (done)
@@ -73,6 +73,11 @@ repository's `live` branch and are edited mid-run.
       receives.
 - [x] **Bradbury reruns** of the two cases that did not complete there, on
       the new watcher: reworded kept (same, 99); absent, absent, gone.
+- [x] **Voided and hidden passages, secret URLs** (THREAT-MODEL T14-T17):
+      surroundings fingerprinted at pinning, hidden markup dropped, https
+      URLs without query or credentials, whole short pages shown to the jury.
+      On chain: the `voided` and `hidden` cases refunded on both networks;
+      a URL with a query refused and its prepay returned.
 - [x] **A runner that resumes.** `deploy/scenario.mjs` decides every step
       from the chain and its record, and waits until times on the chain's
       clock. Tested by killing the Studio run twice - mid-opening (right

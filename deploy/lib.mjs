@@ -26,12 +26,19 @@ export function clientFor(network, role) {
 // walkthrough from dying on one bad gateway response.
 export async function retry(label, fn, tries = 4) {
   let last;
-  for (let i = 0; i < tries; i++) {
+  for (let i = 0, limited = 0; i < tries; i++) {
     try {
       return await fn();
     } catch (e) {
       last = e;
-      const msg = String(e?.message || e);
+      const msg = String(e?.details || e?.message || e);
+      // Studio limits each caller to 30 requests a minute: wait it out, and
+      // do not count it as a failure.
+      if (/rate limit/i.test(msg) && limited++ < 30) {
+        i--;
+        await new Promise((r) => setTimeout(r, 25_000));
+        continue;
+      }
       if (i === tries - 1) break;
       const wait = 2000 * Math.pow(2, i);
       console.log(`  ${label}: ${msg.slice(0, 120)} - retry in ${wait}ms`);

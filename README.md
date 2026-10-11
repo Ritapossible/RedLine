@@ -17,7 +17,8 @@ second while the cover runs. Anyone may ask RedLine to check the page:
 
 | What the page shows | Who decides | What the money does |
 | --- | --- | --- |
-| Every pinned passage still there, word for word (whatever else changed) | The contract. No model. | Nothing. The vendor keeps earning. |
+| Every pinned passage still there, word for word, with the text around it and on its subject as it was (whatever else changed) | The contract. No model. | Nothing. The vendor keeps earning. |
+| A pinned passage still there, but text near it or on its subject changed ("the following is withdrawn") | The jury, shown the pinned passage and today's page | Nothing if the right still stands; the cover ends if it was withdrawn or narrowed. |
 | A pinned passage reworded, but the right is the same | The jury, shown only the pinned passage and today's page | Nothing. A rewording is not a loss. |
 | The right narrowed or removed | The same jury, same two texts | The cover ends: the vendor keeps what it earned, the buyer gets the rest back. |
 | No page, three checks running | No model. The absence is the record. | Refund, dated from when the page went. |
@@ -48,17 +49,20 @@ and agree on them (`deploy/probes/`):
   five, but **disagreed on Stripe's whole-page text**. That decided the design:
   RedLine compares pinned passages, never pages or bytes.
 
-**The contracts** (`tests/direct`, 494 tests, both builds):
+**The contracts** (`tests/direct`, 526 tests, both builds):
 
 - every case in the table above, end to end, through the readable build and
   through the exact bytes deployed, which must behave identically;
+- a pinned sentence left word for word but voided by a line above it; one
+  kept only in hidden markup (11 ways of hiding it); a terms URL carrying a
+  secret;
 - a page that tries to write the jury's answer, validators that disagree, a
   page absent once and back, a watcher that becomes unreadable after
   reporting a breach, a passage the vendor never published;
 - 400 random lifecycles - reports arriving late, twice, out of order, inside
   and outside the appeal window - each of which credits every GEN of the
   prepay exactly once, with no negative or zero credit;
-- `tests/mutation_check.py`: 52 mutants, each weakening one rule; all killed.
+- `tests/mutation_check.py`: 67 mutants, each weakening one rule; all killed.
 
 **On chain**: see [The on-chain record](#the-on-chain-record).
 
@@ -90,6 +94,20 @@ and what stops it: [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md). What is next:
 [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Design decisions
+
+**Still there is not enough.** A reviewer found that a vendor could leave the
+pinned sentence on the page and void it with a line above it, or keep it only
+inside hidden markup, and still be paid. Now text a reader cannot see is not
+text (hidden elements, inline `display:none`, the page's own hiding CSS,
+framework hiding classes), and a passage is kept without a model only if its
+surroundings - the 60 words either side and every sentence on its subject,
+dates and numbers ignored - are as they were at pinning. Otherwise the jury
+reads it, told that withdrawn or overridden words do not give the right. On
+chain both attacks were refunded on both networks.
+
+**The URL is public, so it must be plain.** Every validator fetches the terms
+URL and it is stored in public, so it must be `https` with no query,
+fragment, user name or password.
 
 **Text, not bytes.** A real terms page changes on every load (build ids,
 nonces, cookie banners, "last updated"). RedLine reduces it to visible,
@@ -191,6 +209,14 @@ observation did not land and the runner's retry inside the window ruled).
   is indistinguishable from a page that says what the majority saw. One that
   shows different things to different validators no longer keeps being paid:
   its checks are recorded as contested and end the cover (THREAT-MODEL T11).
+- **A voiding line far from the passage** - more than 60 words away and
+  sharing fewer than three of its long words - is not seen (THREAT-MODEL
+  T14). **A sentence hidden only by an external stylesheet** under the
+  vendor's own class name still counts as on the page (T15): RedLine reads
+  HTML, not a rendered page.
+- **On pages over 12,000 characters** the jury sees three windows, not the
+  whole page, and is told to answer cannot_tell, not removed, when they miss
+  the subject (T17).
 - **Redirects are not measured.** Pin the final URL of the terms page.
 - **The jury sample is small.** The narrowed case ran three times on each
   network; that is a check of the mechanics, not a rate.
@@ -199,8 +225,8 @@ observation did not land and the runner's retry inside the window ruled).
 
 ```bash
 python3 deploy/build_contract.py        # rebuild contracts/build/
-python3 -m pytest tests/direct -q       # 494 tests, no chain needed
-python3 tests/mutation_check.py         # 52 mutants; all must be killed
+python3 -m pytest tests/direct -q       # 526 tests, no chain needed
+python3 tests/mutation_check.py         # 67 mutants; all must be killed
 cd deploy && npm install
 REDLINE_KEYS=<keys dir> node deploy.mjs studio
 REDLINE_KEYS=<keys dir> LIVE_CLONE=<clone of the live branch> node scenario.mjs studio
