@@ -205,6 +205,28 @@ REDLINE_KEYS=<keys dir> LIVE_CLONE=<clone of the live branch> node scenario.mjs 
 REDLINE_KEYS=<keys dir> node verify.mjs studio   # every cover, exact, from chain
 ```
 
+## The web app
+
+`frontend/` is the app: a landing page, the list of covers, a form to open
+one, and a page per cover that shows the money split live, the pinned
+passages, the watcher's latest check, and the one action each person can take
+now (accept, cancel, request a check, observe again, expire, settle,
+withdraw). It reads the contract addresses from `deploy/deployments.json` and
+the home page's on-chain table from the scenario records, so neither can drift
+from what was deployed and measured.
+
+```bash
+cd frontend && npm ci
+npm run dev            # http://localhost:5173
+npm run build          # typecheck + production build into dist/
+npm run e2e            # a buyer and a vendor, two Studio burners, end to end
+```
+
+Sign with a wallet (Reown AppKit when `VITE_REOWN_PROJECT_ID` is set, else the
+browser's injected wallet) on Studio or Bradbury, or with a Studio burner: a
+key made in the browser and funded from Studio's faucet. Deploy on Vercel from
+the repository root (`vercel.json`).
+
 ## Layout
 
 ```
@@ -214,6 +236,7 @@ tests/direct/   the suite and the GenVM stand-in
 tests/          mutation_check.py
 deploy/         deploy.mjs, scenario.mjs, probes/, and every on-chain record
 examples/       the fictional vendor's terms pages
+frontend/       the web app (Vite, React, genlayer-js)
 docs/           ARCHITECTURE, THREAT-MODEL, PLAN
 ```
 

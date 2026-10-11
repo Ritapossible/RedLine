@@ -14,6 +14,7 @@ jury whether a pinned right was cut. Read `docs/ARCHITECTURE.md` first.
 - `tests/direct/` - the suite; `genvm_stub.py` runs the built contracts.
 - `deploy/` - `deploy.mjs`, `scenario.mjs`, `probes/`; records `*.json`.
 - `examples/` - the fictional vendor's terms pages (`make_pages.py`).
+- `frontend/` - the web app; `npm run build` and `npm run e2e` (Studio).
 
 ## Commands
 

@@ -82,8 +82,10 @@ repository's `live` branch and are edited mid-run.
 ## Phase 4 - Product (later)
 
 - [ ] **Keeper**: checks every active cover on its gap, so no buyer has to.
-- [ ] **Front end**: open a cover by pasting a URL and selecting passages
-      from the fetched page; a cover page showing each check.
+- [x] **Front end** (`frontend/`): open a cover, a page per cover with the
+      money split, the latest check and every action; tested end to end on
+      Studio by a buyer and a vendor in a real browser (`npm run e2e`).
+- [ ] Select passages from the fetched page instead of pasting them.
 - [ ] **Partial covers**: several buyers on one pinned page.
 - [ ] **Vendor bond** as an alternative to the streaming prepay, for
       vendors that bill outside RedLine.

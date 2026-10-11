@@ -1,0 +1,13 @@
+const s = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+type P = { size?: number };
+export const ArrowRight = ({ size = 18 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M5 12h14M13 6l6 6-6 6" /></svg>);
+export const ArrowUpRight = ({ size = 14 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M7 17 17 7M8 7h9v9" /></svg>);
+export const Pin = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M12 17v5M8 3h8l-1 6 3 3v2H6v-2l3-3-1-6Z" /></svg>);
+export const Handshake = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="m11 17 2 2a1.4 1.4 0 0 0 2-2M14 14l2.5 2.5a1.4 1.4 0 0 0 2-2L15 11M3 13l4-4 3 1 3-3 4 1 4 4-3 3M3 13l5 5a1.4 1.4 0 0 0 2-2" /></svg>);
+export const Eye = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>);
+export const Scale = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7Zm14 0-3 7a3.5 3.5 0 0 0 6 0l-3-7Z" /></svg>);
+export const Coins = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><ellipse cx="9" cy="7" rx="6" ry="3" /><path d="M3 7v5c0 1.7 2.7 3 6 3s6-1.3 6-3V7" /><path d="M15 11.5c3.3 0 6 1.3 6 3V17c0 1.7-2.7 3-6 3-2 0-3.8-.5-4.9-1.3" /></svg>);
+export const Shield = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z" /><path d="m9 12 2 2 4-4" /></svg>);
+export const Doc = ({ size = 20 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5Z" /><path d="M14 3v5h5M8 13h8M8 17h5" /></svg>);
+export const Check = ({ size = 16 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><path d="m5 12 5 5 9-10" /></svg>);
+export const Copy = ({ size = 14 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" {...s}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a1 1 0 0 1 1-1h10" /></svg>);
