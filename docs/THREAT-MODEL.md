@@ -68,7 +68,7 @@ checks running, each at least `check_gap_seconds` apart, to end a cover, and
 any check that reads the page in between resets the count.
 
 **Test.** `test_4_...`, `test_10_a_page_absent_once_pauses_accrual_and_resumes`;
-mutants `gone-at-once`, `streak-never-grows`, `checks-unspaced`.
+mutants `gone-at-once`, `streak-never-grows`, `request-unspaced`.
 
 **Left.** A cover whose gap is short relative to a real outage can end on
 one long outage. The buyer and vendor choose the gap when the cover opens;
@@ -128,20 +128,37 @@ closes on a clock; held + owed = balance.
 random lifecycles; mutants `refusal-keeps-value`, `refusal-reverts`,
 `double-withdraw`, `vendor-overpaid`, `refund-keeps-rest`.
 
-## T11 - Validators that see different pages
+## T11 - A page shown differently to different validators (cloaking)
 
-**Attack (or accident).** A vendor serves different text by region, or A/B
-tests its terms.
+**Attack.** The vendor shows the pinned text to some readers and a narrowed
+page to others, or A/B tests its terms, so validators never agree and no
+check is ever recorded - and the vendor keeps being paid.
 
-**What happens.** Validators must agree on which passages are present. If
-they cannot, the round records nothing and the cover keeps paying the
-vendor. Measured on Bradbury: whole-page text of Stripe's terms differed
-between validators, but which passage was present did not.
+**Stops it.** A check always ends in a record. `check` is a deterministic
+request that always lands and opens an observation window (half the gap);
+the watcher then observes the page, and anyone may retry the observation
+inside the window. A request with no agreed observation by the end of its
+window is expired as **contested**, and contested counts exactly like a page
+that does not answer: it holds the vendor's accrual, and three running end
+the cover, refunded from the first. A page that cannot be read the same way
+by everyone is treated as not granting the right.
 
-**Left.** A vendor that shows the pinned text to some validators and not to
-others can make every check fail to agree, and keep being paid. RedLine
-cannot tell that apart from an honest variant. It is the main open risk, and
-it is the reason the buyer pins exact passages rather than a whole page.
+An honest vendor loses nothing from one bad round (a network failure, a
+round finalised with no votes - which Bradbury did once in the first run):
+the next agreed check lets the hold go and accrual catches up in full. It
+would take three failed checks running, a gap apart, to end a cover.
+
+**Test.** `test_12_a_cloaked_page_cannot_keep_the_vendor_paid` (a page that
+alternates per fetch: every round fails to agree, three contested checks,
+refunded from the first), `test_11_a_round_that_does_not_agree_is_retried_then_recorded_as_contested`;
+`test_a_contested_check_counts_like_an_absent_page`; mutants
+`contested-forgiven`, `expire-early`, `observe-late`, `request-twice`,
+`no-auto-observe`.
+
+**Left.** A cloaking vendor that fools a majority of validators the same way
+every time is indistinguishable from a page that says what the majority saw.
+Measured on Bradbury: on five real terms pages, validators agreed on whether
+the pinned passage was present every time.
 
 ## T12 - Nobody checks
 

@@ -1,11 +1,11 @@
 {
   "network": "studio",
-  "treasury": "0x67316eDDc754bA1AC0690189F51772eeb726c04b",
-  "watcher": "0x0b88eE44A6901c112DAaCEA92A7F36c6AdF1f683",
+  "treasury": "0xb4a65de24d6522bd59ebb26572a4e506370FAE4a",
+  "watcher": "0xf7d4005fEf76e9BBd948708859c2de8844E84b79",
   "appeal_seconds": 300,
   "coverage_seconds": 2400,
   "check_gap_seconds": 240,
-  "started": "2026-10-10T16:22:41.742Z",
+  "started": "2026-10-10T22:40:43.975Z",
   "cases": {
     "unchanged": {
       "id": 0,
@@ -15,16 +15,18 @@
         "deletion"
       ],
       "expect": "kept",
-      "open_tx": "0x87bd832b1f7c29e17b4810c3275bc7d16799e0b475bc50dca3440a3d7a854be4",
+      "open_tx": "0xb7c68f22e836b5562edb5e377674f05732c2ec1f422459e3940528dd55ea18bc",
       "pinned": "offered",
-      "start": 1791649466,
-      "end": 1791651866,
+      "start": 1791672175,
+      "end": 1791674575,
       "checks": [
         {
-          "tx": "0xcdc1bf893961b5b02d8e174227ae47a2ee977102e8bcd0f9c12b7e2bb7463abf",
+          "tx": "0xf4bb57552e3b151512071d57f116b5e57dcdbe6a6f897ee3589c7ea4fb8b7d43",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650030,
+          "at": 1791672713,
           "page": "read",
           "kind": "kept",
           "passage": "",
@@ -32,11 +34,11 @@
           "confidence": 100,
           "reason": "word_for_word",
           "streak": 0,
-          "since": 1791650030
+          "since": 1791672713
         }
       ],
       "state": "completed",
-      "paid": 20000000000000000,
+      "paid": "20000000000000000",
       "refunded": 0
     },
     "reworded": {
@@ -47,28 +49,30 @@
         "deletion"
       ],
       "expect": "kept",
-      "open_tx": "0x1656bf507892403fb68161b57d30d226b4434720c2e39ca701178e486f8dd646",
+      "open_tx": "0xb8ec7f8601f3362cc0ee774d42498aa754eb45f71e2e2515cba4782361245f7c",
       "pinned": "offered",
-      "start": 1791649472,
-      "end": 1791651872,
+      "start": 1791672181,
+      "end": 1791674581,
       "checks": [
         {
-          "tx": "0xfcec0d7d22ae026ecead44def4853896ec2797749352b23682868901563f0e21",
+          "tx": "0xff6af200d6d9737530ae700ae56bf2133b90a96d2b9c282988591716b563bfb9",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650037,
+          "at": 1791672733,
           "page": "read",
           "kind": "kept",
           "passage": "refund",
           "reading": "same",
-          "confidence": 100,
-          "reason": "conditions and refund terms remain identical.",
+          "confidence": 99,
+          "reason": "identical right, reworded but equally favourable",
           "streak": 0,
-          "since": 1791650037
+          "since": 1791672733
         }
       ],
       "state": "completed",
-      "paid": 20000000000000000,
+      "paid": "20000000000000000",
       "refunded": 0
     },
     "narrowed 1": {
@@ -79,30 +83,32 @@
         "deletion"
       ],
       "expect": "breach",
-      "open_tx": "0xf88c568d56e0e14d4a8d406ae23a0874e1b4cff7e6f36d34b7fe982e50bb38f3",
+      "open_tx": "0xa370ab775ed0b2ac023927a0968eaa5aa793673cf4107758b094f74915b0afad",
       "pinned": "offered",
-      "start": 1791649479,
-      "end": 1791651879,
+      "start": 1791672196,
+      "end": 1791674596,
       "checks": [
         {
-          "tx": "0x2900fca590f291b4cab1af5a14be017ac5cbf0e3dc82d22c68111bf29daecc4a",
+          "tx": "0xf4528079c964db31f3e0c9d2226cabee1f6a809cda697e65f0e3e629c34bc5a7",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650051,
+          "at": 1791672764,
           "page": "read",
           "kind": "breach",
           "passage": "refund",
           "reading": "narrowed",
-          "confidence": 99,
-          "reason": "shorter window, fee, usage condition added",
+          "confidence": 95,
+          "reason": "shorter refund period, added fees and usage limi",
           "streak": 0,
-          "since": 1791650051
+          "since": 1791672764
         }
       ],
       "state": "breached",
-      "paid": 4766666666666666,
-      "refunded": 15233333333333334,
-      "closed_as_of": 1791650051
+      "paid": "4733333333333333",
+      "refunded": "15266666666666667",
+      "closed_as_of": 1791672764
     },
     "narrowed 2": {
       "id": 3,
@@ -112,30 +118,32 @@
         "deletion"
       ],
       "expect": "breach",
-      "open_tx": "0x1ce08fcaaa1ae9c748ee2074b2b39d5957a5050f7ec805b91abf1dcbca8da909",
+      "open_tx": "0x75d79150ffd006f4d4e0b2f3e1f33fe74d8362767eb3dc76b9ce4a8a7fd843e8",
       "pinned": "offered",
-      "start": 1791649482,
-      "end": 1791651882,
+      "start": 1791672202,
+      "end": 1791674602,
       "checks": [
         {
-          "tx": "0xf5916841992ca54dddbc2c07525787abbcceb8ab4dd8281e29aee998c1fc1a8f",
+          "tx": "0x50188c27eb5217c773404526fdf034a5501eb33a8d989d6a08242697d5b410af",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650071,
+          "at": 1791672784,
           "page": "read",
           "kind": "breach",
           "passage": "refund",
           "reading": "narrowed",
-          "confidence": 100,
-          "reason": "shorter period, new fee, and usage limits",
+          "confidence": 99,
+          "reason": "shorter window, 15% fee, request-count condition",
           "streak": 0,
-          "since": 1791650071
+          "since": 1791672784
         }
       ],
       "state": "breached",
-      "paid": 4908333333333333,
-      "refunded": 15091666666666668,
-      "closed_as_of": 1791650071
+      "paid": "4850000000000000",
+      "refunded": "15150000000000000",
+      "closed_as_of": 1791672784
     },
     "narrowed 3": {
       "id": 4,
@@ -145,30 +153,32 @@
         "deletion"
       ],
       "expect": "breach",
-      "open_tx": "0x2f68919afbf023d3465f36e656a9d8f8d3cd8a4855f1372d89e1930612394642",
+      "open_tx": "0x633d5f9e59e7a6a09ff394b190ce25791cda355547c4e93616ea65b0740d8beb",
       "pinned": "offered",
-      "start": 1791649489,
-      "end": 1791651889,
+      "start": 1791672209,
+      "end": 1791674609,
       "checks": [
         {
-          "tx": "0xbd95b11b9af23b4266d3437d0423715f18d54e0cc8059b9e1dc595a0912100c9",
+          "tx": "0xe449deaa3f88a421ad0ec47b073c6addbcc93219b48a17df11c2b6537ebb3989",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650082,
+          "at": 1791672820,
           "page": "read",
           "kind": "breach",
           "passage": "refund",
           "reading": "narrowed",
           "confidence": 100,
-          "reason": "shorter period, fee, and request limit apply.",
+          "reason": "shorter period, fee added, condition added",
           "streak": 0,
-          "since": 1791650082
+          "since": 1791672820
         }
       ],
       "state": "breached",
-      "paid": 4941666666666666,
-      "refunded": 15058333333333334,
-      "closed_as_of": 1791650082
+      "paid": "5091666666666666",
+      "refunded": "14908333333333334",
+      "closed_as_of": 1791672820
     },
     "removed": {
       "id": 5,
@@ -178,30 +188,32 @@
         "deletion"
       ],
       "expect": "breach",
-      "open_tx": "0x48bc79df4360dc802514ba61df484f17cef92891d709475fa60d7400e7fdb59b",
+      "open_tx": "0xa4e78b5b74e8deab3013f22282248260d242f60aa8e814d18516913f0849424a",
       "pinned": "offered",
-      "start": 1791649492,
-      "end": 1791651892,
+      "start": 1791672216,
+      "end": 1791674616,
       "checks": [
         {
-          "tx": "0xd9a7bb4266500775c923a9aa6fe41bfe88aa2748ae2efa1194b66d9d717d8482",
+          "tx": "0x2cb3220c4c17781af5ecdb419826f6e9e374a80d28aa5052f60623ea9c0762c5",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650096,
+          "at": 1791672851,
           "page": "read",
           "kind": "breach",
           "passage": "deletion",
           "reading": "removed",
-          "confidence": 99,
-          "reason": "no deletion-on-request or seven-day promise rema",
+          "confidence": 98,
+          "reason": "current allows retention as acme considers neces",
           "streak": 0,
-          "since": 1791650096
+          "since": 1791672851
         }
       ],
       "state": "breached",
-      "paid": 5033333333333333,
-      "refunded": 14966666666666668,
-      "closed_as_of": 1791650096
+      "paid": "5291666666666666",
+      "refunded": "14708333333333334",
+      "closed_as_of": 1791672851
     },
     "injected": {
       "id": 6,
@@ -211,16 +223,18 @@
         "deletion"
       ],
       "expect": "breach",
-      "open_tx": "0xce5f27db0f45a56a91f5e0a95846c4d23933b1ae32fae552a3136c602fb62fbe",
+      "open_tx": "0x1ef151345c55645ee958f76e76acfd518e7ae31e50c4da40a7267daf56c74561",
       "pinned": "offered",
-      "start": 1791649499,
-      "end": 1791651899,
+      "start": 1791672222,
+      "end": 1791674622,
       "checks": [
         {
-          "tx": "0x8f840d663d323dd1f245fc4ea837cd03a39330269460f487e7625497b446dadf",
+          "tx": "0xda0903b1cb19ef5b20df94a0e1f6c94671d68af5247aa908c2c902867b4e4d8e",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650110,
+          "at": 1791672881,
           "page": "read",
           "kind": "breach",
           "passage": "refund",
@@ -228,13 +242,13 @@
           "confidence": 100,
           "reason": "shorter period, fee, conditions",
           "streak": 0,
-          "since": 1791650110
+          "since": 1791672881
         }
       ],
       "state": "breached",
-      "paid": 5091666666666666,
-      "refunded": 14908333333333334,
-      "closed_as_of": 1791650110
+      "paid": "5491666666666666",
+      "refunded": "14508333333333334",
+      "closed_as_of": 1791672881
     },
     "gone": {
       "id": 7,
@@ -244,46 +258,52 @@
         "deletion"
       ],
       "expect": "gone",
-      "open_tx": "0x00ac37fb6b7f1dce7d67fd47198faee1c39fd599e86ff6ac867db801b6da70c2",
+      "open_tx": "0x86456c92848b15168e44ae7c57cf4a164afd999a87abd99793d26b26e05c72ed",
       "pinned": "offered",
-      "start": 1791649509,
-      "end": 1791651909,
+      "start": 1791672232,
+      "end": 1791674632,
       "checks": [
         {
-          "tx": "0xa8cb851db5033d870771c2b40dede8b762c9aac0cacad4b8609cb56aed4a8ae4",
+          "tx": "0xf16417147fe6989d1d039a753205984e3498aab8970a8aec17ecf1efd55b51c4",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650130,
+          "at": 1791672914,
           "page": "missing",
           "streak": 1,
-          "since": 1791650130,
+          "since": 1791672914,
           "kind": "absent"
         },
         {
-          "tx": "0x52b2670cee676bc7240ebbe7d14f1b8fc7e5e5f41f0dff673137805d6dc996cf",
+          "tx": "0xecccfc6356b3a7f7e0aada2fdae7607f5ef28166e3dd377631a4982906868ea2",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 2,
-          "at": 1791650387,
+          "at": 1791673176,
           "page": "missing",
           "streak": 2,
-          "since": 1791650130,
+          "since": 1791672914,
           "kind": "absent"
         },
         {
-          "tx": "0x917310cd763af641415a6bb852b9ddf78ac9645f9cebf05baec7cfa29d6ba82f",
+          "tx": "0x2041c2ac77bdf0fe1a5d5739fd5869a556e66d5d4c6ba3e6f96554f5af9daee1",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 3,
-          "at": 1791650643,
+          "at": 1791673437,
           "page": "missing",
           "streak": 3,
-          "since": 1791650130,
+          "since": 1791672914,
           "kind": "gone"
         }
       ],
       "state": "breached",
-      "paid": 5175000000000000,
-      "refunded": 14825000000000000,
-      "closed_as_of": 1791650130
+      "paid": "5683333333333333",
+      "refunded": "14316666666666667",
+      "closed_as_of": 1791672914
     },
     "real": {
       "id": 8,
@@ -292,16 +312,18 @@
         "billing"
       ],
       "expect": "kept",
-      "open_tx": "0xbe1429771b23dcc8806fef0926388112034091544283cf9413d051c24fa131c5",
+      "open_tx": "0xed725033c83b3cca28a002a624cbebc363b50812528171da8fc229453ac87b6f",
       "pinned": "offered",
-      "start": 1791649515,
-      "end": 1791651915,
+      "start": 1791672238,
+      "end": 1791674638,
       "checks": [
         {
-          "tx": "0xeb2e80aee332cf9eef9ff2a44dc5312ebee5b5f833aa99dbbe85bb1f831a2e71",
+          "tx": "0x199df73c815bb0ff8999b7793e9b2b2c847c2f20bb9b4d449fc0d4d0def2b8b7",
           "consensus": "MAJORITY_AGREE",
+          "retries": [],
+          "expired": null,
           "seq": 1,
-          "at": 1791650141,
+          "at": 1791672934,
           "page": "read",
           "kind": "kept",
           "passage": "",
@@ -309,11 +331,11 @@
           "confidence": 100,
           "reason": "word_for_word",
           "streak": 0,
-          "since": 1791650141
+          "since": 1791672934
         }
       ],
       "state": "completed",
-      "paid": 20000000000000000,
+      "paid": "20000000000000000",
       "refunded": 0
     },
     "real-bogus": {
@@ -323,7 +345,7 @@
         "billing"
       ],
       "expect": "unpinned",
-      "open_tx": "0x8cb809209426a975ecd6e7b002aac5f4d016c486e8a458795453e27dd88e5f22",
+      "open_tx": "0x16daae5d820978d4c26a2a2d8a02a56be7b839510a0da55e93919df21fbfd2f2",
       "pinned": "refunded"
     }
   },
@@ -395,19 +417,19 @@
       "ok": true
     },
     {
-      "check": "reworded: kept (same 100)",
+      "check": "reworded: kept (same 99)",
       "actual": "kept",
       "expected": "kept",
       "ok": true
     },
     {
-      "check": "narrowed 1: breach (narrowed 99)",
+      "check": "narrowed 1: breach (narrowed 95)",
       "actual": "breach",
       "expected": "breach",
       "ok": true
     },
     {
-      "check": "narrowed 2: breach (narrowed 100)",
+      "check": "narrowed 2: breach (narrowed 99)",
       "actual": "breach",
       "expected": "breach",
       "ok": true
@@ -419,7 +441,7 @@
       "ok": true
     },
     {
-      "check": "removed: breach (removed 99)",
+      "check": "removed: breach (removed 98)",
       "actual": "breach",
       "expected": "breach",
       "ok": true
@@ -456,9 +478,9 @@
     },
     {
       "check": "narrowed 2: closed as breached, paid + refunded = prepay",
-      "actual": "breached/false",
+      "actual": "breached/true",
       "expected": "breached/true",
-      "ok": false
+      "ok": true
     },
     {
       "check": "narrowed 2: the buyer got the unearned rest",
@@ -480,9 +502,9 @@
     },
     {
       "check": "removed: closed as breached, paid + refunded = prepay",
-      "actual": "breached/false",
+      "actual": "breached/true",
       "expected": "breached/true",
-      "ok": false
+      "ok": true
     },
     {
       "check": "removed: the buyer got the unearned rest",
@@ -554,264 +576,264 @@
   "log": [
     {
       "tx": "unchanged: open",
-      "hash": "0x87bd832b1f7c29e17b4810c3275bc7d16799e0b475bc50dca3440a3d7a854be4",
+      "hash": "0xb7c68f22e836b5562edb5e377674f05732c2ec1f422459e3940528dd55ea18bc",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "reworded: open",
-      "hash": "0x1656bf507892403fb68161b57d30d226b4434720c2e39ca701178e486f8dd646",
+      "hash": "0xb8ec7f8601f3362cc0ee774d42498aa754eb45f71e2e2515cba4782361245f7c",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 1: open",
-      "hash": "0xf88c568d56e0e14d4a8d406ae23a0874e1b4cff7e6f36d34b7fe982e50bb38f3",
+      "hash": "0xa370ab775ed0b2ac023927a0968eaa5aa793673cf4107758b094f74915b0afad",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 2: open",
-      "hash": "0x1ce08fcaaa1ae9c748ee2074b2b39d5957a5050f7ec805b91abf1dcbca8da909",
+      "hash": "0x75d79150ffd006f4d4e0b2f3e1f33fe74d8362767eb3dc76b9ce4a8a7fd843e8",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 3: open",
-      "hash": "0x2f68919afbf023d3465f36e656a9d8f8d3cd8a4855f1372d89e1930612394642",
+      "hash": "0x633d5f9e59e7a6a09ff394b190ce25791cda355547c4e93616ea65b0740d8beb",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "removed: open",
-      "hash": "0x48bc79df4360dc802514ba61df484f17cef92891d709475fa60d7400e7fdb59b",
+      "hash": "0xa4e78b5b74e8deab3013f22282248260d242f60aa8e814d18516913f0849424a",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "injected: open",
-      "hash": "0xce5f27db0f45a56a91f5e0a95846c4d23933b1ae32fae552a3136c602fb62fbe",
+      "hash": "0x1ef151345c55645ee958f76e76acfd518e7ae31e50c4da40a7267daf56c74561",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: open",
-      "hash": "0x00ac37fb6b7f1dce7d67fd47198faee1c39fd599e86ff6ac867db801b6da70c2",
+      "hash": "0x86456c92848b15168e44ae7c57cf4a164afd999a87abd99793d26b26e05c72ed",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "real: open",
-      "hash": "0xbe1429771b23dcc8806fef0926388112034091544283cf9413d051c24fa131c5",
+      "hash": "0xed725033c83b3cca28a002a624cbebc363b50812528171da8fc229453ac87b6f",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "real-bogus: open",
-      "hash": "0x8cb809209426a975ecd6e7b002aac5f4d016c486e8a458795453e27dd88e5f22",
+      "hash": "0x16daae5d820978d4c26a2a2d8a02a56be7b839510a0da55e93919df21fbfd2f2",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "unchanged: accept",
-      "hash": "0xdc8000c03e3c6320b0841207750092dc8d860cebb321837b7e60d796fb9504ac",
+      "hash": "0x84d79846372ca8536edef8eee4b6c3cd5c3d769ea132547451a0378d9c6fc03f",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "reworded: accept",
-      "hash": "0x07c1fa126532d3338f425443bf5075107a991c34a31e25c16476f7ded2c9f6bc",
+      "hash": "0xef3f701b7bcc99fd3ea5804e19994cafd2e308a4eb49b7e8d671c75496ac894e",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 1: accept",
-      "hash": "0x46ff04847bb35652760588f700ac0f0c9e3027d4e97be69adf7b0800febcc3a2",
+      "hash": "0xa72e1683a6d24859673896ae1589460e8e6d686c2a5ece01b4fa303f4d5cb354",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 2: accept",
-      "hash": "0x1042461541652819ff55a2dda1d6c4626ae9624ab2d3050900188d4598d28e5e",
+      "hash": "0x05a08c379c2cec77e79b7710dee26509eec2de57379c399f1a1e398d5e6ad505",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 3: accept",
-      "hash": "0xf273928e95d358591aab2572e06440b6ba073c8727e8a3a81b46d1f6305b2213",
+      "hash": "0x6544755cf768cff240763ae140f1066a6e6c532d50ee7d4d3192f6d3f96c44e6",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "removed: accept",
-      "hash": "0xd95b0fda4a02191c0ec4a35fe6ce3070fdbb95ae63f770b853115bc8a833b9bc",
+      "hash": "0x31c71a27bbe99fdad063d7efbfc4b4da2cdfbf598e2fd57aea32edf7c0ef8834",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "injected: accept",
-      "hash": "0xb66839ad77702dce48e84e2e81e06ea5f595c92826c950c711471c994f54ca3f",
+      "hash": "0xdae37525a17277fb1965a4066a671b645295f0df27212b323fb6e9867a3e3243",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: accept",
-      "hash": "0x854615d34e1951be7442f9520d5e976cd02a042ee03825e69667ec16be90a50a",
+      "hash": "0x8fdaa85fdea89c0799b8d80e6de909f7a061b60317061ea499f24d0de4187a69",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "real: accept",
-      "hash": "0x7396cb82ccd04459dade00a35a79f1c0d86f4c70d96b123f0aa76d82f5364729",
+      "hash": "0x9a3ede8060aec1c59a12bb44d4ca951690cc5cf4c801be2f309092f729677450",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "unchanged: check",
-      "hash": "0xcdc1bf893961b5b02d8e174227ae47a2ee977102e8bcd0f9c12b7e2bb7463abf",
+      "hash": "0xf4bb57552e3b151512071d57f116b5e57dcdbe6a6f897ee3589c7ea4fb8b7d43",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "reworded: check",
-      "hash": "0xfcec0d7d22ae026ecead44def4853896ec2797749352b23682868901563f0e21",
+      "hash": "0xff6af200d6d9737530ae700ae56bf2133b90a96d2b9c282988591716b563bfb9",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 1: check",
-      "hash": "0x2900fca590f291b4cab1af5a14be017ac5cbf0e3dc82d22c68111bf29daecc4a",
+      "hash": "0xf4528079c964db31f3e0c9d2226cabee1f6a809cda697e65f0e3e629c34bc5a7",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 2: check",
-      "hash": "0xf5916841992ca54dddbc2c07525787abbcceb8ab4dd8281e29aee998c1fc1a8f",
+      "hash": "0x50188c27eb5217c773404526fdf034a5501eb33a8d989d6a08242697d5b410af",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 3: check",
-      "hash": "0xbd95b11b9af23b4266d3437d0423715f18d54e0cc8059b9e1dc595a0912100c9",
+      "hash": "0xe449deaa3f88a421ad0ec47b073c6addbcc93219b48a17df11c2b6537ebb3989",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "removed: check",
-      "hash": "0xd9a7bb4266500775c923a9aa6fe41bfe88aa2748ae2efa1194b66d9d717d8482",
+      "hash": "0x2cb3220c4c17781af5ecdb419826f6e9e374a80d28aa5052f60623ea9c0762c5",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "injected: check",
-      "hash": "0x8f840d663d323dd1f245fc4ea837cd03a39330269460f487e7625497b446dadf",
+      "hash": "0xda0903b1cb19ef5b20df94a0e1f6c94671d68af5247aa908c2c902867b4e4d8e",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: check",
-      "hash": "0xa8cb851db5033d870771c2b40dede8b762c9aac0cacad4b8609cb56aed4a8ae4",
+      "hash": "0xf16417147fe6989d1d039a753205984e3498aab8970a8aec17ecf1efd55b51c4",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "real: check",
-      "hash": "0xeb2e80aee332cf9eef9ff2a44dc5312ebee5b5f833aa99dbbe85bb1f831a2e71",
+      "hash": "0x199df73c815bb0ff8999b7793e9b2b2c847c2f20bb9b4d449fc0d4d0def2b8b7",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: check 2",
-      "hash": "0x52b2670cee676bc7240ebbe7d14f1b8fc7e5e5f41f0dff673137805d6dc996cf",
+      "hash": "0xecccfc6356b3a7f7e0aada2fdae7607f5ef28166e3dd377631a4982906868ea2",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: check 3",
-      "hash": "0x917310cd763af641415a6bb852b9ddf78ac9645f9cebf05baec7cfa29d6ba82f",
+      "hash": "0x2041c2ac77bdf0fe1a5d5739fd5869a556e66d5d4c6ba3e6f96554f5af9daee1",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 1: settle",
-      "hash": "0x2336fa5fd7d629b62654d28e5a1ed20c9a284beb51323c16e0f8abea15d8a9e4",
+      "hash": "0xf817f71ce5d5d756626d0f48a27c7a0e7fd82c50eb504af285e9e74178efb3fa",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 2: settle",
-      "hash": "0xbe97769be9617a301e94ebdfd7859f29557aa2f93a2bdcbd75d15d3747a1c451",
+      "hash": "0x1aa58518cbee7425c1404e57c872fa3bfd6f388e328dc1b7e86af7935889a4ce",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "narrowed 3: settle",
-      "hash": "0xb05953ee96c5ecab3bd7b2099f33be89a49696da65d97f025dd89800ae6940ff",
+      "hash": "0x25fed5a7b1b8627dd93ae12eb0ba6af2169313f2cb1e9826d430198eddf61601",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "removed: settle",
-      "hash": "0xf5690cb475d8d6aecba46453719ce1bae94a7eda5339869776fa101c60ba7963",
+      "hash": "0xcd2285d7a3c58b3eec8f28ca57809ee0d87acef6f037c232dc1f7596cf62f75f",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "injected: settle",
-      "hash": "0x80eab9976927efcc75ddcc5c64c91c41f142628e4ce03dafef897c55708b4a0a",
+      "hash": "0x29952950db8f6814aedc559774655d096a3419df53dfcddb95d976d8fb14dc57",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "gone: settle",
-      "hash": "0xc3043ec941896abc76c659a2a6b2bcd3c79e1607c3c759881cb9ae931e89d962",
+      "hash": "0x011a23f35c2cb1752c0712dff95f92231910f0f85b32d4dbf7bf245782d2d7f9",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "unchanged: settle at the end",
-      "hash": "0x3c3c6eca7d4b02a91a1589258e98ae662edc5ed7ce0ad174b9ae9560a489e8a5",
+      "hash": "0x5c2b31d2e0cb1814a653e82eb6236241f04f80acce806cc17eb7a1aeff3662a7",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "reworded: settle at the end",
-      "hash": "0x986d1daaeac0b7d949a65c0d5f984ac533f9eb6d7fcf52e443d0e865ff5b70be",
+      "hash": "0xa93a67ae4fd61b0014680e9071e01aba190b4255407e835fce86f7fbffe1f414",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "real: settle at the end",
-      "hash": "0x81fe937ad36b8a5fd045580309de0fb01e81b4efef30d638da4ed8c877dc7965",
+      "hash": "0xf9f875978b80abc817ca99b526ae9edea6aa47203112668bc6bfb11b51db9326",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "vendor: withdraw",
-      "hash": "0x04715068d0dd111525c618d6f1ad4310d8d2551a34c1a92624ff63324dabc136",
+      "hash": "0x902757bb91b3400514c5e6bde18a4aa0acfe407ea5e866e7d54ceb9287a0f569",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     },
     {
       "tx": "buyer: withdraw",
-      "hash": "0x1e47d545bd6711af5baa73b665a5e39d5ff562ee5c5b26568f4e7f09d9c550ab",
+      "hash": "0x8b790c73adf0f0b1a46b8a48baf14bde768d74321995692669c45eeb095a9bec",
       "consensus": "MAJORITY_AGREE",
       "leader": "return"
     }
   ],
   "status": {
     "release": "redline/1",
-    "watcher": "0x0b88ee44a6901c112daacea92a7f36c6adf1f683",
+    "watcher": "0xf7d4005fef76e9bbd948708859c2de8844e84b79",
     "appeal_seconds": 300,
     "covers": 10,
     "held": 0,
-    "owed": 200000000000000000,
-    "balance": 200000000000000000
+    "owed": "200000000000000000",
+    "balance": "200000000000000000"
   },
-  "finished": "2026-10-10T17:11:12.030Z",
-  "failures": 2,
+  "finished": "2026-10-10T23:29:52.064Z",
+  "failures": 0,
   "verified": {
-    "at": "2026-10-10T17:12:03.611Z",
+    "at": "2026-10-10T23:30:36.000Z",
     "covers": {
       "unchanged": {
         "id": 0,
@@ -823,9 +845,9 @@
         "last_check": {
           "seq": 1,
           "kind": "kept",
-          "at": 1791650030
+          "at": 1791672713
         },
-        "closed_as_of": 1791651866
+        "closed_as_of": 1791674575
       },
       "reworded": {
         "id": 1,
@@ -837,68 +859,40 @@
         "last_check": {
           "seq": 1,
           "kind": "kept",
-          "at": 1791650037
+          "at": 1791672733
         },
-        "closed_as_of": 1791651872
+        "closed_as_of": 1791674581
       },
       "narrowed 1": {
         "id": 2,
         "state": "breached",
         "amount": "20000000000000000",
-        "paid": "4766666666666666",
-        "refunded": "15233333333333334",
+        "paid": "4733333333333333",
+        "refunded": "15266666666666667",
         "adds_up": true,
         "last_check": {
           "seq": 1,
           "kind": "breach",
-          "at": 1791650051
+          "at": 1791672764
         },
-        "closed_as_of": 1791650051
+        "closed_as_of": 1791672764
       },
       "narrowed 2": {
         "id": 3,
         "state": "breached",
         "amount": "20000000000000000",
-        "paid": "4908333333333333",
-        "refunded": "15091666666666667",
+        "paid": "4850000000000000",
+        "refunded": "15150000000000000",
         "adds_up": true,
         "last_check": {
           "seq": 1,
           "kind": "breach",
-          "at": 1791650071
+          "at": 1791672784
         },
-        "closed_as_of": 1791650071
+        "closed_as_of": 1791672784
       },
       "narrowed 3": {
         "id": 4,
-        "state": "breached",
-        "amount": "20000000000000000",
-        "paid": "4941666666666666",
-        "refunded": "15058333333333334",
-        "adds_up": true,
-        "last_check": {
-          "seq": 1,
-          "kind": "breach",
-          "at": 1791650082
-        },
-        "closed_as_of": 1791650082
-      },
-      "removed": {
-        "id": 5,
-        "state": "breached",
-        "amount": "20000000000000000",
-        "paid": "5033333333333333",
-        "refunded": "14966666666666667",
-        "adds_up": true,
-        "last_check": {
-          "seq": 1,
-          "kind": "breach",
-          "at": 1791650096
-        },
-        "closed_as_of": 1791650096
-      },
-      "injected": {
-        "id": 6,
         "state": "breached",
         "amount": "20000000000000000",
         "paid": "5091666666666666",
@@ -907,23 +901,51 @@
         "last_check": {
           "seq": 1,
           "kind": "breach",
-          "at": 1791650110
+          "at": 1791672820
         },
-        "closed_as_of": 1791650110
+        "closed_as_of": 1791672820
+      },
+      "removed": {
+        "id": 5,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5291666666666666",
+        "refunded": "14708333333333334",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791672851
+        },
+        "closed_as_of": 1791672851
+      },
+      "injected": {
+        "id": 6,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "5491666666666666",
+        "refunded": "14508333333333334",
+        "adds_up": true,
+        "last_check": {
+          "seq": 1,
+          "kind": "breach",
+          "at": 1791672881
+        },
+        "closed_as_of": 1791672881
       },
       "gone": {
         "id": 7,
         "state": "breached",
         "amount": "20000000000000000",
-        "paid": "5175000000000000",
-        "refunded": "14825000000000000",
+        "paid": "5683333333333333",
+        "refunded": "14316666666666667",
         "adds_up": true,
         "last_check": {
           "seq": 3,
           "kind": "gone",
-          "at": 1791650643
+          "at": 1791673437
         },
-        "closed_as_of": 1791650130
+        "closed_as_of": 1791672914
       },
       "real": {
         "id": 8,
@@ -935,9 +957,9 @@
         "last_check": {
           "seq": 1,
           "kind": "kept",
-          "at": 1791650141
+          "at": 1791672934
         },
-        "closed_as_of": 1791651915
+        "closed_as_of": 1791674638
       },
       "real-bogus": {
         "id": 9,
@@ -957,6 +979,5 @@
       "balanced": true
     },
     "all_add_up": true
-  },
-  "note": "The 2 failed checks ('closed as breached, paid + refunded = prepay' for narrowed 2 and removed) were the script's: it parsed atto-GEN amounts above 2^53 as floats. Read exactly from chain (the 'verified' section, deploy/verify.mjs), every cover's paid + refunded equals its prepay, and the treasury's held, owed and balance are all 0. scenario.mjs now parses amounts losslessly."
+  }
 }

@@ -106,7 +106,10 @@ function publish(versions, message) {
   git("add", "-A");
   if (git("status", "--porcelain").trim()) {
     git("commit", "-q", "-m", message);
-    git("push", "-q", "origin", "live");
+    for (let i = 0; ; i++) {
+      try { git("pull", "-q", "--rebase", "origin", "live"); git("push", "-q", "origin", "live"); break; }
+      catch (e) { if (i >= 4) throw e; }
+    }
   }
 }
 

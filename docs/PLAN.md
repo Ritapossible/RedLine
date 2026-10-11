@@ -29,27 +29,29 @@ agree on it?
       neutralised, answers read from their fields.
 - [x] Treasury and watcher shells; the treasury never reads the watcher;
       both fit Bradbury's gas cap (about 14 KB each).
-- [x] **Tests** (`tests/direct`, 491): both builds run end to end in a GenVM
+- [x] **Tests** (`tests/direct`, 494): both builds run end to end in a GenVM
       stand-in and must behave identically; 400 random lifecycles each credit
       every GEN of a prepay exactly once.
-- [x] **Mutation check** (`tests/mutation_check.py`): 46 of 46 mutants
+- [x] **Mutation check** (`tests/mutation_check.py`): 52 of 52 mutants
       killed.
 
-## Phase 2 - On chain (done, with two Bradbury misses recorded)
+## Phase 2 - On chain (done)
 
 Done when each transaction below is on Studio and Bradbury with a published
-record, misses included.
+record, misses included. Current contracts: `deploy/scenario-studio.json`,
+`deploy/scenario-bradbury.json`. The first run, on watcher 1, is in
+`deploy/scenario-*-v1.json`; its two Bradbury misses are rerun here.
 
 | # | Transaction | Expected | Studio | Bradbury |
 | --- | --- | --- | --- | --- |
 | 1 | page rebuilt, every pinned word kept | kept, no model | kept, no model | kept, no model |
-| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 100) | **no round** (finalized with no votes); paid at end |
-| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 99, 100, 100), refunded | breach ×3 (narrowed 90, 95, 90), refunded |
-| 4 | page deleted: 404 three checks running | gone, refund, no model | gone, refunded, no model | absent ×2, then absent at the end: refunded from the first absence |
-| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | breach (removed, 95) |
-| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | breach (narrowed, 100) |
-| 7 | a passage of GitHub's real terms page | kept, word for word | kept, word for word | kept, word for word |
-| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | refused at pinning |
+| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 99) | kept (same, 99) |
+| 3 | 30 days -> 7 days less a fee | breach (narrowed), refund | breach ×3 (narrowed 95, 99, 100), refunded | breach (narrowed, 100), one observation retried, refunded |
+| 4 | page deleted: 404 three checks running | gone, refund, no model | absent, absent, gone; refunded, no model | absent, absent, gone; refunded, no model |
+| 5 | deletion promise deleted | breach (removed) | breach (removed, 98) | (first run: breach, removed 95) |
+| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | (first run: breach, narrowed 100) |
+| 7 | a passage of GitHub's real terms page | kept, word for word | kept, no model | (first run: kept) |
+| 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | (first run: refused at pinning) |
 
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.
@@ -61,13 +63,15 @@ repository's `live` branch and are edited mid-run.
 - [ ] **Jury sample.** Ten covers per reading (same, narrowed, removed) on
       held-out page edits written after the prompt is fixed; publish every
       verdict and the rate.
-- [ ] **Cloaking.** A page that shows the pinned text to some validators
-      and not others makes checks fail to agree (THREAT-MODEL T11). Measure
-      how often real pages disagree on presence over a week.
+- [x] **Cloaking.** A check is now a request that always records; a
+      request with no agreed observation in its window is expired as
+      contested and counts like an absent page (THREAT-MODEL T11).
+- [ ] Measure how often real terms pages fail to agree on presence over a
+      week, to tune the gap and window.
 - [ ] **Appeal.** Appeal a breach on Studio and record what the treasury
       receives.
-- [ ] **Bradbury reruns** of the two cases that did not complete there: the
-      reworded check (finalized with no votes) and three absences running.
+- [x] **Bradbury reruns** of the two cases that did not complete there, on
+      the new watcher: reworded kept (same, 99); absent, absent, gone.
 - [ ] **A runner that resumes**: the scenario's waits are in-process, so a
       paused container stalls it; resume from the record instead.
 

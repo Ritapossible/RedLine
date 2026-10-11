@@ -34,9 +34,11 @@ open_cover (buyer, payable: the prepay; URL + 1-4 pinned passages)
         │        nobody, past accept_by ───────► REFUNDED (whole), on settle
         │
      ACTIVE ── the prepay accrues to the vendor, pro rata, second by second
-        │   watcher.check (anyone, at most once per check_gap) → note_check:
+        │   watcher.check (anyone, at most once per check_gap): a request, always recorded;
+        │   watcher.observe (sent by the watcher; retried by anyone in the window) → note_check:
         │     kept   - every pinned right still granted ──── accrual continues
-        │     absent - no page (no answer, 404/410) ──────── accrual held from the streak's start
+        │     absent - no page (no answer, 404/410), or no agreed observation
+        │              in the window (contested, via expire) ─ accrual held from the streak's start
         │     breach - a right ruled narrowed or removed ─── accrual held; closes after appeal_seconds
         │     gone   - absent 3 checks running ──────────── same as a breach, dated from the first absence
         │
@@ -139,13 +141,24 @@ unreadable answer is `cannot_tell`.
 `cannot_tell`, a hesitant breach - is kept: the vendor keeps earning unless
 a right was demonstrably cut.
 
-**Validators fail closed toward the vendor.** Each validator re-fetches the
+**A check always ends in a record.** `check` is deterministic: it records a
+request and opens an observation window of half the gap, and the watcher
+sends itself `observe`. If a round does not agree, anyone may send `observe`
+again inside the window. If no agreed observation lands, anyone may
+`expire` the request after the window, and it is recorded as **contested** -
+counted exactly like a page that does not answer. So a page shown
+differently to different validators (cloaking) cannot keep the vendor paid by
+making every round fail; and an honest vendor loses nothing from one failed
+round, because the next agreed check releases the hold and accrual catches
+up.
+
+**Validators fail closed toward the vendor on what a page says.** Each validator re-fetches the
 page and must agree with the leader on what the page is (read, missing,
 unread) and on exactly which passages are still word for word. On a breach
 it re-asks the jury about the passage the leader ruled, and agrees only if it
 finds a breach too. On "kept" it re-asks about every missing passage and
-vetoes if it finds a breach. A round that does not agree records nothing;
-the page can be checked again after the gap.
+vetoes if it finds a breach. A round that does not agree records nothing by
+itself; the open request it leaves is retried, or expired as contested.
 
 ## 6. Pinning
 
@@ -159,8 +172,9 @@ acceptance deadline.
 
 ## 7. Absence
 
-A page that does not answer (an exception, a 5xx, a 429) or answers 404/410
-is **absent**. One absence holds the vendor's accrual from that moment; a
+A page that does not answer (an exception, a 5xx, a 429), answers 404/410,
+or gets no agreed observation within a request's window (contested) is
+**absent**. One absence holds the vendor's accrual from that moment; a
 later check that reads the page lets it go. Checks are at least
 `check_gap_seconds` apart, so `ABSENT_LIMIT` (3) absences running span real
 time, not one outage. The third is **gone**: it ends the cover like a
@@ -172,7 +186,7 @@ still absent at the cover's end is not paid for after it went absent.
 Bradbury caps a transaction at 2^24 gas; a deploy costs about 0.96M gas plus
 782 per byte. The minifier drops docstrings, comments and unreachable
 definitions and shortens local names. Deployed sizes: treasury about 14.2
-KB, watcher about 14.0 KB. `test_it_fits_bradburys_gas_cap` holds both.
+KB, watcher about 16.2 KB. `test_it_fits_bradburys_gas_cap` holds both.
 
 ## 9. Hard rules
 
