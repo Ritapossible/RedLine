@@ -1,5 +1,7 @@
 # RedLine
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-d92d32.svg)](LICENSE)
+
 **A prepay that refunds itself when the vendor takes a right away.**
 
 An agent prepays an API or a data vendor against the terms page that is live
@@ -241,4 +243,10 @@ docs/           ARCHITECTURE, THREAT-MODEL, PLAN
 ```
 
 Built on [GenLayer](https://genlayer.com) with the contract patterns from
-[skills.genlayer.com](https://skills.genlayer.com). MIT licensed.
+[skills.genlayer.com](https://skills.genlayer.com).
+
+## License
+
+[MIT](LICENSE) © 2026 Rita Egwuatu. You may use, copy, modify and
+distribute this code freely, provided the copyright and license notice are
+kept. It comes with no warranty.
