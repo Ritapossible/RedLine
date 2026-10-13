@@ -1,0 +1,119 @@
+{
+  "network": "bradbury",
+  "treasury": "0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13",
+  "watcher": "0xc512c66A5463039C24Df6de6cedf89Da74B55A65",
+  "appeal_seconds": 2400,
+  "coverage_seconds": 4500,
+  "check_gap_seconds": 1200,
+  "started": "2026-10-11T13:11:03.212Z",
+  "cases": {
+    "gone": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/b2-gone.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "gone",
+      "open_tx": "0xdcec18cee6bdb7c130d5ea3150c39e579aa82e2471610e2e9f19adde51c1f1b0",
+      "id": 12,
+      "pinned": "offered",
+      "start": 1791724321,
+      "end": 1791728821,
+      "checks": [
+        {
+          "label": "gone: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0x36ad2053bcf22657d85a68ad4c98306a287e102dab975d97a9a256770a05c899",
+          "consensus": "AGREE",
+          "requested_at": 1791724947,
+          "seq": 1,
+          "at": 1791724961,
+          "page": "missing",
+          "streak": 1,
+          "since": 1791724961,
+          "kind": "absent"
+        },
+        {
+          "label": "gone: check 2",
+          "retries": [],
+          "expired": null,
+          "tx": "0x95899ea349d2b2f870e9d06954c34c11250aa520989b42bc3825940595af5ef2",
+          "consensus": "AGREE",
+          "skipped": "the request was refused (AGREE)"
+        }
+      ],
+      "state": "breached",
+      "paid": "2844444444444444",
+      "refunded": "17155555555555556",
+      "closed_as_of": 1791724961
+    }
+  },
+  "checks": [
+    {
+      "check": "gone: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    }
+  ],
+  "log": [
+    {
+      "tx": "gone: open",
+      "hash": "0xdcec18cee6bdb7c130d5ea3150c39e579aa82e2471610e2e9f19adde51c1f1b0",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-11T13:11:22.167Z"
+    },
+    {
+      "tx": "gone: accept",
+      "hash": "0x6ccb1262d291c03335437369efe32e0c89a32881093e4686b01ffda1469bc4ed",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-11T13:12:15.310Z"
+    },
+    {
+      "tx": "gone: check",
+      "hash": "0x36ad2053bcf22657d85a68ad4c98306a287e102dab975d97a9a256770a05c899",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-11T13:22:44.498Z"
+    },
+    {
+      "tx": "gone: check 2",
+      "hash": "0x95899ea349d2b2f870e9d06954c34c11250aa520989b42bc3825940595af5ef2",
+      "consensus": "AGREE",
+      "leader": "contract_error",
+      "at": "2026-10-13T17:56:59.908Z"
+    }
+  ],
+  "runs": [
+    {
+      "at": "2026-10-11T13:11:03.212Z",
+      "resumed": false
+    },
+    {
+      "at": "2026-10-13T17:56:30.077Z",
+      "resumed": true
+    }
+  ],
+  "opened": true,
+  "edited_at": 1791724580,
+  "finish": {
+    "at": "2026-10-13T18:06:41.001Z",
+    "txs": [
+      {
+        "tx": "gone: settle",
+        "hash": "0x12ecd1644f71258f76ee31821b76456eb08bea8daf6e9fe8533f963fa123286c",
+        "consensus": "AGREE",
+        "leader": "return"
+      },
+      {
+        "tx": "agent: withdraw",
+        "hash": "0xc5ac495a784c548af752e32e990746c5931cb34e022ca60f8819b5a2a3035d16",
+        "consensus": "AGREE",
+        "leader": "return"
+      }
+    ]
+  }
+}

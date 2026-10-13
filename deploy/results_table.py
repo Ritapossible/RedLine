@@ -33,7 +33,10 @@ def found(name, case):
     if name == "real-bogus":
         return "refused at pinning, no model"
     if name == "gone":
-        return ", ".join(c.get("kind", "?") for c in checks[:-1]) + ", **%s**, no model" % checks[-1].get("kind", "?")
+        kinds = [c.get("kind") or "third check refused: too close to the end" for c in checks]
+        if kinds and kinds[-1] == "gone":
+            return ", ".join(kinds[:-1]) + ", **gone**, no model"
+        return ", ".join(kinds) + "; no model"
     c = checks[-1]
     text = "**%s**" % c.get("kind", "?")
     text += " (%s, %s)" % (c["reading"], c["confidence"]) if c.get("reading") else ", word for word, no model"
@@ -55,7 +58,7 @@ def table(path):
 
 
 if __name__ == "__main__":
-    for path in ("scenario-studio.json", "scenario-bradbury.json"):
+    for path in ("scenario-studio.json", "scenario-bradbury.json", "scenario-bradbury-gone.json"):
         if os.path.exists(os.path.join(HERE, path)):
             print(path)
             print(table(path)[0])

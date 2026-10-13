@@ -6,8 +6,8 @@ two contracts; all you need is their addresses and
 
 | Network | Treasury | Watcher |
 | --- | --- | --- |
-| GenLayer Studio | `0xb4a65de24d6522bd59ebb26572a4e506370FAE4a` | `0xf7d4005fEf76e9BBd948708859c2de8844E84b79` |
-| Bradbury testnet | `0xd54D0A5Cf6a52cb48F499CE76FfAE6E2Dd30C4fF` | `0xb45e2cA545EB09435B0C04E22b563Cd19c5fb97c` |
+| GenLayer Studio | `0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014` | `0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6` |
+| Bradbury testnet | `0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13` | `0xc512c66A5463039C24Df6de6cedf89Da74B55A65` |
 
 The same addresses are in `deploy/deployments.json`, which the app reads.
 
@@ -58,8 +58,8 @@ Every method takes the treasury address (lower case) and the cover id.
 import { createClient, createAccount } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
 
-const TREASURY = "0xb4a65de24d6522bd59ebb26572a4e506370FAE4a";
-const WATCHER = "0xf7d4005fEf76e9BBd948708859c2de8844E84b79";
+const TREASURY = "0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014";
+const WATCHER = "0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6";
 const client = createClient({ chain: studionet, account: createAccount(process.env.KEY) });
 
 const passages = [

@@ -139,66 +139,54 @@ prepay exactly once.
 
 ## The on-chain record
 
-Both networks ran every case on the current contracts (watcher
-`redline-watcher/2`, where every check ends in a record), with 0 failed
-checks. Every cover's paid + refunded equals its prepay exactly, read back
-from chain with exact integers (`deploy/verify.mjs`), and after both parties
-withdrew, each treasury's held, owed and balance were all 0.
+Every case below ran on the contracts deployed now (treasury `redline/2`, watcher `redline-watcher/3`): the rules that a pinned sentence voided by a line beside it, or kept only in hidden markup, is not kept, and that a terms URL must be plain https. Every cover's paid + refunded equals its prepay exactly, read back from chain with exact integers (`deploy/verify.mjs`).
 
-**Studio** (`deploy/scenario-studio.json`; prepay 0.02 GEN each, 40-minute
-covers, checks 4 minutes apart, a 5-minute appeal window). The runner was
-killed twice on purpose - once right after a cover was opened but before its
-id was saved, once in the middle of the checks - and resumed each time:
-three runs, no transaction sent twice.
+**Studio** (`deploy/scenario-studio.json`; prepay 0.02 GEN each, 40-minute covers, checks 4 minutes apart, a 300-second appeal window). 0 failed checks. A cover opened with a query string in its URL was refused and its 0.02 GEN returned. After both parties withdrew, the treasury's held, owed and balance were all 0.
 
 | Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
 | --- | --- | --- | --- | --- |
 | Page rebuilt (new build id, nonce, date), every pinned word kept | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | Refund sentence reworded, 30 days kept | **kept** (same, 95) | completed | 0.0200 | 0.0000 |
-| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 99) | breached | 0.0051 | 0.0149 |
-| the same, a fresh cover (2 of 3) | **breach** (narrowed, 96) | breached | 0.0053 | 0.0147 |
-| the same, a fresh cover (3 of 3) | **breach** (narrowed, 95) | breached | 0.0054 | 0.0146 |
-| Deletion promise deleted | **breach** (removed, 99) | breached | 0.0056 | 0.0144 |
-| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 99) | breached | 0.0057 | 0.0143 |
-| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0059 | 0.0141 |
+| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 98) | breached | 0.0048 | 0.0152 |
+| the same, a fresh cover (2 of 3) | **breach** (narrowed, 99) | breached | 0.0050 | 0.0150 |
+| the same, a fresh cover (3 of 3) | **breach** (narrowed, 97) | breached | 0.0052 | 0.0148 |
+| Deletion promise deleted | **breach** (removed, 99) | breached | 0.0053 | 0.0147 |
+| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 100) | breached | 0.0055 | 0.0145 |
+| Refund sentence kept word for word, a line above it saying it is withdrawn | **breach** (removed, 99) | breached | 0.0060 | 0.0140 |
+| Refund sentence kept only inside a hidden element, the visible page narrowed | **breach** (narrowed, 97) | breached | 0.0061 | 0.0139 |
+| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0063 | 0.0137 |
 | A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
-**Bradbury** (`deploy/scenario-bradbury.json`; 75-minute covers, checks 20
-minutes apart, a 40-minute appeal window).
+**Bradbury** (`deploy/scenario-bradbury.json`; 75-minute covers, checks 20 minutes apart, a 2400-second appeal window). Every judged case matched Studio, including the voided (removed, 100) and hidden (narrowed, 95) pages, and the URL with a query string was refused with its prepay returned.
 
 | Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
 | --- | --- | --- | --- | --- |
 | Page rebuilt (new build id, nonce, date), every pinned word kept | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
-| Refund sentence reworded, 30 days kept | **kept** (same, 99) | completed | 0.0200 | 0.0000 |
-| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 95) | breached | 0.0031 | 0.0169 |
-| the same, a fresh cover (2 of 3) | **breach** (narrowed, 95) | breached | 0.0031 | 0.0169 |
-| the same, a fresh cover (3 of 3) | **breach** (narrowed, 90) | breached | 0.0033 | 0.0167 |
-| Deletion promise deleted | **breach** (removed, 100) | breached | 0.0035 | 0.0165 |
-| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 100) | breached | 0.0037 | 0.0163 |
-| Page deleted: 404, three checks running | absent, absent, **gone**, no model | breached | 0.0041 | 0.0159 |
+| Refund sentence reworded, 30 days kept | **kept** (same, 100) | completed | 0.0200 | 0.0000 |
+| 30 days becomes 7 days less a 15% fee (cover 1 of 3) | **breach** (narrowed, 100); 1 observation retried | breached | 0.0048 | 0.0152 |
+| the same, a fresh cover (2 of 3) | **breach** (narrowed, 100) | breached | 0.0050 | 0.0150 |
+| the same, a fresh cover (3 of 3) | **breach** (narrowed, 90); 1 observation retried | breached | 0.0072 | 0.0128 |
+| Deletion promise deleted | **breach** (removed, 99) | breached | 0.0074 | 0.0126 |
+| Narrowed, plus text telling the jury to answer "same" | **breach** (narrowed, 100) | breached | 0.0076 | 0.0124 |
+| Refund sentence kept word for word, a line above it saying it is withdrawn | **breach** (removed, 100) | breached | 0.0078 | 0.0122 |
+| Refund sentence kept only inside a hidden element, the visible page narrowed | **breach** (narrowed, 95); 1 observation retried | breached | 0.0098 | 0.0102 |
+| Page deleted: 404, three checks running | absent, absent, third check refused: too close to the end; no model | breached | 0.0100 | 0.0100 |
 | A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
-The jury's own words, from the records: reworded - "identical refund policy stated" (same, 95) on Studio, "same 30-day cancellation and full unused-credit " (same, 99) on
-Bradbury; narrowed - "shorter period, fee added, usage condition" (narrowed, 95); removed - "no deletion promise found" (removed, 100); the page that told the jury to answer
-"same" - "shorter period, processing fee, new condition" (narrowed, 100).
+2 checks of this run failed, both from the run's schedule, not the contracts: opening and checking twelve covers took 37 minutes of each 75-minute cover, so the deleted page's third check fell inside the last half-gap and the watcher refused it ("too close to the end of the cover"); that cover still refunded, dated from its first absent check, because the page was absent at its last check. And the treasury's books were read while that rerun's cover was still open.
 
-**Earlier runs**, kept for the record: `deploy/scenario-*-v1.json` (watcher
-1; on Bradbury the reworded check was finalised with all five validators
-`NOT_VOTED` and recorded nothing - the reason a check now always ends in a
-record) and `deploy/scenario-bradbury-rerun.json` (watcher 2, the two cases
-that did not complete the first time, where a narrowed check's first
-observation did not land and the runner's retry inside the window ruled).
+**Earlier runs**, kept for the record, on earlier contracts: `deploy/scenario-*-v1.json` (watcher 1; on Bradbury the reworded check was finalised with all five validators `NOT_VOTED` and recorded nothing - the reason a check now always ends in a record), `deploy/scenario-bradbury-rerun.json` and `deploy/scenario-*-v2.json` (watcher 2, before the voided and hidden rules), and `deploy/scenario-bradbury-gone-interrupted.json` (a deleted-page rerun cut short by a paused container, settled from its first absence).
 
 ## Deployed contracts
 
 | Network | Treasury | Watcher |
 | --- | --- | --- |
-| GenLayer Studio | [`0xb4a65de24d6522bd59ebb26572a4e506370FAE4a`](https://explorer-studio.genlayer.com/address/0xb4a65de24d6522bd59ebb26572a4e506370FAE4a) | [`0xf7d4005fEf76e9BBd948708859c2de8844E84b79`](https://explorer-studio.genlayer.com/address/0xf7d4005fEf76e9BBd948708859c2de8844E84b79) |
-| Bradbury testnet | [`0xd54D0A5Cf6a52cb48F499CE76FfAE6E2Dd30C4fF`](https://explorer-bradbury.genlayer.com/address/0xd54D0A5Cf6a52cb48F499CE76FfAE6E2Dd30C4fF) | [`0xb45e2cA545EB09435B0C04E22b563Cd19c5fb97c`](https://explorer-bradbury.genlayer.com/address/0xb45e2cA545EB09435B0C04E22b563Cd19c5fb97c) |
+| GenLayer Studio | [`0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014`](https://explorer-studio.genlayer.com/address/0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014) | [`0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6`](https://explorer-studio.genlayer.com/address/0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6) |
+| Bradbury testnet | [`0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13`](https://explorer-bradbury.genlayer.com/address/0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13) | [`0xc512c66A5463039C24Df6de6cedf89Da74B55A65`](https://explorer-bradbury.genlayer.com/address/0xc512c66A5463039C24Df6de6cedf89Da74B55A65) |
 
-- Releases: treasury `redline/1`, watcher `redline-watcher/2`.
+- Releases: treasury `redline/2`, watcher `redline-watcher/3`.
 - Appeal window: 300 s on Studio, 2,400 s on Bradbury.
 
 ## Limits, stated plainly

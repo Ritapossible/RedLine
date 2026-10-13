@@ -290,6 +290,7 @@ const gone = active.find((c) => c.expect === "gone");
 if (gone) {
   for (let k = 2; k <= 3; k++) {
     const last = record.cases[gone.name].checks.at(-1);
+    if (last.skipped) break; // a refused request has no time to wait from; the cover cannot reach gone
     if ((record.cases[gone.name].checks.length) < k) await until(Number(last.requested_at ?? last.at) + GAP + 15, `for check ${k} of the gone page`);
     await checkOnce(gone, k, `gone: check ${k}`);
   }

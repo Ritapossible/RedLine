@@ -70,7 +70,9 @@ npm run e2e       # a buyer and a vendor in a real browser, against Studio
 ```
 
 To deploy on Vercel, import the repository; `vercel.json` at the root builds
-`frontend/`. To let people connect mobile wallets through WalletConnect, set
+`frontend/` from `main`. The `live` branch holds only the fictional vendor's
+test pages that `scenario.mjs` edits mid-run; it is never merged and never
+built (`git.deploymentEnabled` is off for it on both branches). To let people connect mobile wallets through WalletConnect, set
 `VITE_REOWN_PROJECT_ID` to a project ID from dashboard.reown.com, with the
 site's domain on its allowlist. Without it, the app uses the browser's own
 wallet extension, and Studio burners always work.
