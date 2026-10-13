@@ -73,7 +73,10 @@ open_cover (buyer, payable: the prepay; URL + 1-4 pinned passages)
   that no credit is zero or negative, and that every cover closes.
 - **The books balance.** `held` (prepay still in covers) plus `owed`
   (credited, not withdrawn) equals the contract's balance; the end-to-end
-  test checks it before and after everyone withdraws to zero.
+  test checks it before and after everyone withdraws to zero. On Bradbury a
+  withdrawal's transfer leaves the contract only when its transaction
+  finalises (about 30 minutes or more), so for that long the balance can
+  exceed held + owed; `deploy/verify.mjs` read 0, 0, 0 once it had.
 
 ## 3. The treasury never reads the watcher
 
@@ -205,8 +208,10 @@ still absent at the cover's end is not paid for after it went absent.
 
 Bradbury caps a transaction at 2^24 gas; a deploy costs about 0.96M gas plus
 782 per byte. The minifier drops docstrings, comments and unreachable
-definitions and shortens local names. Deployed sizes: treasury about 14.2
-KB, watcher about 16.2 KB. `test_it_fits_bradburys_gas_cap` holds both.
+definitions and shortens local names. Deployed sizes: treasury about 14.5
+KB, watcher about 19.2 KB - within about 75 bytes of the cap after the
+voided-sentence and hidden-text rules, so any further watcher logic has to
+pay for itself in bytes. `test_it_fits_bradburys_gas_cap` holds both.
 
 ## 9. Hard rules
 

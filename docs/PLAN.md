@@ -28,7 +28,8 @@ agree on it?
 - [x] Prompt layer (`redline_prompts.py`): one question, untrusted text
       neutralised, answers read from their fields.
 - [x] Treasury and watcher shells; the treasury never reads the watcher;
-      both fit Bradbury's gas cap (about 14 KB each).
+      both fit Bradbury's gas cap (treasury about 14.5 KB, watcher about
+      19.2 KB).
 - [x] **Tests** (`tests/direct`, 526): both builds run end to end in a GenVM
       stand-in and must behave identically; 400 random lifecycles each credit
       every GEN of a prepay exactly once.

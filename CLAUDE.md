@@ -40,3 +40,9 @@ REDLINE_KEYS=... node verify.mjs studio   # exact on-chain check of every cover
 - Keep each deployed file under about 19 KB (Bradbury's gas cap);
   `test_it_fits_bradburys_gas_cap` enforces it.
 - Never commit keys. Never put a model identifier in the repository.
+- The watcher is within about 75 bytes of the gas cap: new watcher logic
+  must pay for itself in bytes.
+- The `live` branch holds only test pages edited by `scenario.mjs`; never
+  merge it, never build it. Vercel builds `main`.
+- After a run, `node verify.mjs <net>` then `python3 deploy/readme_record.py`
+  so the README shows the deployed contracts and their records.

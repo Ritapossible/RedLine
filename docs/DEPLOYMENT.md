@@ -47,6 +47,7 @@ addresses to `deploy/deployments.json`. Keys are never committed.
 ```bash
 REDLINE_KEYS=... LIVE_CLONE=<clone of the live branch> node scenario.mjs studio
 REDLINE_KEYS=... node verify.mjs studio
+python3 readme_record.py      # rebuild the README's record and address sections
 ```
 
 `scenario.mjs` opens a cover for each case, edits the fictional vendor's
@@ -57,8 +58,34 @@ transaction twice (`RESET=1` starts over). `verify.mjs` re-reads every cover
 with exact integers and confirms that paid plus refunded equals the prepay
 and that the treasury ends with nothing held or owed.
 
-The records (`deploy/scenario-studio.json`, `deploy/scenario-bradbury.json`)
-are the source of the results table on the home page and in the README.
+| Setting | What it does |
+| --- | --- |
+| `COVER`, `GAP` | Coverage period and check gap in seconds (Studio defaults 2400 and 240). On Bradbury, leave room: opening twelve covers took 37 minutes. |
+| `ONLY=gone,voided` | Run only the named cases |
+| `OUT=<file>` | Write the record to another file (a separate run on the same treasury) |
+| `LIVE_PREFIX=b-` | Edit separate copies of the live pages, so two runs do not collide |
+| `RESET=1` | Start a fresh record instead of resuming |
+
+| Script | What it is for |
+| --- | --- |
+| `deploy.mjs` | Deploy the watcher, then the treasury pointed at it; record both in `deployments.json` |
+| `scenario.mjs` | The on-chain cases, resumable |
+| `verify.mjs` | Re-read every cover of a record exactly; write `verified` into it |
+| `finish.mjs` | Settle and withdraw every cover of a record whose run stopped for good |
+| `recheck_refusal.mjs` | Re-check the secret-URL refusal of a record from what the treasury recorded |
+| `results_table.py`, `readme_record.py` | Build the README's tables and its record and address sections from the records |
+
+| Record | Contracts | What it holds |
+| --- | --- | --- |
+| `scenario-studio.json` | current | Every case on Studio, 0 failed checks |
+| `scenario-bradbury.json` | current | Every case on Bradbury (the deleted page's third check did not fit the schedule) |
+| `scenario-bradbury-gone.json` | current | The deleted page alone on Bradbury: absent, absent, gone, 0 failed checks |
+| `scenario-bradbury-gone-interrupted.json` | current | A deleted-page run cut short by a paused container, settled with `finish.mjs` |
+| `scenario-*-v2.json`, `scenario-bradbury-rerun.json` | watcher 2 | Before the voided-sentence and hidden-text rules |
+| `scenario-*-v1.json` | watcher 1 | Before a check always ended in a record |
+
+The current records are the source of the results table on the home page
+and in the README.
 
 ## The web app
 

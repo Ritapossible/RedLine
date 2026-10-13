@@ -97,17 +97,18 @@ cannot close.
 
 ## A worked example
 
-From the Studio run (`deploy/scenario-studio.json`, cover 12):
+From the Studio run on the current contracts (`deploy/scenario-studio.json`,
+the case `narrowed 1`, cover 2):
 
 - The buyer prepays **0.02 GEN** for **40 minutes**, pinning "You may cancel
   at any time within 30 days of purchase and receive a full refund of any
   unused prepaid credit, with no questions asked."
 - The vendor accepts. Some minutes later the page is edited to "within 7
   days … less a 15% processing fee".
-- A check, 10 minutes 16 seconds after acceptance, finds the passage gone.
-  The jury reads it as **narrowed**, confidence **99**, with the reason
-  "shorter window, fee deducted, request limit adde" (reasons are cut at 48
+- A check, 9 minutes 37 seconds after acceptance, finds the passage gone.
+  The jury reads it as **narrowed**, confidence **98**, with the reason
+  "window 30→7 days, fee added, usage limit added" (reasons are cut at 48
   characters).
 - Accrual stops at the check. After the 5-minute appeal window, `settle`
-  closes the cover: the vendor keeps **0.005133 GEN** (25.7%, the time it
-  ran), the buyer gets **0.014867 GEN** back.
+  closes the cover: the vendor keeps **0.004808 GEN** (24.0%, the time it
+  ran), the buyer gets **0.015192 GEN** back.

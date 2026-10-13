@@ -53,8 +53,9 @@ def section():
             "%d checks of this run failed, both from the run's schedule, not the contracts: opening and checking "
             "twelve covers took 37 minutes of each 75-minute cover, so the deleted page's third check fell inside "
             "the last half-gap and the watcher refused it (\"too close to the end of the cover\"); that cover still "
-            "refunded, dated from its first absent check, because the page was absent at its last check. And the "
-            "treasury's books were read while that rerun's cover was still open." % len(b_fail))
+            "refunded, dated from its first absent check, because the page was absent at its last check. And its "
+            "books check read the treasury while a separate deleted-page run's cover on the same treasury was still "
+            "open (below); read again after that run, held, owed and balance were all 0." % len(b_fail))
         out.append("")
     if gone and gone.get("verified"):
         g = gone["cases"]["gone"]

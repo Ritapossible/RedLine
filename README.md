@@ -4,6 +4,11 @@
 
 **A prepay that refunds itself when the vendor takes a right away.**
 
+**Live app: [red-line-v0.vercel.app](https://red-line-v0.vercel.app)** - open a cover on GenLayer
+Studio with a one-click burner wallet, or on the Bradbury testnet with your
+own. Docs, from the introduction to the roadmap, are on the site and in
+[docs/](docs/README.md).
+
 An agent prepays an API or a data vendor against the terms page that is live
 that day: a 30-day refund, a promise to delete its data within 7 days. A month
 later the vendor edits that same URL. The refund window is now 7 days, or the
@@ -69,12 +74,14 @@ and agree on them (`deploy/probes/`):
 ## How it works
 
 1. **Open.** The buyer calls `open_cover` on the treasury with the vendor's
-   address, the terms URL, 1-4 passages (40-600 characters each, copied from
-   the page) and the coverage period, sending the prepay. A malformed cover
-   is refused and the value credited back.
+   address, the terms URL (plain `https`: no query, fragment, user name or
+   password), 1-4 passages (40-600 characters each, copied from the page)
+   and the coverage period, sending the prepay. A malformed cover is refused
+   and the value credited back.
 2. **Pin.** The treasury messages the watcher, whose validators fetch the
-   page and check every passage is on it word for word. No model. A passage
-   that is not there refuses the cover and refunds it.
+   page, check every passage is on it word for word as visible text, and
+   fingerprint the text around each one. No model. A passage that is not
+   there refuses the cover and refunds it.
 3. **Accept.** The vendor accepts the pinned terms; the cover starts and the
    prepay begins to accrue to it.
 4. **Check.** Anyone calls `check` on the watcher, at most once per
@@ -175,7 +182,7 @@ Every case below ran on the contracts deployed now (treasury `redline/2`, watche
 | A passage of GitHub's live terms page | **kept**, word for word, no model | completed | 0.0200 | 0.0000 |
 | A passage that is not on GitHub's page | refused at pinning, no model | refunded | 0.0000 | 0.0200 |
 
-2 checks of this run failed, both from the run's schedule, not the contracts: opening and checking twelve covers took 37 minutes of each 75-minute cover, so the deleted page's third check fell inside the last half-gap and the watcher refused it ("too close to the end of the cover"); that cover still refunded, dated from its first absent check, because the page was absent at its last check. And the treasury's books were read while that rerun's cover was still open.
+2 checks of this run failed, both from the run's schedule, not the contracts: opening and checking twelve covers took 37 minutes of each 75-minute cover, so the deleted page's third check fell inside the last half-gap and the watcher refused it ("too close to the end of the cover"); that cover still refunded, dated from its first absent check, because the page was absent at its last check. And its books check read the treasury while a separate deleted-page run's cover on the same treasury was still open (below); read again after that run, held, owed and balance were all 0.
 
 **Bradbury, the deleted page alone** (`deploy/scenario-bradbury-gone.json`; 60-minute cover, checks 15 minutes apart): absent, absent, gone, no model; breached, the vendor paid 0.0036 GEN until the first absence, the buyer refunded 0.0164 GEN. 0 failed checks. After every Bradbury run, the treasury owes nothing and holds nothing in covers (held 0, owed 0).
 
@@ -214,6 +221,7 @@ Every case below ran on the contracts deployed now (treasury `redline/2`, watche
 ## Run it
 
 ```bash
+pip install -r requirements-dev.txt     # pytest
 python3 deploy/build_contract.py        # rebuild contracts/build/
 python3 -m pytest tests/direct -q       # 526 tests, no chain needed
 python3 tests/mutation_check.py         # 67 mutants; all must be killed
@@ -223,6 +231,7 @@ REDLINE_KEYS=<keys dir> LIVE_CLONE=<clone of the live branch> node scenario.mjs 
 # The runner is resumable: run it again after any stop and it carries on from
 # the chain and its record, never sending a step twice. RESET=1 starts over.
 REDLINE_KEYS=<keys dir> node verify.mjs studio   # every cover, exact, from chain
+python3 readme_record.py                         # README record + addresses from the records
 ```
 
 ## The web app
@@ -245,7 +254,9 @@ npm run e2e            # a buyer and a vendor, two Studio burners, end to end
 Sign with a wallet (Reown AppKit when `VITE_REOWN_PROJECT_ID` is set, else the
 browser's injected wallet) on Studio or Bradbury, or with a Studio burner: a
 key made in the browser and funded from Studio's faucet. Deploy on Vercel from
-the repository root (`vercel.json`).
+the repository root (`vercel.json`), from `main`. The `live` branch holds only
+the fictional vendor's test pages that `scenario.mjs` edits mid-run; it is
+never merged and never built.
 
 ## Layout
 

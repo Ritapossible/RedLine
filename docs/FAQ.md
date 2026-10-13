@@ -20,7 +20,7 @@ a pinned sentence, or moving it to a different URL, is noticed.
 The word-for-word check fails, so the jury reads the pinned passage against
 today's page. If the right is the same, it rules **same** and the cover
 carries on. On chain, a reworded refund sentence with the 30 days kept was
-ruled same on both networks (confidence 95 on Studio, 99 on Bradbury).
+ruled same on both networks (confidence 95 on Studio, 100 on Bradbury).
 
 ## What if the vendor leaves my sentence on the page but adds "this no longer applies"?
 
@@ -85,5 +85,7 @@ what they saw. See the [Threat model](THREAT-MODEL.md).
 ## Is this on mainnet?
 
 Not yet. It runs on GenLayer Studio and the Bradbury testnet. Every case was
-run on both, with 0 failed checks, and every payout re-read from the chain
-(see the [Build and deploy](DEPLOYMENT.md) page and the README's record).
+run on both on the current contracts, and every payout re-read from the
+chain: Studio with 0 failed checks; on Bradbury every judged case matched
+Studio, and the deleted page, run on its own, went absent, absent, gone with
+0 failed checks (the README's record says why it needed its own run).

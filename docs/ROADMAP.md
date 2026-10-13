@@ -25,10 +25,15 @@ build log is in [PLAN.md](PLAN.md).
 
 - Every case on Studio and Bradbury with the current contracts: kept word
   for word, reworded but kept, narrowed (three times), removed, a page that
-  tries to instruct the jury, a deleted page, a real GitHub terms passage,
-  and a passage that is not on GitHub's page.
-- 0 failed checks on both networks; every cover's paid plus refunded equals
-  its prepay exactly; both treasuries end with nothing held or owed.
+  tries to instruct the jury, a sentence voided by a line beside it, a
+  sentence kept only in hidden markup, a deleted page, a real GitHub terms
+  passage, a passage that is not on GitHub's page, and a URL carrying a
+  query string.
+- Every cover's paid plus refunded equals its prepay exactly; both
+  treasuries end with nothing held, owed or in their balance. Studio: 0
+  failed checks. Bradbury: every judged case as on Studio; the deleted page
+  needed a run of its own (0 failed checks) because twelve covers took too
+  long to open for its third check to fit.
 
 ### Phase 3 (part): hardening
 

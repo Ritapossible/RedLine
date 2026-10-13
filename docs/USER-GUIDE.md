@@ -1,5 +1,7 @@
 # User guide
 
+The app is at [red-line-v0.vercel.app](https://red-line-v0.vercel.app).
+
 Everything in RedLine is done from the app: **Covers** lists every cover on
 the network you picked, **Open a cover** creates one, and each cover has its
 own page showing the money, the pinned passages, the latest check, and the
@@ -64,6 +66,14 @@ deadline (anyone can press **Settle** to apply it).
 
 If the page stays as it was, at the end of the coverage period (plus the
 appeal window) the cover completes and the whole prepay is yours.
+
+What counts as keeping the terms: each pinned passage stays on the page,
+visible, word for word. Moving it into hidden markup counts as taking it
+away. Editing the text right around it, or another sentence on the same
+subject, sends it to the jury at the next check: a harmless edit is ruled
+the same and costs you nothing; a line that withdraws or overrides the
+passage ends the cover. Dates, numbers and the rest of the page do not
+matter.
 
 ## As anyone: check a cover
 
