@@ -65,6 +65,10 @@ def section():
             "minutes apart): %s, no model; %s, the vendor paid %.4f GEN until the first absence, the buyer refunded "
             "%.4f GEN. %d failed checks." % (gone["coverage_seconds"] // 60, gone["check_gap_seconds"] // 60, kinds, v["state"],
                                              int(v["paid"]) / 1e18, int(v["refunded"]) / 1e18, gone.get("failures", 0)))
+        books = gone["verified"]["books"]
+        out[-1] += (" After every Bradbury run, the treasury owes nothing and holds nothing in covers (held %s, owed %s)%s."
+                    % (books["held"], books["owed"],
+                       "" if int(books["balance"]) == 0 else "; its last %.2f GEN, the final withdrawals, leaves the contract when those transactions finalise (they were ACCEPTED, not yet FINALIZED, when read)" % (int(books["balance"]) / 1e18)))
         out.append("")
     out.append(
         "**Earlier runs**, kept for the record, on earlier contracts: `deploy/scenario-*-v1.json` (watcher 1; on "

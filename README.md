@@ -177,6 +177,8 @@ Every case below ran on the contracts deployed now (treasury `redline/2`, watche
 
 2 checks of this run failed, both from the run's schedule, not the contracts: opening and checking twelve covers took 37 minutes of each 75-minute cover, so the deleted page's third check fell inside the last half-gap and the watcher refused it ("too close to the end of the cover"); that cover still refunded, dated from its first absent check, because the page was absent at its last check. And the treasury's books were read while that rerun's cover was still open.
 
+**Bradbury, the deleted page alone** (`deploy/scenario-bradbury-gone.json`; 60-minute cover, checks 15 minutes apart): absent, absent, gone, no model; breached, the vendor paid 0.0036 GEN until the first absence, the buyer refunded 0.0164 GEN. 0 failed checks. After every Bradbury run, the treasury owes nothing and holds nothing in covers (held 0, owed 0); its last 0.02 GEN, the final withdrawals, leaves the contract when those transactions finalise (they were ACCEPTED, not yet FINALIZED, when read).
+
 **Earlier runs**, kept for the record, on earlier contracts: `deploy/scenario-*-v1.json` (watcher 1; on Bradbury the reworded check was finalised with all five validators `NOT_VOTED` and recorded nothing - the reason a check now always ends in a record), `deploy/scenario-bradbury-rerun.json` and `deploy/scenario-*-v2.json` (watcher 2, before the voided and hidden rules), and `deploy/scenario-bradbury-gone-interrupted.json` (a deleted-page rerun cut short by a paused container, settled from its first absence).
 
 ## Deployed contracts

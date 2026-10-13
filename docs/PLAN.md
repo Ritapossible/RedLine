@@ -38,21 +38,25 @@ agree on it?
 ## Phase 2 - On chain (done)
 
 Done when each transaction below is on Studio and Bradbury with a published
-record, misses included. Both networks ran all eight on the current
-contracts: `deploy/scenario-studio.json`, `deploy/scenario-bradbury.json`,
-0 failed checks each. Earlier runs: `deploy/scenario-*-v1.json`,
-`deploy/scenario-bradbury-rerun.json`.
+record, misses included. Both networks ran them on the current contracts
+(treasury `redline/2`, watcher `redline-watcher/3`): `deploy/scenario-studio.json`
+(0 failed checks), `deploy/scenario-bradbury.json` and, for the deleted page,
+`deploy/scenario-bradbury-gone.json`. Earlier contracts' runs:
+`deploy/scenario-*-v1.json`, `-v2.json`, `deploy/scenario-bradbury-rerun.json`.
 
 | # | Transaction | Expected | Studio | Bradbury |
 | --- | --- | --- | --- | --- |
 | 1 | page rebuilt, every pinned word kept | kept, no model | kept, no model | kept, no model |
-| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 95) | kept (same, 99) |
-| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 99, 96, 95), refunded | breach ×3 (narrowed 95, 95, 90), refunded |
-| 4 | page deleted: 404 three checks running | gone, refund, no model | absent, absent, gone; refunded, no model | absent, absent, gone; refunded, no model |
-| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | breach (removed, 100) |
-| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 99) | breach (narrowed, 100) |
+| 2 | refund sentence reworded, 30 days kept | kept (jury: same) | kept (same, 95) | kept (same, 100) |
+| 3 | 30 days -> 7 days less a fee, three fresh covers | breach (narrowed), refund | breach ×3 (narrowed 98, 99, 97), refunded | breach ×3 (narrowed 100, 100, 90), refunded |
+| 4 | page deleted: 404 three checks running | gone, refund, no model | absent, absent, gone; refunded | absent, absent, gone; refunded (alone; in the 12-cover run the third check fell after the cover's end and was refused, still refunded from the first absence) |
+| 5 | deletion promise deleted | breach (removed) | breach (removed, 99) | breach (removed, 99) |
+| 6 | narrowed, plus text telling the jury "same" | breach | breach (narrowed, 100) | breach (narrowed, 100) |
 | 7 | a passage of GitHub's real terms page | kept, word for word | kept, no model | kept, no model |
 | 8 | a passage that is not on GitHub's page | refused at pinning | refused at pinning | refused at pinning |
+| 9 | refund sentence kept word for word, "withdrawn" line above it | breach | breach (removed, 99) | breach (removed, 100) |
+| 10 | refund sentence kept only in hidden markup, visible page narrowed | breach | breach (narrowed, 97) | breach (narrowed, 95) |
+| 11 | terms URL with a query string | refused at opening, value returned | refused, 0.02 returned | refused, 0.02 returned |
 
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.

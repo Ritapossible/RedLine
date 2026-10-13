@@ -1,0 +1,213 @@
+{
+  "network": "bradbury",
+  "treasury": "0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13",
+  "watcher": "0xc512c66A5463039C24Df6de6cedf89Da74B55A65",
+  "appeal_seconds": 2400,
+  "coverage_seconds": 3600,
+  "check_gap_seconds": 900,
+  "started": "2026-10-13T18:07:27.059Z",
+  "cases": {
+    "gone": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/b3-gone.html",
+      "passages": [
+        "refund",
+        "deletion"
+      ],
+      "expect": "gone",
+      "open_tx": "0xcbfba3e0e5ab76dcc6598ee4afc7053566969ef5672857de1cac8614793f5bc5",
+      "id": 13,
+      "pinned": "offered",
+      "start": 1791914902,
+      "end": 1791918502,
+      "checks": [
+        {
+          "label": "gone: check",
+          "retries": [],
+          "expired": null,
+          "tx": "0xa5ed0893a91e679a58facb80ae99c82ff8a8ec03837f94a24cba9e6d610ff708",
+          "consensus": "AGREE",
+          "requested_at": 1791915532,
+          "seq": 1,
+          "at": 1791915545,
+          "page": "missing",
+          "streak": 1,
+          "since": 1791915545,
+          "kind": "absent"
+        },
+        {
+          "label": "gone: check 2",
+          "retries": [],
+          "expired": null,
+          "tx": "0x5e952fb8abd1aee3972b1722f20efaee58cb173a52acbca22a5940bf1a294003",
+          "consensus": "AGREE",
+          "requested_at": 1791916457,
+          "seq": 2,
+          "at": 1791916473,
+          "page": "missing",
+          "streak": 2,
+          "since": 1791915545,
+          "kind": "absent"
+        },
+        {
+          "label": "gone: check 3",
+          "retries": [],
+          "expired": null,
+          "tx": "0xffb28c7a4a1b21769c4a67d239f929d708bb693d0c3d0202ff5699dee0719342",
+          "consensus": "AGREE",
+          "requested_at": 1791917380,
+          "seq": 3,
+          "at": 1791917393,
+          "page": "missing",
+          "streak": 3,
+          "since": 1791915545,
+          "kind": "gone"
+        }
+      ],
+      "state": "breached",
+      "paid": "3572222222222222",
+      "refunded": "16427777777777778",
+      "closed_as_of": 1791915545
+    }
+  },
+  "checks": [
+    {
+      "check": "gone: pinned",
+      "actual": "offered",
+      "expected": "offered",
+      "ok": true
+    },
+    {
+      "check": "gone: absent, absent, gone",
+      "actual": "absent,absent,gone",
+      "expected": "absent,absent,gone",
+      "ok": true
+    },
+    {
+      "check": "gone: closed breached, paid + refunded = prepay",
+      "actual": "breached/true",
+      "expected": "breached/true",
+      "ok": true
+    },
+    {
+      "check": "the treasury holds exactly what is owed (nothing left in covers)",
+      "actual": "0/true",
+      "expected": "0/true",
+      "ok": true
+    },
+    {
+      "check": "vendor withdraws",
+      "actual": "true",
+      "expected": "true",
+      "ok": true
+    },
+    {
+      "check": "buyer withdraws",
+      "actual": "true",
+      "expected": "true",
+      "ok": true
+    }
+  ],
+  "log": [
+    {
+      "tx": "gone: open",
+      "hash": "0xcbfba3e0e5ab76dcc6598ee4afc7053566969ef5672857de1cac8614793f5bc5",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T18:07:44.089Z"
+    },
+    {
+      "tx": "gone: accept",
+      "hash": "0x406679a723f4bf43aab5965c26d43809988c439a0ec0f190c1078b596dcd0b01",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T18:08:36.633Z"
+    },
+    {
+      "tx": "gone: check",
+      "hash": "0xa5ed0893a91e679a58facb80ae99c82ff8a8ec03837f94a24cba9e6d610ff708",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T18:19:06.651Z"
+    },
+    {
+      "tx": "gone: check 2",
+      "hash": "0x5e952fb8abd1aee3972b1722f20efaee58cb173a52acbca22a5940bf1a294003",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T18:34:36.147Z"
+    },
+    {
+      "tx": "gone: check 3",
+      "hash": "0xffb28c7a4a1b21769c4a67d239f929d708bb693d0c3d0202ff5699dee0719342",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T18:49:54.728Z"
+    },
+    {
+      "tx": "gone: settle",
+      "hash": "0x22606ffcf9898f3b77ac9573e0b6b2ca719a78a139c2076135e43cb8f22546b4",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T19:30:29.289Z"
+    },
+    {
+      "tx": "vendor: withdraw",
+      "hash": "0x06c081bfc4818e0e2eb7b5c90662fa7f5579911d64dedb2fb91efa6db63bf86b",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T19:30:45.389Z"
+    },
+    {
+      "tx": "buyer: withdraw",
+      "hash": "0x14aafb554b7de7c2f585142fdde2eb20ba33660c4df2ed2a2326657e2203c1ec",
+      "consensus": "AGREE",
+      "leader": "return",
+      "at": "2026-10-13T19:31:01.464Z"
+    }
+  ],
+  "runs": [
+    {
+      "at": "2026-10-13T18:07:27.060Z",
+      "resumed": false
+    }
+  ],
+  "opened": true,
+  "edited_at": 1791915163,
+  "status": {
+    "release": "redline/2",
+    "watcher": "0xc512c66a5463039c24df6de6cedf89da74b55a65",
+    "appeal_seconds": 2400,
+    "covers": 14,
+    "held": 0,
+    "owed": "20000000000000000",
+    "balance": "20000000000000000"
+  },
+  "finished": "2026-10-13T19:31:01.466Z",
+  "failures": 0,
+  "verified": {
+    "at": "2026-10-13T19:51:31.769Z",
+    "covers": {
+      "gone": {
+        "id": 13,
+        "state": "breached",
+        "amount": "20000000000000000",
+        "paid": "3572222222222222",
+        "refunded": "16427777777777778",
+        "adds_up": true,
+        "last_check": {
+          "seq": 3,
+          "kind": "gone",
+          "at": 1791917393
+        },
+        "closed_as_of": 1791915545
+      }
+    },
+    "books": {
+      "held": "0",
+      "owed": "0",
+      "balance": "20000000000000000",
+      "balanced": false
+    },
+    "all_add_up": true
+  }
+}
