@@ -104,6 +104,18 @@ The full documentation, from the introduction to the roadmap, is in
 and what stops it: [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md). What is next:
 [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## Where RedLine is going
+
+RedLine is meant to become a production service on GenLayer mainnet, not
+stay a demo. After this release is accepted, the work runs in six stages,
+each closed by a measured test: a published jury error rate; security for
+real money (no key that can move a cover's funds, a live books monitor, an
+independent audit and a bug bounty); a product anyone can use (a keeper,
+click-to-pin, a clause library); SDKs and an agent tool so AI agents can
+cover what they buy; shared covers and a badge for vendors; and mainnet
+under published caps. The plan, with every checklist and exit test, is in
+[docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PLAN.md](docs/PLAN.md).
+
 ## Design decisions
 
 **Still there is not enough.** A reviewer found that a vendor could leave the

@@ -53,40 +53,75 @@ build log is in [PLAN.md](PLAN.md).
   buyer and a vendor against Studio.
 - **These docs.**
 
-## Next: finish hardening
+## What comes next
 
-- **Redirects.** Measure whether the page fetch follows redirects. Until
-  then, pin a page's final URL.
-- **A jury sample.** Ten covers per reading (same, narrowed, removed) on page
-  edits written after the prompt was fixed, every verdict published, and the
-  error rate stated.
-- **Presence over a week.** Measure how often real terms pages fail to agree
-  on presence, to tune the check gap and observation window.
-- **An appeal on chain.** Appeal a breach on Studio and record exactly what
-  the treasury receives.
+RedLine is built to become a production service and to launch on GenLayer
+mainnet when mainnet is live. The work is in six stages. Each ends with a
+test that has to be measured before the next one starts, and none of it
+begins until the current release is accepted. Details and checklists are in
+[PLAN.md](PLAN.md).
 
-## Then: the product
+### 1. Finish hardening: know how often the jury is wrong
 
-- **A keeper.** An automatic service that requests a check on every active
-  cover once per gap, so no buyer has to remember. Anyone will be able to
-  run one.
-- **Pick passages from the page.** Paste a URL, see the page's text, and
-  select the passages to pin instead of copying them.
-- **Notifications.** Email or webhook when a check finds a problem, when a
-  breach is recorded, and when money can be withdrawn.
-- **Covers by agents.** A small SDK and an agent-facing guide so an AI agent
-  buying a service can open and watch a cover on its owner's behalf.
+- **A published error rate.** At least 30 judged covers on page edits
+  written after the prompt was fixed, every verdict public, with false
+  refunds and missed breaches each under 5%.
+- **Real pages over a week.** Twenty real terms pages checked hourly for
+  seven days, to set how often checks run.
+- **Redirects, appeals, and pages drawn by JavaScript.** Measured, or
+  refused before any money moves.
 
-## Later
+### 2. Security for real money
 
-- **Partial covers.** Several buyers on one pinned page, each with its own
-  prepay, sharing the checks.
-- **A vendor bond.** For vendors billed outside RedLine: the vendor stakes a
-  bond against its pinned terms instead of receiving a streamed prepay.
-- **More than one page.** A cover over a terms page and its linked policies
-  (privacy, SLA, refund pages).
-- **Mainnet.** After the jury sample, an external review of the contracts,
-  and GenLayer mainnet availability.
+- **No key can move a cover's money.** No owner withdrawal, no freeze, no
+  in-place upgrade. A pause, if any, can only stop new covers.
+- **A live books monitor.** Every treasury checked continuously, to the
+  atto; any drift is posted publicly.
+- **50+ adversarial pages** that try to fool the jury, run as tests.
+- **Fuzzing at scale,** a fee on every check so checks cannot be spammed,
+  an **independent audit** with findings published, a **bug bounty** running
+  for 30 days, and a rehearsed **incident runbook**.
+
+### 3. A product anyone can use
+
+- **A keeper** that checks every cover on time, so nobody has to
+  remember. Anyone can run one and is paid for it.
+- **Pick passages by clicking them** on the page.
+- **A clause library**: one click to cover a refund window, a price lock,
+  a data-deletion promise, or "we do not train models on your data".
+- **Covers over several pages** (terms, privacy policy, DPA, SLA),
+  **notifications**, and a **dashboard** for buyers with many covers.
+
+### 4. Agents
+
+- **SDKs** in TypeScript and Python, and an **agent tool (MCP)** so an AI
+  agent buying an API or a dataset can open and watch a cover by itself,
+  within limits its owner sets.
+
+### 5. Vendors and scale
+
+- **Shared covers**: many buyers on one vendor's page share the checks, so
+  the cost per buyer falls as more join.
+- **A RedLine-covered badge** for vendors who agree to be watched, a
+  **vendor bond** for vendors billed elsewhere, and a **change preview**
+  that shows a vendor which covers an edit would break before it goes live.
+- **An indexer** so the app stays fast at thousands of covers.
+
+### 6. Mainnet
+
+- When GenLayer mainnet is live, and only after stages 1 and 2.
+- **Stable-value prepays** if a stablecoin is available there; **published
+  caps** raised in steps; small, bounded **fees** that pay keepers, audits
+  and the bounty; **plain legal terms** (RedLine refunds unearned prepay; it
+  is not insurance); a public **status page**.
+- Done when it has run 90 days under caps with the books balancing to the
+  atto.
+
+### How progress is measured
+
+Monthly, from the chain: covers and value under cover, checks per day and
+missed checks, breaches refunded, the jury's error rate, time for a new user
+to open a first cover, and vendors showing the badge.
 
 ## Not goals
 

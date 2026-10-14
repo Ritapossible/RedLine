@@ -62,20 +62,36 @@ record, misses included. Both networks ran them on the current contracts
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.
 
-## Phase 3 - Hardening (next)
+## Release 1 ends here
+
+Phases 0-2, the hardening marked done below and the web app are Release 1,
+the build under review. Everything after this line is planned, and starts
+only once Release 1 is accepted. The order is deliberate: measure the jury,
+then secure the money, then make it easy to use, then let agents and
+vendors in, then mainnet. Each phase has an exit test; the next phase does
+not start until it is measured and the evidence is in the repository.
+
+## Phase 3 - Hardening (finish)
 
 - [ ] **Redirects.** Measure whether `gl.nondet.web.get` follows them;
-      if it does not, a moved terms page looks absent.
+      if it does not, a moved terms page looks absent. Until measured, pin a
+      page's final URL; the app warns when the URL redirects.
 - [ ] **Jury sample.** Ten covers per reading (same, narrowed, removed) on
-      held-out page edits written after the prompt is fixed; publish every
-      verdict and the rate.
+      held-out page edits written after the prompt is fixed, on Studio and
+      Bradbury; publish every verdict and the error rate, false refunds and
+      missed breaches counted separately.
 - [x] **Cloaking.** A check is now a request that always records; a
       request with no agreed observation in its window is expired as
       contested and counts like an absent page (THREAT-MODEL T11).
-- [ ] Measure how often real terms pages fail to agree on presence over a
-      week, to tune the gap and window.
+- [ ] **Presence over a week.** Check twenty real terms pages every hour
+      for seven days; measure how often validators fail to agree a pinned
+      passage is present, and set the default gap and window from it.
 - [ ] **Appeal.** Appeal a breach on Studio and record what the treasury
-      receives.
+      receives; the watcher must stay readable after it (T9).
+- [ ] **Pages drawn by JavaScript.** A page whose text arrives only after a
+      script runs reads as empty to a validator. Refuse it before any money
+      moves: the app fetches the page the way a validator does and refuses
+      to open a cover whose passages are not in that text.
 - [x] **Bradbury reruns** of the two cases that did not complete there, on
       the new watcher: reworded kept (same, 99); absent, absent, gone.
 - [x] **Voided and hidden passages, secret URLs** (THREAT-MODEL T14-T17):
@@ -89,16 +105,140 @@ repository's `live` branch and are edited mid-run.
       after a cover was opened, before its id was saved) and mid-checks -
       and resuming: three runs, no transaction sent twice, 0 failed checks.
 
-## Phase 4 - Product (later)
+**Exit:** the jury's error rate is published from at least 30 judged
+covers, with false refunds under 5% and missed breaches under 5%; the
+presence measurement has set the defaults; an appeal is recorded on chain.
 
-- [ ] **Keeper**: checks every active cover on its gap, so no buyer has to.
+## Phase 4 - The web app (done for Release 1)
+
 - [x] **Front end** (`frontend/`): open a cover, a page per cover with the
       money split, the latest check and every action; tested end to end on
       Studio by a buyer and a vendor in a real browser (`npm run e2e`).
-- [ ] Select passages from the fetched page instead of pasting them.
-- [ ] **Partial covers**: several buyers on one pinned page.
-- [ ] **Vendor bond** as an alternative to the streaming prepay, for
-      vendors that bill outside RedLine.
+- [x] Docs on the site, from the introduction to this roadmap.
+
+## Phase 5 - Security for real money
+
+Nothing here adds a feature. It is what has to be true before anyone puts
+in money they would miss.
+
+- [ ] **No keys that can move money.** The treasury has no owner who can
+      withdraw, redirect or freeze a cover. If a pause exists, it can only
+      stop new covers from opening, never trap or move a cover's funds, and
+      using it is public. Contracts are not upgradeable in place; a new
+      version is a new deployment that new covers move to.
+- [ ] **Invariant monitor.** A service that, every block it can, reads each
+      treasury and checks its books: held + owed + paid + refunded equals
+      everything deposited, to the atto. Any drift pages a person and is
+      posted publicly.
+- [ ] **Adversarial page set.** At least 50 published pages written to make
+      the jury refund wrongly or miss a cut: instructions to the model,
+      white-on-white text, look-alike Unicode, splits across tags, voids
+      placed far from the sentence, very long pages. Each is a test that
+      runs on chain; the set grows with every report.
+- [ ] **Fuzzing the deployed bytes.** Random lifecycles (today 400) raised
+      to 100,000 against the minified build, with the readable and the
+      deployed build compared step by step.
+- [ ] **Check spam.** A check costs its caller a fee, so nobody can drain a
+      cover or flood validators with requests; measured against a burst of
+      a thousand checks.
+- [ ] **External review.** An independent audit of the treasury, watcher,
+      core and text extraction, with every finding and its fix published.
+- [ ] **Bug bounty.** Public, with a fixed reward table, live on the testnet
+      deployment for at least 30 days before mainnet.
+- [ ] **Incident runbook.** What happens, in order, when a check is wrong,
+      the monitor fires, or a validator set misbehaves; rehearsed once.
+
+**Exit:** audit findings fixed, the bounty has run 30 days with nothing
+critical open, and the monitor has watched the testnet treasury for 30 days
+with no drift.
+
+## Phase 6 - A product people can use without reading the docs
+
+- [ ] **Keeper.** Requests a check on every active cover once per gap, so
+      no buyer has to remember. Open source, anyone can run one, and the
+      check fee from Phase 5 pays whoever runs it; RedLine runs one by
+      default. Done when it has run 30 days without a missed gap.
+- [ ] **Pick passages from the page.** Paste a URL, see the text the way a
+      validator sees it, and click the sentences to pin. No copying.
+- [ ] **Clause library.** Ready-made pins for the clauses buyers care about
+      most, each with a plain-English name: refund window, price lock,
+      "we delete your data within N days", "we do not train models on your
+      data", uptime credits, notice before changes. Start with the AI and
+      API vendors agents buy from.
+- [ ] **More than one page.** One cover over a vendor's terms, privacy
+      policy, DPA and SLA, since a cut often lands on the page nobody
+      watches.
+- [ ] **Notifications.** Email, webhook and Telegram when a check finds a
+      change, when a breach is recorded, and when money can be withdrawn.
+- [ ] **A buyer dashboard** for many covers at once: what is covered, what
+      changed, what is owed.
+
+**Exit:** five first-time users each open a cover in under two minutes,
+unaided, recorded; the keeper has 30 days with no missed gap.
+
+## Phase 7 - Agents
+
+The buyers who most need this cannot read terms pages at all: AI agents
+that buy APIs, data and compute on someone's behalf.
+
+- [ ] **SDK** in TypeScript and Python: open, check, read and settle a
+      cover in a few lines.
+- [ ] **An agent tool (MCP server)** so any agent framework can call
+      `open_cover`, `cover_status` and `settle` without custom code.
+- [ ] **An agent guide**: how an agent decides what to pin for a purchase,
+      with limits its owner sets (largest prepay, allowed vendors).
+- [ ] **Agent payments.** Open a cover in the same step as paying a vendor,
+      as agent payment standards settle.
+
+**Exit:** one agent project outside RedLine opens covers through the SDK on
+the testnet.
+
+## Phase 8 - Vendors, and scale
+
+- [ ] **Shared covers.** Many buyers of one vendor share one pinned page
+      and one set of checks, each with their own prepay. Cost per buyer
+      falls as buyers join; this is how checks scale.
+- [ ] **Vendor bond.** For vendors billed outside RedLine: the vendor
+      stakes a bond against its pinned terms instead of receiving a
+      streamed prepay.
+- [ ] **RedLine-covered badge.** A vendor that agrees to be watched shows a
+      live badge on its terms page, backed by its on-chain record. Buyers
+      get a reason to trust; vendors get a reason to join.
+- [ ] **Change preview for vendors.** Before publishing an edit, a vendor
+      sees which covers it would breach. Fewer surprises on both sides.
+- [ ] **An indexer.** The app reads covers from an index of chain events,
+      not by reading every cover from the chain, so it stays fast at
+      thousands of covers. Settled covers are archived out of hot storage.
+
+**Exit:** three vendors show the badge; a shared cover with 50 buyers runs
+its checks at no more than twice the cost of a single cover.
+
+## Phase 9 - Mainnet
+
+Starts only when GenLayer mainnet is live and Phases 3 and 5 are done.
+
+- [ ] **Stable-value prepays,** if a stablecoin is available on GenLayer
+      mainnet, so a year's prepay does not move with a token's price;
+      otherwise GEN, with the risk said plainly at opening.
+- [ ] **Staged caps.** A cap per cover and on the total held, published;
+      raised in steps only after weeks without an incident.
+- [ ] **Fees.** A small fee on each prepay and on each check, bounded in the
+      contract and public, to pay keepers, audits and the bounty.
+- [ ] **Plain legal terms.** RedLine is a contract that refunds unearned
+      prepay when a pinned promise is cut; it is not insurance and pays
+      nothing beyond the prepay. Reviewed by counsel before launch.
+- [ ] **Support and status.** A public status page (keepers, monitor,
+      validators) and a way to reach a person.
+
+**Exit:** 90 days on mainnet under caps with the books balancing to the
+atto, every incident published.
+
+## How we will know it is working
+
+Published monthly from the chain, never estimated: covers open and value
+under cover; checks per day and missed gaps; breaches found and refunded;
+the jury's error rate on the published sample; time for a new user to open
+a first cover; vendors showing the badge.
 
 ## Not goals
 
