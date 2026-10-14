@@ -115,6 +115,7 @@ function WalletControl() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [copied, setCopied] = useState(false);
   const address = wallet.kind === "none" ? "" : wallet.address;
 
   useEffect(() => {
@@ -198,11 +199,20 @@ function WalletControl() {
 
   return (
     <div className="row">
-      <span className="btn chip" title="Studio burner">
+      <button
+        className="btn chip"
+        title="Studio burner - click to copy its full address"
+        onClick={() => {
+          void navigator.clipboard?.writeText(address).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          });
+        }}
+      >
         <span className="dot ok" aria-hidden />
-        <span className="mono">{shortAddr(address)}</span>
+        <span className="mono">{copied ? "address copied" : shortAddr(address)}</span>
         <span className="muted">{gen}</span>
-      </span>
+      </button>
       <button className="btn sm" disabled={busy} onClick={() => run(() => fundOnStudio(address))}>
         {busy ? <Spinner /> : "Top up"}
       </button>
