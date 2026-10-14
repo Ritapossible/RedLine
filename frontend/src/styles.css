@@ -835,6 +835,36 @@ main,
   border-top: 1px solid var(--line);
   font-size: 13px;
   color: var(--dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.foot-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.foot-credit img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--red);
+  object-fit: cover;
+}
+.foot-credit b {
+  color: var(--text);
+  font-weight: 600;
+}
+.intro-video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: #09070a;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
 }
 
 /* ================================================================ app */

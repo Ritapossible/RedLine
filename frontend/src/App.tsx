@@ -71,7 +71,13 @@ export function App() {
             </a>
           </div>
         </div>
-        <div className="wrap foot-line">© 2026 RedLine · MIT licensed · Built on GenLayer</div>
+        <div className="wrap foot-line">
+          <span>© 2026 RedLine · MIT licensed · Built on GenLayer</span>
+          <span className="foot-credit">
+            <img src="media/ritacryptotips.jpg" srcSet="media/ritacryptotips@2x.jpg 2x" alt="RitaCryptoTips" width={30} height={30} />
+            Built by <b>RitaCryptoTips</b>
+          </span>
+        </div>
       </footer>
     </>
   );

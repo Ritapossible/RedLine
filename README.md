@@ -9,6 +9,10 @@ Studio with a one-click burner wallet, or on the Bradbury testnet with your
 own. Docs, from the introduction to the roadmap, are on the site and in
 [docs/](docs/README.md).
 
+[![Watch the RedLine intro (10 seconds, with sound)](docs/media/watch-redline.jpg)](https://red-line-v0.vercel.app/media/redline-intro.mp4)
+
+<sub>The intro plays on the live site, under the hero, and here: [redline-intro.mp4](frontend/public/media/redline-intro.mp4).</sub>
+
 An agent prepays an API or a data vendor against the terms page that is live
 that day: a 30-day refund, a promise to delete its data within 7 days. A month
 later the vendor edits that same URL. The refund window is now 7 days, or the
@@ -279,3 +283,11 @@ Built on [GenLayer](https://genlayer.com) with the contract patterns from
 [MIT](LICENSE) © 2026 Rita Egwuatu. You may use, copy, modify and
 distribute this code freely, provided the copyright and license notice are
 kept. It comes with no warranty.
+
+---
+
+<p>
+  <img src="frontend/public/media/ritacryptotips@2x.jpg" alt="RitaCryptoTips" width="48" height="48" align="left" style="border-radius:50%" />
+  Built by <b>RitaCryptoTips</b> (Rita Egwuatu).<br />
+  RedLine's name, logo and intro video are part of this project.
+</p>

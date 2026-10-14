@@ -45,6 +45,13 @@ export function Home() {
         <TermsMock />
       </section>
 
+      <section className="wrap section intro-video">
+        <p className="eyebrow plain">RedLine in ten seconds</p>
+        <video controls playsInline preload="none" poster="media/redline-intro-poster.jpg" aria-label="RedLine intro video">
+          <source src="media/redline-intro.mp4" type="video/mp4" />
+        </video>
+      </section>
+
       <section className="wrap section">
         <p className="eyebrow plain">What runs it</p>
         <div className="stack-card">
