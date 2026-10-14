@@ -288,6 +288,5 @@ kept. It comes with no warranty.
 
 <p>
   <img src="frontend/public/media/ritacryptotips@2x.jpg" alt="RitaCryptoTips" width="48" height="48" align="left" style="border-radius:50%" />
-  Built by <b>RitaCryptoTips</b> (Rita Egwuatu).<br />
-  RedLine's name, logo and intro video are part of this project.
+  Built by <b>RitaCryptoTips</b> (Rita Egwuatu).
 </p>
