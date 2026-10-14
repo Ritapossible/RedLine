@@ -11,7 +11,7 @@ own. Docs, from the introduction to the roadmap, are on the site and in
 
 [![Watch the RedLine intro (10 seconds, with sound)](docs/media/watch-redline.jpg)](https://red-line-v0.vercel.app/media/redline-intro.mp4)
 
-<sub>The intro plays on the live site, under the hero, and here: [redline-intro.mp4](frontend/public/media/redline-intro.mp4).</sub>
+<sub>Tap the image to play it in your browser ([direct link](https://red-line-v0.vercel.app/media/redline-intro.mp4)). It also plays on the [live site](https://red-line-v0.vercel.app), under the hero.</sub>
 
 An agent prepays an API or a data vendor against the terms page that is live
 that day: a 30-day refund, a promise to delete its data within 7 days. A month
