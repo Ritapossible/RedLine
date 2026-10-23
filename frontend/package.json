@@ -19,6 +19,7 @@
     "@wagmi/connectors": "^6.2.0",
     "@wagmi/core": "^2.22.1",
     "genlayer-js": "^1.1.8",
+    "genlayer-js-next": "npm:genlayer-js@^2.0.0-rc.2",
     "marked": "^15.0.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

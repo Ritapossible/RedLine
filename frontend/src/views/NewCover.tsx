@@ -14,6 +14,8 @@ type Span = { n: string; unit: Unit };
 
 const DEFAULTS = {
   studio: { coverage: { n: "1", unit: "hours" }, accept: { n: "30", unit: "minutes" }, gap: { n: "10", unit: "minutes" } },
+  // Studio Next reports as fast as Studio.
+  studionext: { coverage: { n: "1", unit: "hours" }, accept: { n: "30", unit: "minutes" }, gap: { n: "10", unit: "minutes" } },
   bradbury: { coverage: { n: "3", unit: "hours" }, accept: { n: "1", unit: "hours" }, gap: { n: "40", unit: "minutes" } },
 } as const satisfies Record<string, Record<string, Span>>;
 

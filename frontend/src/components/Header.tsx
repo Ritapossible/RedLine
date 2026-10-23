@@ -3,7 +3,7 @@ import { APP_ROUTES, href, useApp } from "../state";
 import { Logo } from "./Logo";
 import { ArrowUpRight } from "./icons";
 import { NETWORKS, type NetworkId } from "../chain/networks";
-import { balanceOf, createBurner, forgetBurner, fundOnStudio } from "../chain/wallet";
+import { balanceOf, createBurner, forgetBurner, fundFromFaucet } from "../chain/wallet";
 import { networkIdOfChain } from "../chain/appkit";
 import { formatGen } from "../lib/money";
 import { shortAddr } from "../lib/format";
@@ -53,8 +53,9 @@ export function AppBar() {
         <div className="app-bar-right">
           <select aria-label="Network" value={network} onChange={(e) => setNetwork(e.target.value as NetworkId)}>
             {Object.values(NETWORKS).map((n) => (
-              <option key={n.id} value={n.id}>
+              <option key={n.id} value={n.id} disabled={!n.available}>
                 {n.label}
+                {n.available ? "" : ` (${n.unavailable ?? "not deployed yet"})`}
               </option>
             ))}
           </select>
@@ -149,7 +150,7 @@ function WalletControl() {
       disabled={busy}
       onClick={() =>
         run(async () => {
-          if (!ext.available) throw new Error("No wallet in this browser. Open the page in your wallet's browser, or use a Studio burner.");
+          if (!ext.available) throw new Error("No wallet in this browser. Open the page in your wallet's browser, or use a Studio or Studio Next burner.");
           await ext.connect();
         })
       }
@@ -161,20 +162,20 @@ function WalletControl() {
   if (wallet.kind === "none")
     return (
       <div className="row">
-        {network === "studio" && (
+        {NETWORKS[network].faucet && (
           <button
             className="btn"
             disabled={busy}
-            title="A key made in this browser and funded from Studio's faucet. Studio only; its GEN has no value."
+            title={`A key made in this browser and funded from ${NETWORKS[network].short}'s faucet. Its GEN has no value.`}
             onClick={() =>
               run(async () => {
                 const w = createBurner();
-                if (w.kind === "burner") await fundOnStudio(w.address);
+                if (w.kind === "burner") await fundFromFaucet(network, w.address);
                 setWallet(w);
               })
             }
           >
-            {busy && <Spinner />} Studio burner
+            {busy && <Spinner />} {NETWORKS[network].short} burner
           </button>
         )}
         {connect}
@@ -201,7 +202,7 @@ function WalletControl() {
     <div className="row">
       <button
         className="btn chip"
-        title="Studio burner - click to copy its full address"
+        title={`${NETWORKS[network].short} burner - click to copy its full address`}
         onClick={() => {
           void navigator.clipboard?.writeText(address).then(() => {
             setCopied(true);
@@ -213,7 +214,7 @@ function WalletControl() {
         <span className="mono">{copied ? "address copied" : shortAddr(address)}</span>
         <span className="muted">{gen}</span>
       </button>
-      <button className="btn sm" disabled={busy} onClick={() => run(() => fundOnStudio(address))}>
+      <button className="btn sm" disabled={busy || !NETWORKS[network].faucet} onClick={() => run(() => fundFromFaucet(network, address))}>
         {busy ? <Spinner /> : "Top up"}
       </button>
       <button

@@ -36,11 +36,17 @@ gas cap measured on Bradbury.
 
 ```bash
 cd deploy && npm install
-REDLINE_KEYS=<dir with principal.key agent.key vendor.key> node deploy.mjs studio   # or bradbury
+REDLINE_KEYS=<dir with principal.key agent.key vendor.key> node deploy.mjs studio   # or studionext, bradbury
 ```
 
 It deploys the watcher, then the treasury pointed at it, and writes both
-addresses to `deploy/deployments.json`. Keys are never committed.
+addresses to `deploy/deployments.json`. Keys are never committed. Studio
+runs the older GenVM and uses `genlayer-js` 1.1.8; Studio Next and Bradbury
+charge fees and use 2.0.0-rc.2, and every write there carries the fee
+deposit from the SDK's simulation of that exact call.
+
+`node verify_code.mjs <commit> <record.json>` checks that the code on chain
+is the build of that commit.
 
 ## Run the scenarios on chain
 
@@ -77,10 +83,12 @@ and that the treasury ends with nothing held or owed.
 
 | Record | Contracts | What it holds |
 | --- | --- | --- |
+| `scenario-studio.json` | Milestone 1 | Every case on Studio, 0 failed checks |
+| `scenario-studionext.json` | Milestone 1 | Every case on Studio Next, with fees |
 | `scenario-studio-v3.json` | Release 1 | Every case on Studio, 0 failed checks |
-| `scenario-bradbury.json` | current | Every case on Bradbury (the deleted page's third check did not fit the schedule) |
-| `scenario-bradbury-gone.json` | current | The deleted page alone on Bradbury: absent, absent, gone, 0 failed checks |
-| `scenario-bradbury-gone-interrupted.json` | current | A deleted-page run cut short by a paused container, settled with `finish.mjs` |
+| `scenario-bradbury.json` | Release 1 | Every case on Bradbury before its Phase 2 reset (the deleted page's third check did not fit the schedule) |
+| `scenario-bradbury-gone.json` | Release 1 | The deleted page alone on Bradbury: absent, absent, gone, 0 failed checks |
+| `scenario-bradbury-gone-interrupted.json` | Release 1 | A deleted-page run cut short by a paused container, settled with `finish.mjs` |
 | `scenario-*-v2.json`, `scenario-bradbury-rerun.json` | watcher 2 | Before the voided-sentence and hidden-text rules |
 | `scenario-*-v1.json` | watcher 1 | Before a check always ended in a record |
 
@@ -94,6 +102,7 @@ cd frontend && npm ci
 npm run dev       # local development
 npm run build     # typecheck and production build into dist/
 npm run e2e       # a buyer and a vendor in a real browser, against Studio
+NET=studionext npm run e2e   # the same against Studio Next, paying fees
 ```
 
 To deploy on Vercel, import the repository; `vercel.json` at the root builds
@@ -102,4 +111,4 @@ test pages that `scenario.mjs` edits mid-run; it is never merged and never
 built (`git.deploymentEnabled` is off for it on both branches). To let people connect mobile wallets through WalletConnect, set
 `VITE_REOWN_PROJECT_ID` to a project ID from dashboard.reown.com, with the
 site's domain on its allowlist. Without it, the app uses the browser's own
-wallet extension, and Studio burners always work.
+wallet extension, and Studio and Studio Next burners always work.

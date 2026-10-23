@@ -1,7 +1,7 @@
 import { createAppKit } from "@reown/appkit/react";
 import { defineChain } from "@reown/appkit/networks";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { NETWORKS, type NetworkId } from "./networks";
+import { AVAILABLE, NETWORKS, type NetworkId } from "./networks";
 
 // Wallet connection through Reown AppKit (reown.com): browser-extension
 // wallets, and mobile wallets through WalletConnect. It needs a project ID
@@ -26,20 +26,25 @@ function toAppKit(id: NetworkId) {
   });
 }
 
-export const APPKIT_NETWORKS = { studio: toAppKit("studio"), bradbury: toAppKit("bradbury") } as const;
+export const APPKIT_NETWORKS = Object.fromEntries(
+  (Object.keys(NETWORKS) as NetworkId[]).map((id) => [id, toAppKit(id)]),
+) as Record<NetworkId, ReturnType<typeof toAppKit>>;
 
-export const wagmiAdapter = appKitEnabled
-  ? new WagmiAdapter({ networks: [APPKIT_NETWORKS.studio, APPKIT_NETWORKS.bradbury], projectId, ssr: false })
-  : null;
+// Only the networks RedLine is deployed on are offered to the wallet.
+const OFFERED = AVAILABLE.map((id) => APPKIT_NETWORKS[id]) as [ReturnType<typeof toAppKit>, ...ReturnType<typeof toAppKit>[]];
 
-const initialNetwork = (): NetworkId =>
-  new URLSearchParams(window.location.search).get("net") === "bradbury" ? "bradbury" : "studio";
+export const wagmiAdapter = appKitEnabled ? new WagmiAdapter({ networks: OFFERED, projectId, ssr: false }) : null;
+
+const initialNetwork = (): NetworkId => {
+  const n = new URLSearchParams(window.location.search).get("net") as NetworkId | null;
+  return n && AVAILABLE.includes(n) ? n : "studio";
+};
 
 export const appKit =
   wagmiAdapter &&
   createAppKit({
     adapters: [wagmiAdapter],
-    networks: [APPKIT_NETWORKS.studio, APPKIT_NETWORKS.bradbury],
+    networks: OFFERED,
     defaultNetwork: APPKIT_NETWORKS[initialNetwork()],
     projectId,
     metadata: {

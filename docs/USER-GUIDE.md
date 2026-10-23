@@ -15,9 +15,14 @@ actions you can take right now.
   transactions settle in seconds. Click **Studio burner** to get a wallet in
   one click: a key is made in your browser and funded from Studio's faucet.
   Use **Top up** for more GEN, **Forget** to drop the key.
-- **GenLayer Bradbury** is the public testnet. Connect your own wallet
-  (**Connect wallet**). Transactions take longer, and the appeal window is 40
-  minutes instead of 5.
+- **GenLayer Studio Next** is the development network that runs what
+  mainnet will run, fees included: every transaction carries a small fee
+  deposit, worked out by the app before you sign. It has a faucet too, so
+  **Studio Next burner**, **Top up** and **Forget** work as on Studio.
+- **GenLayer Bradbury** is the public testnet. Its Phase 2 reset erased
+  every contract, so it shows as unavailable until RedLine is redeployed
+  there. When it returns, connect your own wallet (**Connect wallet**);
+  transactions take longer, and the appeal window is 40 minutes instead of 5.
 
 If your wallet is on a different chain from the app, a banner offers to
 switch it. Nothing can be signed until the two match.
@@ -82,7 +87,7 @@ should have to trust a particular person to look.
 
 - **Request a check** asks the watcher to read the page now. It can be done
   once per check gap. The watcher records the request and observes the page
-  by itself within seconds on Studio, a few minutes on Bradbury.
+  by itself within seconds on Studio and Studio Next, a few minutes on Bradbury.
 - **Observe again** appears while a requested check is still open and no
   reading has been agreed. It asks the validators to try again.
 - **Expire the check** appears when the window closed with no agreed
@@ -96,7 +101,7 @@ reading and confidence), or *gone* (absent three checks running).
 ## When a right is cut
 
 A breach or a gone page stops the vendor accruing at once, then waits out
-the **appeal window** (5 minutes on Studio, 40 on Bradbury), during which
+the **appeal window** (5 minutes on Studio and Studio Next, 40 on Bradbury), during which
 the check can still be challenged on GenLayer. After that, **Settle** closes
 the cover: the vendor keeps what it earned up to the check, the buyer gets
 the rest, and each withdraws.

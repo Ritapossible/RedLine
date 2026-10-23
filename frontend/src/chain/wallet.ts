@@ -1,4 +1,6 @@
 import { createAccount, createClient, generatePrivateKey } from "genlayer-js";
+import { createAccount as createFeeAccount, createClient as createFeeClient } from "genlayer-js-next";
+import { getAddress } from "viem";
 import { NETWORKS, type NetworkId } from "./networks";
 
 // Two ways to sign:
@@ -7,11 +9,11 @@ import { NETWORKS, type NetworkId } from "./networks";
 //    wallet over WalletConnect; or the browser's injected wallet when AppKit has
 //    no project ID). It signs through its own EIP-1193 provider and must be on
 //    the network the app is set to. This is how real testnet GEN is spent.
-//  - A Studio burner: a key generated in this browser and funded from Studio's
-//    faucet. It exists so anyone can try the full flow in under a minute
-//    without a wallet. It is never offered on the testnet, and it is stored in
-//    localStorage in plain text - which is acceptable only because Studio GEN
-//    has no value.
+//  - A burner: a key generated in this browser and funded from the faucet of
+//    Studio or Studio Next. It exists so anyone can try the full flow in under
+//    a minute without a wallet. It is never offered on the testnet, and it is
+//    stored in localStorage in plain text - which is acceptable only because
+//    Studio GEN has no value.
 
 export type Eip1193 = { request(args: { method: string; params?: unknown[] | object }): Promise<unknown> };
 
@@ -25,7 +27,7 @@ const BURNER_KEY = "redline.studio-burner.v1";
 export const injected = (): (Eip1193 & { on?: Function; removeListener?: Function }) | undefined =>
   (window as unknown as { ethereum?: Eip1193 & { on?: Function; removeListener?: Function } }).ethereum;
 
-export function makeClient(network: NetworkId, wallet: Wallet) {
+function makeV1(network: NetworkId, wallet: Wallet) {
   const net = NETWORKS[network];
   if (wallet.kind === "wallet")
     return createClient({
@@ -40,6 +42,20 @@ export function makeClient(network: NetworkId, wallet: Wallet) {
       : // Read-only: a throwaway account that never signs, so gen_call has a sender.
         createAccount(generatePrivateKey());
   return createClient({ chain: net.chain, endpoint: net.rpc, account } as Parameters<typeof createClient>[0]);
+}
+
+/** A client for the network. Fee networks use genlayer-js 2, marked
+ *  ``withFees`` so every write sends its fee deposit (redline.ts). */
+export function makeClient(network: NetworkId, wallet: Wallet) {
+  const net = NETWORKS[network];
+  if (!net.fees) return makeV1(network, wallet);
+  const cfg =
+    wallet.kind === "wallet"
+      ? { chain: net.chain, endpoint: net.rpc, account: wallet.address as `0x${string}`, provider: wallet.provider }
+      : { chain: net.chain, endpoint: net.rpc, account: createFeeAccount(wallet.kind === "burner" ? wallet.key : generatePrivateKey()) };
+  const client = createFeeClient(cfg as Parameters<typeof createFeeClient>[0]) as unknown as ReturnType<typeof makeV1>;
+  (client as unknown as { withFees: boolean }).withFees = true;
+  return client;
 }
 
 export type Client = ReturnType<typeof makeClient>;
@@ -115,11 +131,15 @@ export async function balanceOf(network: NetworkId, address: string): Promise<bi
   return BigInt((await rpc(NETWORKS[network].rpc, "eth_getBalance", [address, "latest"])) ?? "0x0");
 }
 
-/** Studio only. The amount travels as a raw JSON integer - a hex or string
- *  amount is rejected by sim_fundAccount. */
-export async function fundOnStudio(address: string, gen = 5): Promise<void> {
-  const body = `{"jsonrpc":"2.0","id":${Date.now()},"method":"sim_fundAccount","params":["${address}",${BigInt(gen) * 10n ** 18n}]}`;
-  const res = await fetch(NETWORKS.studio.rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body });
+/** Studio and Studio Next. The amount travels as a raw JSON integer - a hex
+ *  or string amount is rejected by sim_fundAccount - and the address
+ *  checksummed: a lower-case address is accepted and the GEN never shows
+ *  (measured in CounterSign). */
+export async function fundFromFaucet(network: NetworkId, address: string, gen = 5): Promise<void> {
+  const net = NETWORKS[network];
+  if (!net.faucet) throw new Error(`${net.label} has no faucet`);
+  const body = `{"jsonrpc":"2.0","id":${Date.now()},"method":"sim_fundAccount","params":["${getAddress(address)}",${BigInt(gen) * 10n ** 18n}]}`;
+  const res = await fetch(net.rpc, { method: "POST", headers: { "Content-Type": "application/json" }, body });
   const json = await res.json();
   if (json.error) throw new Error(json.error.message ?? "Faucet refused");
 }

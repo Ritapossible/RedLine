@@ -9,16 +9,6 @@
     "watcher_release": "redline-watcher/3",
     "at": "2026-10-23T07:11:23.821Z"
   },
-  "bradbury": {
-    "treasury": "0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13",
-    "treasury_tx": "0xd14b311f443444d6ea838b6fc74a8f42cac3ffb6bcaa56b7221aaadf0fd72283",
-    "watcher": "0xc512c66A5463039C24Df6de6cedf89Da74B55A65",
-    "watcher_tx": "0x42d22903f56f71f919f89ce50411b3dc25363ca559340bbf4f282846cc9467fa",
-    "appeal_seconds": 2400,
-    "release": "redline/2",
-    "watcher_release": "redline-watcher/3",
-    "at": "2026-10-11T11:41:55.301Z"
-  },
   "studionext": {
     "treasury": "0xAFBD64bcAb01FBEA0DAB0fCe0FdfC0039b69cf1A",
     "treasury_tx": "0x5f9fea624c2307bd0de4dbdab9d59405c660d158739c4ab79c28b4c8ab85ed35",
@@ -28,5 +18,16 @@
     "release": "redline/2",
     "watcher_release": "redline-watcher/3",
     "at": "2026-10-23T07:11:44.324Z"
+  },
+  "bradbury-release1": {
+    "treasury": "0x5756c3FeD0D84E37EFEA208E15561BFcdE945e13",
+    "treasury_tx": "0xd14b311f443444d6ea838b6fc74a8f42cac3ffb6bcaa56b7221aaadf0fd72283",
+    "watcher": "0xc512c66A5463039C24Df6de6cedf89Da74B55A65",
+    "watcher_tx": "0x42d22903f56f71f919f89ce50411b3dc25363ca559340bbf4f282846cc9467fa",
+    "appeal_seconds": 2400,
+    "release": "redline/2",
+    "watcher_release": "redline-watcher/3",
+    "at": "2026-10-11T11:41:55.301Z",
+    "note": "Release 1, on the Bradbury network reset for its Phase 2 in October 2026: these addresses no longer resolve."
   }
 }

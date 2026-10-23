@@ -1,17 +1,40 @@
-// Drives the built app in a real browser against GenLayer Studio, as two
-// people with their own Studio burners: a buyer and a vendor.
+// Drives the built app in a real browser against GenLayer Studio (or Studio
+// Next with NET=studionext, where every write pays fees), as two people with
+// their own burners: a buyer and a vendor.
 //
 //   buyer opens a cover on the example terms page  ->  the watcher pins it
 //   vendor accepts                                 ->  buyer requests a check: kept
 //   anyone settles (vendor credited)               ->  vendor withdraws
 //   the phone layout has no sideways scroll
 //
-// Usage: node scripts/e2e.mjs [baseUrl]
+// Usage: [NET=studio|studionext] node scripts/e2e.mjs [baseUrl]
 import { chromium } from "playwright";
 import { createAccount } from "genlayer-js";
 
 const BASE = process.argv[2] ?? "http://localhost:4173";
+const NET = process.env.NET ?? "studio";
+const BURNER = NET === "studionext" ? "Studio Next burner" : "Studio burner";
 let failures = 0;
+// Waits for a write's banner to say done; shows what it said instead if not.
+const done = async (page, label) => {
+  try {
+    await page.locator(".banner", { hasText: `${label}: done` }).waitFor({ timeout: 240000 });
+  } catch (e) {
+    const said = await page.locator(".banner").allInnerTexts().catch(() => []);
+    throw new Error(`${label} did not finish; banner: ${JSON.stringify(said)}`);
+  }
+};
+
+// Clicks a button once the page offers it; shows the page instead if it never does.
+const press = async (page, name) => {
+  try {
+    await page.getByRole("button", { name }).click({ timeout: 120000 });
+  } catch (e) {
+    const shown = await page.locator("main").innerText().catch(() => "");
+    throw new Error(`no "${name}" button; page:\n${shown.slice(0, 1500)}`);
+  }
+};
+
 const check = (label, ok, detail = "") => {
   if (!ok) failures++;
   console.log(`  ${ok ? "ok  " : "FAIL"} ${label}${detail ? ` - ${detail}` : ""}`);
@@ -19,15 +42,16 @@ const check = (label, ok, detail = "") => {
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium",
-  ...(process.env.HTTPS_PROXY ? { proxy: { server: process.env.HTTPS_PROXY, bypass: "localhost,127.0.0.1" } } : {}),
+  // The proxy carries the RPC traffic; the local preview server is reached directly.
+  args: process.env.HTTPS_PROXY ? [`--proxy-server=${process.env.HTTPS_PROXY}`, "--proxy-bypass-list=127.0.0.1;localhost"] : [],
 });
 const errors = [];
 async function person() {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(`${BASE}/?net=studio#/app`);
-  await page.getByRole("button", { name: "Studio burner" }).click();
+  await page.goto(`${BASE}/?net=${NET}#/app`);
+  await page.getByRole("button", { name: BURNER, exact: true }).click();
   await page.getByRole("button", { name: "Forget" }).waitFor({ timeout: 90000 });
   const key = await page.evaluate(() => localStorage.getItem("redline.studio-burner.v1"));
   return { ctx, page, address: createAccount(key).address };
@@ -40,9 +64,9 @@ check("two funded burners", !!vendor.address && !!buyer.address && vendor.addres
 
 console.log("[open]");
 const b = buyer.page;
-await b.goto(`${BASE}/?net=studio#/app/new`);
+await b.goto(`${BASE}/?net=${NET}#/app/new`);
 await b.getByPlaceholder("0x…").fill(vendor.address);
-await b.getByRole("button", { name: "Use the example vendor's terms" }).click();
+await press(b, "Use the example vendor's terms");
 const spans = b.locator(".span");
 const set = async (i, n, unit) => {
   await spans.nth(i).locator("input").fill(n);
@@ -62,36 +86,36 @@ check("watcher pinned every passage", (await b.locator(".facts").first().textCon
 
 console.log("[accept]");
 const v = vendor.page;
-await v.goto(`${BASE}/?net=studio#/app/cover/${id}`);
-await v.getByRole("button", { name: "Accept the terms" }).click();
-await v.locator(".banner", { hasText: "Accept: done" }).waitFor({ timeout: 240000 });
+await v.goto(`${BASE}/?net=${NET}#/app/cover/${id}`);
+await press(v, "Accept the terms");
+await done(v, "Accept");
 await v.locator(".state.big", { hasText: "active" }).waitFor({ timeout: 60000 });
 check("vendor accepted; cover active", true);
 
 console.log("[check]");
 await b.reload();
-await b.getByRole("button", { name: "Request a check" }).click();
-await b.locator(".banner", { hasText: "Check: done" }).waitFor({ timeout: 240000 });
+await press(b, "Request a check");
+await done(b, "Check");
 await b.locator(".facts", { hasText: /#1\s*kept/ }).waitFor({ timeout: 300000 });
 check("check recorded: kept, word for word", (await b.locator(".facts").first().textContent()).includes("word for word"));
 
 console.log("[settle and withdraw]");
 await v.reload();
-await v.getByRole("button", { name: "Settle" }).click();
-await v.locator(".banner", { hasText: "Settle: done" }).waitFor({ timeout: 240000 });
+await press(v, "Settle");
+await done(v, "Settle");
 await v.reload();
 const withdraw = v.getByRole("button", { name: /Withdraw .* GEN/ });
 await withdraw.waitFor({ timeout: 60000 });
 const owed = await withdraw.textContent();
 await withdraw.click();
-await v.locator(".banner", { hasText: "Withdraw: done" }).waitFor({ timeout: 240000 });
+await done(v, "Withdraw");
 check("vendor withdrew what it earned", true, owed.trim());
 
 console.log("[phone]");
 const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
 const p = await phone.newPage();
 for (const path of ["#/", "#/app", `#/app/cover/${id}`, "#/app/new"]) {
-  await p.goto(`${BASE}/?net=studio${path}`);
+  await p.goto(`${BASE}/?net=${NET}${path}`);
   await p.waitForTimeout(4000);
   const [sw, w] = await p.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
   check(`no sideways scroll on ${path}`, sw <= w, `${sw} <= ${w}`);

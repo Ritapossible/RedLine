@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { NETWORKS, type NetworkId } from "./chain/networks";
+import { AVAILABLE, NETWORKS, type NetworkId } from "./chain/networks";
 import { loadBurner, makeClient, type Client, type Wallet } from "./chain/wallet";
 import { useExternalWallet, type ExternalWallet } from "./chain/useExternalWallet";
 import { networkIdOfChain } from "./chain/appkit";
@@ -65,7 +65,7 @@ const Ctx = createContext<AppState | null>(null);
 
 function readNet(): NetworkId | undefined {
   const net = new URLSearchParams(window.location.search).get("net");
-  return net === "studio" || net === "bradbury" ? net : undefined;
+  return AVAILABLE.includes(net as NetworkId) ? (net as NetworkId) : undefined;
 }
 
 function writeNet(net: NetworkId) {
@@ -77,7 +77,8 @@ function writeNet(net: NetworkId) {
 export function AppProvider({ children }: { children: ReactNode }) {
   const [route, setRoute] = useState<Route>(() => parseRoute(window.location.hash));
   const [network, setNetworkRaw] = useState<NetworkId>(readNet() ?? "studio");
-  const [burner, setWallet] = useState<Wallet>(() => (network === "studio" ? loadBurner() : { kind: "none" }));
+  // A burner exists only where there is a faucet (Studio, Studio Next).
+  const [burner, setWallet] = useState<Wallet>(() => (NETWORKS[network].faucet ? loadBurner() : { kind: "none" }));
   const ext = useExternalWallet();
   const extRef = useRef(ext);
   extRef.current = ext;
@@ -97,8 +98,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNetworkRaw(n);
     const e = extRef.current;
     if (e.address && e.chainId !== NETWORKS[n].chain.id) e.switchTo(n).catch((err) => console.warn(err));
-    // A burner exists only on Studio. Never carry one onto the testnet.
-    setWallet((w) => (n === "studio" ? (w.kind === "none" ? loadBurner() : w) : w.kind === "burner" ? { kind: "none" } : w));
+    // A burner exists only on a faucet network. Never carry one onto the testnet.
+    setWallet((w) => (NETWORKS[n].faucet ? (w.kind === "none" ? loadBurner() : w) : w.kind === "burner" ? { kind: "none" } : w));
   }, []);
 
   const wallet: Wallet = useMemo(
@@ -124,7 +125,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     seenChain.current = ext.chainId;
     if (ext.chainId === NETWORKS[network].chain.id) return;
     const other = networkIdOfChain(ext.chainId);
-    if (!first && changed && other) setNetwork(other);
+    if (!first && changed && other && NETWORKS[other].available) setNetwork(other);
     else if (first) ext.switchTo(network).catch((err) => console.warn(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ext.address, ext.chainId]);
