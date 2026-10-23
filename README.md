@@ -210,6 +210,12 @@ Every case below ran on the contracts deployed now (treasury `redline/2`, watche
 
 ## Deployed contracts
 
+**Release 1**, the contracts submitted and accepted, kept as they were
+(`deploy/scenario-studio-v3.json`, `deploy/scenario-bradbury.json`). The
+Bradbury pair was on the network GenLayer reset for its Phase 2 in October
+2026, so those addresses no longer resolve; the records keep every
+transaction. The Milestone 1 contracts are [below](#milestone-1-know-when-redline-is-wrong).
+
 | Network | Treasury | Watcher |
 | --- | --- | --- |
 | GenLayer Studio | [`0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014`](https://explorer-studio.genlayer.com/address/0xf05d7F8B710743f18e1e1356Ed1377EF3D6CB014) | [`0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6`](https://explorer-studio.genlayer.com/address/0xd0E22b3bBbf7dD43a4203B18E71B2e3b8EB426c6) |
@@ -217,6 +223,34 @@ Every case below ran on the contracts deployed now (treasury `redline/2`, watche
 
 - Releases: treasury `redline/2`, watcher `redline-watcher/3`.
 - Appeal window: 300 s on Studio, 2,400 s on Bradbury.
+
+## Milestone 1: know when RedLine is wrong
+
+Release 1 was accepted. Milestone 1 moves RedLine to the current networks
+and measures how often its jury is wrong; the full scope, with every
+checklist, is in [docs/PLAN.md](docs/PLAN.md#milestone-1---know-when-redline-is-wrong).
+
+**Milestone 1 contracts**: the same treasury and watcher logic, built with
+the GenVM version line Studio Next requires (commit `1bb621d`), deployed
+with genlayer-js 2 and its fees where the network charges them
+(`deploy/deployments.json`).
+
+| Contract | Studio | Studio Next | Bradbury |
+| --- | --- | --- | --- |
+| **Treasury** `redline/2` - holds prepays, runs every clock | [`0xAA6E5031B9F7Bf5f024bcb3836a4a89358EfB4cb`](https://explorer-studio.genlayer.com/address/0xAA6E5031B9F7Bf5f024bcb3836a4a89358EfB4cb) | [`0xAFBD64bcAb01FBEA0DAB0fCe0FdfC0039b69cf1A`](https://explorer-studio-next.genlayer.com/address/0xAFBD64bcAb01FBEA0DAB0fCe0FdfC0039b69cf1A) | after its Phase 2 reset, once test GEN is available |
+| **Watcher** `redline-watcher/3` - reads the page, asks the jury | [`0x9852129f5056c0629d43D98717bD65bd90e4d451`](https://explorer-studio.genlayer.com/address/0x9852129f5056c0629d43D98717bD65bd90e4d451) | [`0xa51634d2Fb82C9c4d0c01326fED440175FC29153`](https://explorer-studio-next.genlayer.com/address/0xa51634d2Fb82C9c4d0c01326fED440175FC29153) | |
+
+Appeal window: 300 s on Studio and Studio Next.
+
+| Part | Where it stands |
+| --- | --- |
+| **The redeploy** (the milestone's exit) | The 11-case table is running on Studio, then Studio Next: 0 failed checks and the code on chain verified against `1bb621d` close it. |
+| **The jury sample** | The prompt, the prompt module and the watcher build are frozen by hash ([protocol](docs/jury-sample/PROTOCOL.md)) before any sample page exists. |
+| **Redirects** | Validators follow them on Studio and Studio Next, through a chain of two; no refusal is needed there (`deploy/probes/probe-redirect-*.json`). |
+| **One appeal** | After the table, on the new Studio watcher. |
+| **A week of real pages** | Twenty real terms pages, hourly on a probe contract (never the treasury), 23-30 October 2026; results on the `probe-week` branch. |
+
+The probe contracts: redirects [`0x5E453E047cCbE175faa62ebe10C2229Ce0247287`](https://explorer-studio.genlayer.com/address/0x5E453E047cCbE175faa62ebe10C2229Ce0247287) (Studio), [`0xC8e1B964b2e0fd3B43496CEBBeF6FB8c5eF2836c`](https://explorer-studio-next.genlayer.com/address/0xC8e1B964b2e0fd3B43496CEBBeF6FB8c5eF2836c) (Studio Next); the week [`0x00091C9b47AA7d39e588f7d7195b8CF6A2c8107D`](https://explorer-studio.genlayer.com/address/0x00091C9b47AA7d39e588f7d7195b8CF6A2c8107D) (Studio).
 
 ## Limits, stated plainly
 

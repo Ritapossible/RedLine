@@ -50,3 +50,10 @@ node verify_code.mjs <commit> scenario-studio.json   # code on chain == build at
   merge it, never build it. Vercel builds `main`.
 - After a run, `node verify.mjs <net>` then `python3 deploy/readme_record.py`
   so the README shows the deployed contracts and their records.
+
+## Releases and milestones in the README
+
+- Never replace a submitted release's contract addresses. Each release or
+  milestone keeps its own contracts table (Release 1 in "Deployed
+  contracts"; each milestone in its own section, as Remit does), with
+  explorer links.
