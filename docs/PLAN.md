@@ -115,12 +115,29 @@ milestone.
 
 ### 1.3 Redirects
 
-- [ ] A small probe: does a validator's fetch follow an HTTP redirect, on
-      Studio (and Bradbury when funded)?
-- [ ] If it does not, opening a cover on a URL that redirects is
-      **refused**, never warned about: a warning that still opens a cover is
-      how a moved page becomes a refund. No new fetch path in the watcher,
-      which is already near the size cap.
+- [x] A small probe (`deploy/probes/probe_redirect.py`, records
+      `probe-redirect-studio.json`, `probe-redirect-studionext.json`): every
+      validator fetched three URLs with the watcher's own call
+      (`gl.nondet.web.get`) and agreed on the status, and on whether a known
+      sentence was in the body.
+
+      | URL | Server sends | Studio | Studio Next |
+      | --- | --- | --- | --- |
+      | the file on `raw.githubusercontent.com` (control) | 200 | 200, sentence present | 200, sentence present |
+      | GitHub's `/raw/` link to the same file | 302 to the control | 200, sentence present | 200, sentence present |
+      | `httpbin.org/redirect/2` | 302, 302, then 200 | 200 (the final page) | 200 (the final page) |
+
+      **Validators follow redirects** on both networks, through a chain of
+      two: a URL that redirects is read as the page it lands on, exactly as
+      if that page were fetched directly. The first probe contract on Studio
+      (`0x2B12...Dd29`) disagreed on every URL, the control included: its
+      validator decoded the leader's result with `json.loads(str(...))`,
+      which fails on the wrapper GenVM hands it. It was replaced by the
+      recorded one, which decodes it as the watcher does.
+- [x] **Decision: no refusal is needed** on Studio or Studio Next; the
+      refusal applies only where validators do not follow. No new fetch path
+      in the watcher. Bradbury is probed when it is funded, and a refusal is
+      added there only if it does not follow.
 
 ### 1.4 One appeal
 

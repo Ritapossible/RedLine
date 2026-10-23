@@ -1,0 +1,47 @@
+{
+  "network": "studio",
+  "address": "0x5E453E047cCbE175faa62ebe10C2229Ce0247287",
+  "recorded_at": "2026-10-23T07:22:55.313Z",
+  "marker": "You may cancel at any time within 30 days of purchase and receive a full refund",
+  "cases": {
+    "direct (control)": {
+      "url": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/unchanged.html",
+      "served_by_the_server": "200, sentence present",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x7ae895fb6e5cb809518c6be1f5fc9cf9a9d86612019e2b14bc6b6e5159cefcf5",
+      "validators_saw": {
+        "status": 200,
+        "bytes": 1575,
+        "marker": true,
+        "error": ""
+      }
+    },
+    "302 redirect": {
+      "url": "https://github.com/Ritapossible/redline/raw/live/live/unchanged.html",
+      "served_by_the_server": "302 to the URL above",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x86324ebd0f78901d54ba67adc213781b3df25c1eab39af7ec0aa6b44e305a83b",
+      "validators_saw": {
+        "status": 200,
+        "bytes": 1575,
+        "marker": true,
+        "error": ""
+      }
+    },
+    "two redirects": {
+      "url": "https://httpbin.org/redirect/2",
+      "served_by_the_server": "302, 302, then 200 (no sentence)",
+      "consensus": "MAJORITY_AGREE",
+      "leader": "return",
+      "hash": "0x54078afd873d276e8f2c3c3183374559d6be217ad49870569ffe4d1be4873e00",
+      "validators_saw": {
+        "status": 200,
+        "bytes": 343,
+        "marker": false,
+        "error": ""
+      }
+    }
+  }
+}
