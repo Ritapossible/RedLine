@@ -97,7 +97,7 @@ cannot close.
 
 ## A worked example
 
-From the Studio run on the current contracts (`deploy/scenario-studio.json`,
+From the Release 1 Studio run (`deploy/scenario-studio-v3.json`,
 the case `narrowed 1`, cover 2):
 
 - The buyer prepays **0.02 GEN** for **40 minutes**, pinning "You may cancel

@@ -77,7 +77,7 @@ and that the treasury ends with nothing held or owed.
 
 | Record | Contracts | What it holds |
 | --- | --- | --- |
-| `scenario-studio.json` | current | Every case on Studio, 0 failed checks |
+| `scenario-studio-v3.json` | Release 1 | Every case on Studio, 0 failed checks |
 | `scenario-bradbury.json` | current | Every case on Bradbury (the deleted page's third check did not fit the schedule) |
 | `scenario-bradbury-gone.json` | current | The deleted page alone on Bradbury: absent, absent, gone, 0 failed checks |
 | `scenario-bradbury-gone-interrupted.json` | current | A deleted-page run cut short by a paused container, settled with `finish.mjs` |

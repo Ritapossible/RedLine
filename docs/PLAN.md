@@ -40,7 +40,7 @@ agree on it?
 
 Done when each transaction below is on Studio and Bradbury with a published
 record, misses included. Both networks ran them on the current contracts
-(treasury `redline/2`, watcher `redline-watcher/3`): `deploy/scenario-studio.json`
+(treasury `redline/2`, watcher `redline-watcher/3`): `deploy/scenario-studio-v3.json`
 (0 failed checks), `deploy/scenario-bradbury.json` and, for the deleted page,
 `deploy/scenario-bradbury-gone.json`. Earlier contracts' runs:
 `deploy/scenario-*-v1.json`, `-v2.json`, `deploy/scenario-bradbury-rerun.json`.

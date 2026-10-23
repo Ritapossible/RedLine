@@ -168,7 +168,7 @@ prepay exactly once.
 
 Every case below ran on the contracts deployed now (treasury `redline/2`, watcher `redline-watcher/3`): the rules that a pinned sentence voided by a line beside it, or kept only in hidden markup, is not kept, and that a terms URL must be plain https. Every cover's paid + refunded equals its prepay exactly, read back from chain with exact integers (`deploy/verify.mjs`).
 
-**Studio** (`deploy/scenario-studio.json`; prepay 0.02 GEN each, 40-minute covers, checks 4 minutes apart, a 300-second appeal window). 0 failed checks. A cover opened with a query string in its URL was refused and its 0.02 GEN returned. After both parties withdrew, the treasury's held, owed and balance were all 0.
+**Studio** (`deploy/scenario-studio-v3.json`; prepay 0.02 GEN each, 40-minute covers, checks 4 minutes apart, a 300-second appeal window). 0 failed checks. A cover opened with a query string in its URL was refused and its 0.02 GEN returned. After both parties withdrew, the treasury's held, owed and balance were all 0.
 
 | Case | The watcher found | Cover | Vendor paid (GEN) | Buyer refunded (GEN) |
 | --- | --- | --- | --- | --- |
