@@ -107,8 +107,12 @@ and what stops it: [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md). What is next:
 ## Where RedLine is going
 
 RedLine is meant to become a production service on GenLayer mainnet, not
-stay a demo. After this release is accepted, the work runs in six stages,
-each closed by a measured test: a published jury error rate; security for
+stay a demo. Release 1 was accepted, and the work now runs in six stages,
+each closed by a measured test. **Milestone 1** (in progress): redeploy on
+the current networks (Studio and Studio Next first; Bradbury after its
+Phase 2 reset, once test GEN is available), publish the jury's error rate
+from a frozen prompt on real terms excerpts, decide redirects, record an
+appeal, and probe twenty real terms pages for a week. Then security for
 real money (no key that can move a cover's funds, a live books monitor, an
 independent audit and a bug bounty); a product anyone can use (a keeper,
 click-to-pin, a clause library); SDKs and an agent tool so AI agents can

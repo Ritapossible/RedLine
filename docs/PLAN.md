@@ -62,36 +62,87 @@ record, misses included. Both networks ran them on the current contracts
 Runner: `deploy/scenario.mjs`. The fictional vendor's pages live on this
 repository's `live` branch and are edited mid-run.
 
-## Release 1 ends here
+## Release 1 ends here (accepted)
 
 Phases 0-2, the hardening marked done below and the web app are Release 1,
 the build under review. Everything after this line is planned, and starts
-only once Release 1 is accepted. The order is deliberate: measure the jury,
+only once Release 1 is accepted (it was). The order is deliberate: measure the jury,
 then secure the money, then make it easy to use, then let agents and
 vendors in, then mainnet. Each phase has an exit test; the next phase does
 not start until it is measured and the evidence is in the repository.
 
-## Phase 3 - Hardening (finish)
+## Milestone 1 - Know when RedLine is wrong
 
-- [ ] **Redirects.** Measure whether `gl.nondet.web.get` follows them;
-      if it does not, a moved terms page looks absent. Until measured, pin a
-      page's final URL; the app warns when the URL redirects.
-- [ ] **Jury sample.** Ten covers per reading (same, narrowed, removed) on
-      held-out page edits written after the prompt is fixed, on Studio and
-      Bradbury; publish every verdict and the error rate, false refunds and
-      missed breaches counted separately.
+Release 1 was accepted. Milestone 1 finishes the hardening, in this order,
+scoped after review: the redeploy is the milestone's own exit, and each
+measurement below is published whatever it shows. Bradbury joins only when
+test GEN for the reset network is available; nothing here waits for it.
+
+### 1.1 Redeploy on the current networks (the exit)
+
+RedLine's Bradbury deployment was erased by the Phase 2 reset, and the
+GenLayer JS SDK it used (1.1.8) cannot pay the fees Studio Next and the new
+Bradbury require. Nothing measured on the old deployment counts for this
+milestone.
+
+- [ ] Contracts carry the runner version line (`# v0.2.0`) that Studio Next
+      requires; no other change to their logic.
+- [ ] Deploy and scenario scripts on genlayer-js 2 for fee networks: every
+      write sends the fee deposit from the SDK's simulation of that exact
+      call, including the message the treasury sends the watcher.
+- [ ] **Done when** the existing 11-case table runs on **Studio** and
+      **Studio Next** with 0 failed checks, and `deploy/verify.mjs` matches
+      the code on chain to the commit. Bradbury joins this table when the
+      faucet works.
+
+### 1.2 The jury sample
+
+- [ ] **Freeze the prompt first.** Its hash is committed before any page is
+      written. The pages are then written and each is run **once**. If the
+      error rate is over 5%, that number is published. The prompt is not
+      edited and the same pages rerun; a second prompt is a new sample.
+- [ ] **Real terms, not the fictional vendor.** Excerpts of real terms
+      pages, each edited one way: the right kept (reworded or moved), the
+      right narrowed, the right removed. Every page and its expected reading
+      are committed before the first verdict.
+- [ ] **30 per reading on Studio** (90 covers): every verdict published,
+      false refunds and missed breaches counted separately.
+- [ ] **30 on Bradbury** as a check of the Studio numbers, not a second
+      study, once Bradbury is funded.
+- [ ] The **5% bar** (false refunds and missed breaches each under 5%)
+      decides whether Milestone 2, real money, may start. It does not decide
+      whether this milestone is done.
+
+### 1.3 Redirects
+
+- [ ] A small probe: does a validator's fetch follow an HTTP redirect, on
+      Studio (and Bradbury when funded)?
+- [ ] If it does not, opening a cover on a URL that redirects is
+      **refused**, never warned about: a warning that still opens a cover is
+      how a moved page becomes a refund. No new fetch path in the watcher,
+      which is already near the size cap.
+
+### 1.4 One appeal
+
+- [ ] After the redeploy, on the new watcher: appeal one recorded breach on
+      Studio; record what the treasury receives, and that the watcher stays
+      readable after it (THREAT-MODEL T9).
+
+### 1.5 A week of real pages, on a probe
+
+- [ ] A probe contract, as in Phase 0, never the treasury: no paid cover is
+      opened on a real vendor's live terms.
+- [ ] Twenty real terms pages, each checked hourly for seven days on
+      Studio. Every result is one of: **unreadable** (bot block, over the
+      byte cap, a JavaScript shell), **present and agreed**, **absent and
+      agreed**, or **disagreed**. Only "disagreed" informs the default
+      check gap and window; the rest is published as what it is.
+
+### Already done in this phase (Release 1)
+
 - [x] **Cloaking.** A check is now a request that always records; a
       request with no agreed observation in its window is expired as
       contested and counts like an absent page (THREAT-MODEL T11).
-- [ ] **Presence over a week.** Check twenty real terms pages every hour
-      for seven days; measure how often validators fail to agree a pinned
-      passage is present, and set the default gap and window from it.
-- [ ] **Appeal.** Appeal a breach on Studio and record what the treasury
-      receives; the watcher must stay readable after it (T9).
-- [ ] **Pages drawn by JavaScript.** A page whose text arrives only after a
-      script runs reads as empty to a validator. Refuse it before any money
-      moves: the app fetches the page the way a validator does and refuses
-      to open a cover whose passages are not in that text.
 - [x] **Bradbury reruns** of the two cases that did not complete there, on
       the new watcher: reworded kept (same, 99); absent, absent, gone.
 - [x] **Voided and hidden passages, secret URLs** (THREAT-MODEL T14-T17):
@@ -109,6 +160,14 @@ not start until it is measured and the evidence is in the repository.
 covers, with false refunds under 5% and missed breaches under 5%; the
 presence measurement has set the defaults; an appeal is recorded on chain.
 
+### Not a second rule
+
+A page drawn by JavaScript is already refused by the contract: a passage
+that is not in the visible text is refused at pinning (scenario case
+"hidden"; the probe's "unreadable"). The app's check is so the buyer learns
+that before paying, by fetching the page the way a validator does. It adds
+no rule.
+
 ## Phase 4 - The web app (done for Release 1)
 
 - [x] **Front end** (`frontend/`): open a cover, a page per cover with the
@@ -120,6 +179,9 @@ presence measurement has set the defaults; an appeal is recorded on chain.
 
 Nothing here adds a feature. It is what has to be true before anyone puts
 in money they would miss.
+
+**Starts only when** Milestone 1's jury sample shows false refunds under
+5% and missed breaches under 5%, measured on the frozen prompt.
 
 - [ ] **No keys that can move money.** The treasury has no owner who can
       withdraw, redirect or freeze a cover. If a pause exists, it can only

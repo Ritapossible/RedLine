@@ -57,19 +57,30 @@ build log is in [PLAN.md](PLAN.md).
 
 RedLine is built to become a production service and to launch on GenLayer
 mainnet when mainnet is live. The work is in six stages. Each ends with a
-test that has to be measured before the next one starts, and none of it
-begins until the current release is accepted. Details and checklists are in
+test that has to be measured before the next one starts. Release 1 was
+accepted; stage 1 is under way. Details and checklists are in
 [PLAN.md](PLAN.md).
 
-### 1. Finish hardening: know how often the jury is wrong
+### 1. Milestone 1: know when RedLine is wrong (in progress)
 
-- **A published error rate.** At least 30 judged covers on page edits
-  written after the prompt was fixed, every verdict public, with false
-  refunds and missed breaches each under 5%.
-- **Real pages over a week.** Twenty real terms pages checked hourly for
-  seven days, to set how often checks run.
-- **Redirects, appeals, and pages drawn by JavaScript.** Measured, or
-  refused before any money moves.
+- **Redeploy on the current networks.** RedLine's Bradbury deployment was
+  erased by the Phase 2 reset, and its SDK could not pay fees. The
+  milestone is done when the 11-case table passes with 0 failed checks on
+  Studio and Studio Next, code verified. Bradbury joins when its faucet can
+  be used.
+- **The jury sample, published whatever it shows.** The prompt is frozen
+  (its hash committed) before any page is written; 30 excerpts of real terms
+  per reading (kept, narrowed, removed) are each run once on Studio, and 30
+  on Bradbury as a check. A rate over 5% is published as it is; a changed
+  prompt is a new sample.
+- **Redirects:** probed; a URL validators cannot follow is refused at
+  opening, never just warned about.
+- **One appeal** on the new watcher, recorded on chain.
+- **A week of real pages on a probe contract,** never the treasury: twenty
+  terms pages hourly on Studio, each result unreadable, present, absent, or
+  disagreed.
+- **The 5% bar** (false refunds and missed breaches each under 5%) is the
+  gate for stage 2, real money. It does not close this milestone.
 
 ### 2. Security for real money
 
