@@ -1,0 +1,132 @@
+{
+  "start": "2026-10-23T10:00:00Z",
+  "days": 7,
+  "network": "studio",
+  "probe": "0x00091C9b47AA7d39e588f7d7195b8CF6A2c8107D",
+  "chosen_at": "2026-10-23",
+  "how_chosen": "Twenty public terms pages of API, cloud and SaaS vendors. Passages: the first sentence of 60-400 characters about refunds, fees, termination, deletion or notice in the page's visible text, as RedLine's own text rules extract it from a plain fetch on 23 October 2026, stored normalised. OpenAI and Notion are included although no passage could be taken from them, to record whether blocked and script-drawn pages ever read differently.",
+  "pages": [
+    {
+      "key": "stripe",
+      "url": "https://stripe.com/legal/ssa",
+      "passage": "unless user and stripe otherwise agree in writing or if law requires, payment obligations are non-cancelable and fees paid are non-refundable.",
+      "note": ""
+    },
+    {
+      "key": "anthropic-commercial",
+      "url": "https://www.anthropic.com/legal/commercial-terms",
+      "passage": "these terms start on the effective date and continue until terminated (the \" term \").",
+      "note": ""
+    },
+    {
+      "key": "github",
+      "url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+      "passage": "no refunds payment based on plan for monthly or yearly payment plans, the service is billed in advance on a monthly or yearly basis respectively and is non-refundable.",
+      "note": ""
+    },
+    {
+      "key": "cloudflare",
+      "url": "https://www.cloudflare.com/terms/",
+      "passage": "if cloudflare makes a third-party product available to you, it is on an \"as is\" and \"as available\" basis, and cloudflare may cease providing it without entitling you to any refund, credit, or other compensation.",
+      "note": ""
+    },
+    {
+      "key": "vercel",
+      "url": "https://vercel.com/legal/terms",
+      "passage": "all fees are non-refundable, except as expressly stated otherwise in this agreement or required by applicable law.",
+      "note": ""
+    },
+    {
+      "key": "google-cloud",
+      "url": "https://cloud.google.com/terms",
+      "passage": "refunds given by google for billing inaccuracies under this section will only be in the form of credit for the services.",
+      "note": ""
+    },
+    {
+      "key": "aws",
+      "url": "https://aws.amazon.com/agreement/",
+      "passage": "if we suspend your account under section 4.1 or terminate your use of the services pursuant to section 5.2(b)(ii), we may elect not to bill you for fees and charges after suspension unless your account is reinstated.",
+      "note": ""
+    },
+    {
+      "key": "twilio",
+      "url": "https://www.twilio.com/en-us/legal/tos",
+      "passage": "except as otherwise expressly set forth herein, payment obligations are non-cancelable and fees, taxes, and communications surcharges (collectively, \" fees \"), once paid, are non-refundable.",
+      "note": ""
+    },
+    {
+      "key": "slack",
+      "url": "https://slack.com/terms-of-service/user",
+      "passage": "you are here at the pleasure of customer (and us) these user terms remain effective until customer's subscription for you expires or terminates, or your access to the services has been terminated by customer or us.",
+      "note": ""
+    },
+    {
+      "key": "figma",
+      "url": "https://www.figma.com/legal/tos/",
+      "passage": "unless otherwise specified in these terms, fees paid are non-refundable and quantities purchased cannot be decreased during the relevant subscription term.",
+      "note": ""
+    },
+    {
+      "key": "dropbox",
+      "url": "https://www.dropbox.com/terms",
+      "passage": "for example, users living in the european union have the right to cancel their paid account subscriptions and obtain a refund within 14 days of signing up for, upgrading to, or renewing a paid account by clicking here .",
+      "note": ""
+    },
+    {
+      "key": "zoom",
+      "url": "https://www.zoom.com/en/trust/terms/",
+      "passage": "you agree that all payments are non-cancelable for the initial subscription term or the then-current renewal term, as applicable, and are final and non-refundable, unless otherwise agreed to by zoom, required by law, or set forth in your order form.",
+      "note": ""
+    },
+    {
+      "key": "digitalocean",
+      "url": "https://www.digitalocean.com/legal/terms-of-service-agreement",
+      "passage": "except as otherwise set forth herein or expressly agreed between the parties, any and all fees paid to us are non-refundable and any and all fees still owed to us at the time of such termination shall be immediately due and payable.",
+      "note": ""
+    },
+    {
+      "key": "netlify",
+      "url": "https://www.netlify.com/legal/terms-of-use/",
+      "passage": "credits have no cash value, are non-transferable and non-refundable, and are forfeited if the account is closed.",
+      "note": ""
+    },
+    {
+      "key": "supabase",
+      "url": "https://supabase.com/terms",
+      "passage": "where customer purchased the applicable services via aws marketplace, any refund owed to customer under this agreement will be paid or credited back through the aws marketplace, and not directly by supabase to customer.",
+      "note": ""
+    },
+    {
+      "key": "huggingface",
+      "url": "https://huggingface.co/terms-of-service",
+      "passage": "all fees are non-refundable and exclusive of any applicable taxes, which the customer is solely responsible to pay.",
+      "note": ""
+    },
+    {
+      "key": "fly",
+      "url": "https://fly.io/legal/terms-of-service/",
+      "passage": "it is fly.io's policy to terminate membership privileges of any customer who repeatedly infringes copyright, trademark, or other intellectual property rights upon prompt notification to fly.io by the respective intellectual property owner or their legal agent.",
+      "note": ""
+    },
+    {
+      "key": "linear",
+      "url": "https://linear.app/terms",
+      "passage": "payment obligations are non-cancelable and, except as expressly stated in this agreement, non-refundable.",
+      "note": ""
+    },
+    {
+      "key": "openai",
+      "url": "https://openai.com/policies/terms-of-use",
+      "passage": "",
+      "note": "no passage could be taken from a plain fetch on 23 October 2026 (403, blocks the fetch)"
+    },
+    {
+      "key": "notion",
+      "url": "https://www.notion.so/terms",
+      "passage": "",
+      "note": "no passage could be taken from a plain fetch on 23 October 2026 (a script-drawn shell with under 200 visible characters)"
+    }
+  ],
+  "probe_deploy_tx": "0x4924eebd89be0e4384998e4c59a7fdc40bcb0793713e36e9125322813b2b213d",
+  "trial_round": "One trial round was run before the week started (deploy/probes/week/trial.jsonl); it is not counted."
+}

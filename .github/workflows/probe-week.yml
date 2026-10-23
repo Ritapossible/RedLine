@@ -1,0 +1,42 @@
+# Milestone 1.5: a week of real terms pages, on a probe contract, never the
+# treasury. Every hour, one round checks the twenty pages in
+# deploy/probes/week/pages.json on GenLayer Studio and appends the results to
+# results.jsonl on the probe-week branch. The runner stops by itself outside
+# the week set in pages.json. No secret is used: each round funds a fresh key
+# from Studio's public faucet.
+name: probe-week
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: probe-week
+  cancel-in-progress: false
+jobs:
+  round:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: probe-week
+          path: results
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: deploy
+      - run: node deploy/probes/week/run_round.mjs "$GITHUB_WORKSPACE/results/results.jsonl"
+      - name: Record the round
+        working-directory: results
+        run: |
+          git config user.name "redline-probe"
+          git config user.email "redline-probe@users.noreply.github.com"
+          git add results.jsonl
+          git diff --cached --quiet && exit 0
+          git commit -qm "probe-week: round $(date -u +%Y-%m-%dT%H:00Z)"
+          for i in 1 2 3 4; do git pull -q --rebase origin probe-week && git push -q origin probe-week && exit 0; sleep $((i * 10)); done
+          exit 1

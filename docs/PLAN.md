@@ -147,10 +147,17 @@ milestone.
 
 ### 1.5 A week of real pages, on a probe
 
-- [ ] A probe contract, as in Phase 0, never the treasury: no paid cover is
-      opened on a real vendor's live terms.
-- [ ] Twenty real terms pages, each checked hourly for seven days on
-      Studio. Every result is one of: **unreadable** (bot block, over the
+- [x] A probe contract, as in Phase 0, never the treasury: no paid cover is
+      opened on a real vendor's live terms (`deploy/probes/week/`: the probe
+      is built from RedLine's own text rules, so "present" means what it
+      means to the watcher; Studio `0x00091C9b47AA7d39e588f7d7195b8CF6A2c8107D`).
+- [ ] Twenty real terms pages (`pages.json`: eighteen API, cloud and SaaS
+      vendors with a passage taken from a plain fetch, plus OpenAI, which
+      blocks the fetch, and Notion, a script-drawn shell), each checked
+      hourly for seven days on Studio, **23-30 October 2026**, by
+      `.github/workflows/probe-week.yml`; results on the `probe-week`
+      branch. A trial round before the week (`trial.jsonl`, not counted):
+      18 present, OpenAI unreadable (403), Notion unreadable (shell). Every result is one of: **unreadable** (bot block, over the
       byte cap, a JavaScript shell), **present and agreed**, **absent and
       agreed**, or **disagreed**. Only "disagreed" informs the default
       check gap and window; the rest is published as what it is.
