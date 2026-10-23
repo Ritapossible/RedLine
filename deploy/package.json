@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "genlayer-js": "^1.1.8",
+    "genlayer-js-next": "npm:genlayer-js@^2.0.0-rc.2",
     "viem": "^2.21.0"
   }
 }

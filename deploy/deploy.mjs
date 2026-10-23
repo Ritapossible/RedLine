@@ -9,7 +9,7 @@ const network = process.argv[2] || "studio";
 // How long a reported breach waits before the treasury refunds, so an appeal
 // of the watcher's transaction has its window. Clause and Remit measured
 // finality at about 5 minutes on Studio and used 40 on Bradbury.
-const APPEAL = Number(process.env.APPEAL_SECONDS ?? (network === "studio" ? 300 : 2400));
+const APPEAL = Number(process.env.APPEAL_SECONDS ?? (network.startsWith("studio") ? 300 : 2400));
 const client = clientFor(network, "principal");
 
 console.log(`network  ${network}\ndeployer ${accountFor("principal").address}`);

@@ -26,6 +26,9 @@ OUT_DIR = os.path.join(SRC, "build")
 # networks reject py-genlayer:test, :latest and unversioned aliases, so this is
 # never floated.
 RUNNER = "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6"
+# The GenVM version line. Studio Next refuses a contract without it ("runner
+# malformed"); Studio accepts it too (measured in CounterSign, October 2026).
+RUNNER_VERSION = "v0.2.0"
 
 BUILDS = {
     "redline": (["redline_text.py", "redline_core.py", "treasury_shell.py"], "RedLine"),
@@ -36,7 +39,8 @@ BUILDS = {
 # between it and the first statement makes the deploy fail with an empty-stderr
 # contract_error on every validator - measured on Studio, see CLAUDE.md. The
 # "generated file" banner therefore sits *after* the imports, not before them.
-PREAMBLE = '''# { "Depends": "%s" }
+PREAMBLE = '''# %s
+# { "Depends": "%s" }
 from genlayer import *
 
 import datetime
@@ -49,7 +53,7 @@ import json
 # contracts/redline_core.py (the rules) and, for the treasury,
 # treasury_shell.py; for the watcher, redline_prompts.py and watcher_shell.py.
 # ---------------------------------------------------------------------------
-''' % RUNNER
+''' % (RUNNER_VERSION, RUNNER)
 
 # Imports the parts declare for themselves; the preamble already provides them.
 DROP_IMPORT = re.compile(

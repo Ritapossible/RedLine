@@ -36,7 +36,7 @@ import { execFileSync } from "node:child_process";
 import { clientFor, accountFor, sendTx, readView, readUntil, retry } from "./lib.mjs";
 
 const network = process.argv[2] || "studio";
-const STUDIO = network === "studio";
+const STUDIO = network === "studio" || network === "studionext"; // both report in about 40 s
 const dep = JSON.parse(fs.readFileSync("deployments.json", "utf8"))[network];
 const { treasury, watcher } = dep;
 const APPEAL = Number(dep.appeal_seconds);

@@ -245,8 +245,10 @@ def reindent(code):
 
 
 def minify(source, shake=True, root="RemitGuard"):
-    header = source.splitlines()[0]
-    if not header.startswith('# { "Depends":'):
+    lines = source.splitlines()
+    # An optional GenVM version line ("# v0.2.0") precedes the runner header.
+    header = lines[0] if lines[0].startswith('# { "Depends":') else "\n".join(lines[:2])
+    if not header.splitlines()[-1].startswith('# { "Depends":'):
         raise SystemExit("build does not start with the runner header")
     tree = strip_docstrings(ast.parse(source))
     removed = []

@@ -27,11 +27,15 @@ REDLINE_KEYS=<dir with principal.key agent.key vendor.key> node deploy.mjs studi
 REDLINE_KEYS=... LIVE_CLONE=<clone of the live branch> node scenario.mjs studio
 # resumable: run it again after any stop and it carries on (RESET=1 starts over)
 REDLINE_KEYS=... node verify.mjs studio   # exact on-chain check of every cover
+node verify_code.mjs <commit> scenario-studio.json   # code on chain == build at commit
+# networks: studio (SDK 1), studionext and bradbury (SDK 2, fees on every write)
 ```
 
 ## Hard rules (each learned on chain)
 
-- The runner header is line 1 and is followed immediately by code.
+- The GenVM version line (`# v0.2.0`) is line 1 and the runner header line 2,
+  followed immediately by code. Studio Next refuses a contract without the
+  version line.
 - The web fetch is written inline in both the leader and validator closure.
 - Closures capture plain Python values only.
 - A payable method never raises after value has arrived: refuse and credit.

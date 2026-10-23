@@ -14,6 +14,7 @@ from minify_contract import _names_used, minify
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BUILD = os.path.join(ROOT, "contracts", "build")
 RUNNER = "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6"
+RUNNER_VERSION = "v0.2.0"  # Studio Next requires the GenVM version line
 CAP = 16_777_216
 GENLAYER = {"gl", "Address", "u256", "TreeMap", "DynArray"}
 
@@ -57,8 +58,9 @@ def closures(src, name):
 def test_runner_header_then_code(pair):
     for src in pair[:2]:
         lines = src.splitlines()
-        assert lines[0] == '# { "Depends": "%s" }' % RUNNER
-        assert lines[1] == "from genlayer import *"
+        assert lines[0] == "# %s" % RUNNER_VERSION
+        assert lines[1] == '# { "Depends": "%s" }' % RUNNER
+        assert lines[2] == "from genlayer import *"
 
 
 def test_deployed_is_a_fresh_minify_of_the_tested_build(pair):
