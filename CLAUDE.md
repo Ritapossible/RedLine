@@ -57,3 +57,30 @@ node verify_code.mjs <commit> scenario-studio.json   # code on chain == build at
   milestone keeps its own contracts table (Release 1 in "Deployed
   contracts"; each milestone in its own section, as Remit does), with
   explorer links.
+
+## RedLine on PayPal (branch `paypal`)
+
+A second product on the same core, for the PayPal AI Hackathon (deadline
+12 Nov 2026, 12:00 PST). Read `docs/PAYPAL-ARCHITECTURE.md` before writing
+code; `docs/PAYPAL-PLAN.md` is the product and schedule, `docs/PAYPAL-RULES.md`
+the rules.
+
+- All new code is under `paypal/`. `contracts/redline_core.py`,
+  `redline_text.py` and `redline_prompts.py` are imported **unchanged**; the
+  GenLayer shells and `contracts/build/` are not touched on this branch.
+- Money: a PayPal **authorization** is the hold. Settlement is
+  `capture(share)` then `void(rest)`, planned from `redline_core.close` and
+  executed through the `paypal_ops` journal with deterministic
+  `PayPal-Request-Id`s. Never compute a share outside `redline_core`; never
+  retry a PayPal write without reconciling from PayPal's record first.
+- The stored `covers.core` dict is the only truth for a cover's state and
+  money; columns beside it are for queries and are rewritten from it.
+- A breach is **confirmed by a second check before `apply_check` hears of
+  it** (the core lets a reported breach stand). The panel fails closed toward
+  the vendor: errors, splits and `cannot_tell` never make a breach.
+- Every PayPal call goes to the sandbox; the client refuses live hosts.
+- Fetching pages: only allowed hosts, no private addresses, size and time
+  limits (architecture section 9.1).
+- Demo covers are checked only in-process; GitHub Actions checks long covers
+  and settles. Never fetch a demo page from the scheduled worker.
+- Still: no keys and no model identifiers in the repository.

@@ -98,6 +98,9 @@ the hackathon.
 
 ## 4. Architecture
 
+Superseded in detail by [PAYPAL-ARCHITECTURE.md](PAYPAL-ARCHITECTURE.md): memory,
+settlement journal, scheduling, security, failure modes and decisions.
+
 ```
  Customer ─► Vendor's site: RedLine checkout (PayPal JS SDK, intent AUTHORIZE)
                  │ order approved → authorization (the hold)
