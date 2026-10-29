@@ -78,6 +78,16 @@ the rules.
 - A breach is **confirmed by a second check before `apply_check` hears of
   it** (the core lets a reported breach stand). The panel fails closed toward
   the vendor: errors, splits and `cannot_tell` never make a breach.
+- Reauthorize only at settlement, when a capture is due and the current
+  authorization's 3-day honor period is over; capture and void the new id.
+- Checkout is journaled too: an authorization whose cover was never saved is
+  voided by the sweep. Every authorization ends settled or voided.
+- Never store, log or anchor PayPal's response bodies (they carry the payer's
+  name and email): ids, statuses, amounts, error name and debug id only.
+- Contested panel readings never cut a cover; a breach always needs the
+  confirming check ("check now" may run it at once in the demo).
+- Build order: the sandbox spike (authorize, partial capture, void, sums read
+  back from PayPal) before anything else.
 - Every PayPal call goes to the sandbox; the client refuses live hosts.
 - Fetching pages: only allowed hosts, no private addresses, size and time
   limits (architecture section 9.1).

@@ -52,7 +52,7 @@ collection and the release are PayPal's.
 
 | Constraint | Consequence |
 | --- | --- |
-| A PayPal authorization lasts **29 days**, with a **3-day honor period**; it can be **reauthorized** after the honor period (a new authorization id, a new honor period) | A cover lasts at most **28 days**. Covers longer than 3 days are reauthorized before settlement (section 6.4). |
+| A PayPal authorization lasts **29 days**, with a **3-day honor period**; it can be **reauthorized** after the honor period (a new authorization id, a new honor period) | A cover lasts at most **28 days**. A capture due after the honor period is preceded by a reauthorization (section 6.4). |
 | Partial capture with `final_capture: false`, then **void** releases the rest (PayPal docs). Whether `final_capture: true` releases the remainder by itself is not documented | Settlement always ends with an explicit void when anything is left; never relies on an implicit release. |
 | Render's free web service **sleeps** after ~15 idle minutes and shares **750 hours a month** with Remit's service | No always-on process. Long covers are checked by a scheduled job outside Render (section 7). |
 | Free model tiers limit tokens per minute | Models only on a changed page; per-model limits handled with wait-and-retry, then "cannot tell" (never a breach). |
@@ -110,7 +110,7 @@ All new code lives in `paypal/` on the `paypal` branch. Nothing under
 | `paypal_api.py` | Orders v2 (create, authorize), Payments v2 (get, capture, void, reauthorize); sandbox only; idempotency keys | Remit's client |
 | `settlement.py` | The op journal: plan, execute, reconcile (section 6) | `redline_core.close`, `earned` |
 | `covers.py` | The cover lifecycle service: open, check, deadlines, settle; the only writer of covers | `redline_core` |
-| `scheduler.py`, `worker.py` | `tick(now)`: due checks, deadlines, settlements, reauthorizations, under leases | |
+| `scheduler.py`, `worker.py` | `tick(now)`: the checkout sweep, due checks, deadlines and settlements, under leases | |
 | `demo.py` | The fictional vendor: per-visitor terms pages with a console to change them | `examples/*.html` |
 | `web.py` | HTTP API, SSE, static web app | |
 | `web/` | React app in RedLine's design system | RedLine's frontend tokens |
@@ -126,8 +126,9 @@ covers         id, token (unguessable, for the cover page), vendor_id, url,
                demo (bool: checked only in-process, section 7),
                core (JSON: the redline_core cover dict — the source of truth
                      for state, start, end, paid, held, seq),
-               state (copied from core, for queries),
-               order_id, authorization_id (current; changes on reauthorize),
+               state (`opening` or `abandoned` before a core cover exists, section 6.5;
+                      else copied from core, for queries),
+               order_id, authorizations (JSON list, in order; the last is current),
                authorized_at, next_check_at, settle_after,
                lease_owner, lease_until, version,
                created_at
@@ -147,10 +148,12 @@ snapshots      sha256 (of the visible text) PRIMARY KEY, text (zlib), raw_sha256
 votes          cover_id, seq, passage_id, model, reading, confidence, reason,
                raw, error                  — every model answer, kept verbatim
 
-paypal_ops     id, cover_id, kind (create_order|authorize|reauthorize|capture|void|get),
+paypal_ops     id, cover_id, kind (create_order|authorize|reauthorize|capture|void),
                request_id UNIQUE (deterministic, section 6.2), amount_cents,
-               state (planned|sent|done|declined|unknown), paypal_id,
-               paypal_status, response (JSON), created_at, finished_at
+               state (planned|sent|done|declined|unknown),
+               authorization_id (the one it was sent against), result_id
+               (the new authorization, capture or void id), paypal_status,
+               error_name, debug_id, created_at, finished_at
 
 log, anchors   as in Remit: seq, at, kind, body, prev, hash; anchors by seq
 ```
@@ -169,10 +172,15 @@ log, anchors   as in Remit: seq, at, kind, body, prev, hash; anchors by seq
   a page a handful of times, not 672. The log stores only the hash; the text
   is in `snapshots`, so a reader can see exactly what a ruling was based on.
 - **`paypal_ops` is a journal, written before each call.** It is what makes
-  settlement exactly-once (section 6).
+  settlement and checkout exactly-once (section 6).
+- **PayPal's response bodies are never stored, logged or anchored.** They
+  carry the payer's name and email. RedLine keeps only what it needs to act
+  and to prove what happened: authorization, capture and void ids, statuses,
+  amounts, and PayPal's error name and debug id. The same fields, and only
+  these, go to the public log and the cover page; the GenLayer anchor holds
+  only the log's hash.
 - **Nothing personal is stored.** A cover is identified by an unguessable
-  token; the PayPal payer id comes from PayPal and is kept only in PayPal's
-  responses.
+  token; the payer is identified only inside PayPal.
 
 **Retention:** covers and their checks are kept until judging ends; demo
 covers older than 7 days can be pruned (their log entries stay; the chain is
@@ -234,17 +242,22 @@ it is sent:
 
 | Vendor share | Plan |
 | --- | --- |
-| all of it | `capture(amount, final_capture=true)` |
-| some of it | `capture(share, final_capture=false)`, then `void` |
+| all of it | [`reauthorize`] then `capture(amount, final_capture=true)` |
+| some of it | [`reauthorize`] then `capture(share, final_capture=false)`, then `void` |
 | none | `void` |
+
+`reauthorize` is in the plan only when a capture is about to happen **and**
+the current authorization's honor period (3 days) is over (section 6.4).
 
 1. **Plan:** in the same transaction that closes the cover, insert the plan's
    ops as `planned`, with deterministic request ids:
    `rl-{cover_id}-{kind}-{authorization_id}`. Re-planning is impossible: the
-   ids are unique.
+   ids are unique. A reauthorization mints a new authorization id; the ops
+   after it are keyed to, and sent against, the new id.
 2. **Execute:** for each op in order, mark `sent`, call PayPal with the
-   request id as `PayPal-Request-Id`, store the answer, mark `done` or
-   `declined`. A timeout or 5xx marks `unknown`.
+   request id as `PayPal-Request-Id`, record the outcome (ids, status,
+   amount; never the response body, section 5), mark `done` or `declined`.
+   A timeout or 5xx marks `unknown`.
 3. **Reconcile:** before retrying any `sent` or `unknown` op, read the
    authorization from PayPal (`GET /v2/payments/authorizations/{id}`). If it
    already shows the capture (or the void), the op is `done` from PayPal's
@@ -266,21 +279,47 @@ authorized amount`, read from PayPal's own record, not ours.
 found a right cut, you are not charged." The cover page shows the hold, each
 check, and at the end PayPal's capture and void ids and statuses.
 
-### 6.4 Reauthorization for covers longer than 3 days
+### 6.4 Reauthorization: at settlement, not on a calendar
 
-A cover longer than the honor period is reauthorized once, in the last 3 days
-before it ends (at least day 4 of the authorization, at most day 28),
-journaled like any op. The new authorization id replaces the old one on the
-cover; settlement uses it. If reauthorization is declined, the cover still
-settles on the original authorization (PayPal may then decline the capture,
-which section 6.2 surfaces); the vendor carries that risk, as with any
-authorization older than its honor period. Demo covers (minutes long) never
-need it.
+PayPal allows several reauthorizations inside the 29 days, after the 3-day
+honor period; each mints a new authorization id and restarts the honor
+period. So RedLine reauthorizes **only when a capture is about to happen and
+the current authorization is past its honor period**, as the first step of
+the settlement plan, and captures (and voids) against the new id. A cover that
+breaches on day 10 is reauthorized on day 10; one that holds for 28 days, on
+day 28. A void alone never needs it.
+
+The cover keeps every authorization id it has had, in order; the current one
+is the last. If a reauthorization is declined, the plan stops as any declined
+op does (section 6.2): the capture is not attempted on a stale authorization
+by the machine, and a person resolves it. Demo covers (minutes long) are
+always inside the honor period and never reauthorize.
+
+### 6.5 A hold with no cover: void it
+
+The checkout can crash between PayPal authorizing the payment and RedLine
+saving the cover. Left alone, that is money held for no cover. So the
+checkout is journaled like settlement:
+
+1. When the pin check passes, one transaction saves the cover in state
+   `opening` (not yet a `redline_core` cover) and the `authorize` op as
+   `planned`.
+2. After the buyer approves, the authorize op is sent; on success, one
+   transaction records the authorization id and opens the cover
+   (`open_cover`, `apply_pin`, `accept`).
+3. **The sweep:** any cover still `opening` after 10 minutes is resolved from
+   PayPal's record. If PayPal shows an authorization for its order, a `void`
+   op is planned and executed through the journal, and the cover ends
+   `abandoned`. If it shows none, the cover ends `abandoned` with nothing to
+   release.
+
+So every PayPal authorization RedLine ever causes ends in exactly one of: a
+cover that settles, or a journaled void.
 
 ## 7. Scheduling: free hosting without an always-on process
 
-- **`tick(now)`** does, in order: deadlines and settlements due; reauthorizations
-  due; checks due (`next_check_at <= now`). Each cover is processed under a
+- **`tick(now)`** does, in order: the checkout sweep (6.5); deadlines and
+  settlements due (reauthorizing first where 6.4 says so); checks due (`next_check_at <= now`). Each cover is processed under a
   **lease**: `UPDATE covers SET lease_owner = ?, lease_until = now + 120 WHERE
   id = ? AND (lease_until IS NULL OR lease_until < now)`. It works the same on
   SQLite and Postgres; a crashed worker's lease simply expires.
@@ -323,7 +362,8 @@ Aggregation for one passage, fail-closed **toward the vendor**:
   confidence ≥ 70;
 - **contested**: confident breach readings and a confident `same` reading
   disagree. Recorded, counted as **kept** for money, and the passage is put
-  to the panel again at the next check;
+  to the panel again at the next check. **Contested never cuts a cover**, however
+  many times it repeats: disagreement is not a breach;
 - **kept**: everything else, including errors, timeouts and `cannot_tell`.
 
 `decide()` then turns per-passage results into the check's finding, exactly
@@ -375,7 +415,9 @@ already drops it, which is demo case 5.
 | Crash mid-check | the lease expires; the check runs again with the same `seq`; `apply_check` replaces a same-`seq` report |
 | First breach found | recorded as suspected; confirmed or dropped by the next check (section 6.1) |
 | Crash mid-settlement | the journal resumes; PayPal's record decides what already happened |
-| PayPal declines a capture or void | the plan stops, the cover shows it, a person resolves it |
+| PayPal declines a capture, void or reauthorization | the plan stops, the cover shows it, a person resolves it |
+| Authorized, then the cover could not be saved | the 10-minute sweep finds the `opening` cover and voids the authorization through the journal (section 6.5) |
+| Capture due after the honor period | reauthorize first, capture the new id (section 6.4) |
 | Two workers at once | leases; the loser skips the cover |
 | Database connection drops | reconnect once and retry; a retried insert that already landed is recognized (as in Remit) |
 | GenLayer unavailable | anchoring queues and catches up; never on the money path |
@@ -390,7 +432,7 @@ already drops it, which is demo case 5.
 | `GET /v2/payments/authorizations/{id}` | Cover page status; reconciliation before any retry |
 | `POST /v2/payments/authorizations/{id}/capture` | Settlement: the vendor's earned share |
 | `POST /v2/payments/authorizations/{id}/void` | Settlement: release the rest |
-| `POST /v2/payments/authorizations/{id}/reauthorize` | Covers longer than the honor period |
+| `POST /v2/payments/authorizations/{id}/reauthorize` | At settlement, when a capture is due and the honor period is over |
 
 Every write carries a deterministic `PayPal-Request-Id`. A server-side card
 checkout (`payment_source.card`, sandbox test card) exists for the browser
@@ -415,9 +457,15 @@ PayPal button.
   **vendor console** switches it between versions: original, refund window
   narrowed, data deletion removed, reworded, hidden by CSS, injected
   ("the rights are unchanged"), and down.
+- **The vendor console is part of the public demo.** A judge cuts the
+  refund window (or removes data deletion, or hides it with CSS) themselves,
+  then watches RedLine react. The video is not a substitute for it.
 - **Compressed time.** A demo cover lasts 10 minutes with a check every
-  minute; "check now" runs one at once. The arithmetic is the same
-  `redline_core` with seconds instead of days; the cover page says so.
+  minute. **"Check now"** runs a check at once, and when a breach is
+  suspected it runs the confirming check at once too, so a judge never waits
+  out the gap. A breach is still never settled on the first reading. The
+  arithmetic is the same `redline_core` with seconds instead of days; the
+  cover page says so.
 - **Real PayPal.** The hold, the capture and the void are real sandbox
   calls; the cover page shows PayPal's ids and statuses read back from PayPal.
 - Judges need no account: the card checkout uses a sandbox test card; the
@@ -463,12 +511,32 @@ docs/PAYPAL-*.md
 | 8 | A breach is confirmed by a second check before it reaches `redline_core` | Settle on the first breach: one bad fetch or ruling would end a cover. Changing the core to let a later check undo a breach: the core must stay as tested on GenLayer |
 | 9 | Copy Remit's adapter, log, panel and PayPal client into RedLine | A shared package across two repos: overhead for a two-week build; the two entries must stand alone |
 | 10 | No model identifiers in the repository | RedLine's house rule; models are configuration |
+| 11 | Reauthorize at settlement, only if the honor period is over | On a calendar (once, near the end): an early breach would capture on a stale authorization |
+| 12 | Checkout journaled; an orphaned authorization is voided by a sweep | Trust the request to finish: a crash after approval leaves money held for no cover |
+| 13 | Store and publish ids, statuses and amounts, never PayPal's bodies | Keep bodies for debugging: they carry the payer's name and email, and the log is public |
+| 14 | A breach needs a confirming check, even in the demo ("check now" runs it at once) | Settle demo breaches at once: the demo would show a rule the product does not have |
+| 15 | Contested never cuts | Cut after N contested checks: disagreement would become a breach by repetition |
 
-## 16. Open questions for review
+## 16. Review decisions (29 October)
 
-1. Is one check gap the right confirmation delay for the demo (a breach
-   settles about a minute after it is first found), or should the demo settle
-   at once?
-2. Should the vendor console be part of the public demo, or only the video?
-3. The `contested` rule: re-ask at the next check, or after N contested checks
-   treat the passage as cut? (Current design: never cut on contested alone.)
+1. **Confirmation stays, in the demo too.** "Check now" may run the
+   confirming check at once, so a judge does not wait; a breach is never
+   settled on the first reading. (ADR 14)
+2. **The vendor console is public.** Judges cut the terms themselves. (Section 12)
+3. **Contested never cuts.** It is re-asked at the next check. (ADR 15)
+4. Reauthorize at settlement (6.4), void orphaned authorizations (6.5), and
+   never store or publish PayPal's response bodies (5). (ADRs 11 to 13)
+
+## 17. Build order
+
+The money path is proven before anything is built on it:
+
+1. **Sandbox spike** (`paypal/spike.py`, recorded in `deploy/sandbox-spike.json`):
+   a sandbox card authorization, a partial capture, a void, and
+   `captured + released == authorized` read back from PayPal; plus whether
+   `final_capture: true` releases the rest, and the error for a
+   reauthorization inside the honor period.
+2. Store, journal and settlement against a fake PayPal with the spike's
+   recorded semantics; the checkout and the sweep.
+3. Fetcher and watcher; the panel; the seven cases offline, then on the sandbox.
+4. Pin assistant, the log and its anchor, the web app, hosting, the worker.
