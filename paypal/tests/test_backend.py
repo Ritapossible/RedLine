@@ -412,3 +412,31 @@ def test_a_seat_that_errors_once_is_asked_again():
     app.covers.tick()
     ch = app.covers.view(app.covers.load(token))["checks"][-1]
     assert ch["kind"] == "breach" and ch["suspected"] and len(calls) == 2
+
+
+def test_two_threads_of_one_process_never_hold_one_cover_at_once():
+    import threading
+    app, clock, sandbox = make()
+    v, token = opened(app, clock)
+    assert app.covers.lease(token)
+    other = []
+    t = threading.Thread(target=lambda: other.append(app.covers.lease(token)))
+    t.start()
+    t.join()
+    assert other == [False]
+    app.covers.release(token)
+    t = threading.Thread(target=lambda: other.append(app.covers.lease(token)))
+    t.start()
+    t.join()
+    assert other == [False, True]
+
+
+def test_an_unexpected_error_still_carries_cors_headers(http):
+    a = http.app.state.redline()
+
+    def boom(token):
+        raise RuntimeError("unexpected")
+    a.covers.catch_up = boom
+    r = http.get("/api/covers/x", headers={"Origin": "https://redline-paypal.vercel.app"})
+    assert r.status_code == 500 and "detail" in r.json()
+    assert r.headers.get("access-control-allow-origin") == "https://redline-paypal.vercel.app"

@@ -22,6 +22,7 @@ import contextlib
 import hashlib
 import json
 import secrets
+import threading
 import time
 
 from .core import core, prompts, text
@@ -93,16 +94,21 @@ class Covers:
             raise CoverError(409, "The cover changed meanwhile; try again.")
         c["version"] += 1
 
+    def holder(self):
+        """Who holds a lease: this process *and* this thread, so the background
+        tick and a request in the same process never work one cover at once."""
+        return "%s-%d" % (self.owner, threading.get_ident())
+
     def lease(self, token):
         now = self.now()
         cur = self.db.execute(
             "UPDATE covers SET lease_owner = ?, lease_until = ? WHERE token = ? AND (lease_until IS NULL OR lease_until < ? "
-            "OR lease_owner = ?)", (self.owner, now + LEASE_SECONDS, token, now, self.owner))
+            "OR lease_owner = ?)", (self.holder(), now + LEASE_SECONDS, token, now, self.holder()))
         return cur.rowcount == 1
 
     def release(self, token):
         self.db.execute("UPDATE covers SET lease_owner = NULL, lease_until = NULL WHERE token = ? AND lease_owner = ?",
-                        (token, self.owner))
+                        (token, self.holder()))
 
     @contextlib.contextmanager
     def leased(self, token):

@@ -52,6 +52,19 @@ def create_app(env=os.environ, **kw):
 
     api = FastAPI(title="RedLine for PayPal", lifespan=lifespan, docs_url=None, redoc_url=None)
     origins = [o.strip() for o in env.get("REDLINE_WEB_ORIGINS", "https://redline-paypal.vercel.app").split(",") if o.strip()]
+
+    @api.middleware("http")
+    async def unexpected(request, call_next):
+        """An unexpected error is a JSON sentence, inside CORS, so the browser
+        shows it instead of a blocked request."""
+        try:
+            return await call_next(request)
+        except Exception as exc:
+            print("error: %s" % type(exc).__name__, flush=True)
+            return JSONResponse({"detail": "Something went wrong on RedLine's server. Nothing was charged twice; try again."},
+                                status_code=500)
+
+    # Added last, so it is the outermost layer: every answer carries its headers.
     api.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST", "PUT"],
                        allow_headers=["Content-Type"])
 
@@ -59,12 +72,6 @@ def create_app(env=os.environ, **kw):
     @api.exception_handler(VendorError)
     async def refused(_, exc):
         return JSONResponse({"detail": str(exc)}, status_code=exc.status)
-
-    @api.exception_handler(Exception)
-    async def failed(_, exc):
-        print("error: %s" % type(exc).__name__, flush=True)
-        return JSONResponse({"detail": "Something went wrong on RedLine's server. Nothing was charged twice; try again."},
-                            status_code=500)
 
     async def body(request):
         raw = await request.body()
