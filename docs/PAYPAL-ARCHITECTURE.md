@@ -439,7 +439,14 @@ checkout (`payment_source.card`, sandbox test card) exists for the browser
 test and for judges without a sandbox buyer login; the main path is the
 PayPal button.
 
-**Verify in the sandbox on day one** (recorded in `deploy/sandbox-spike.json`):
+**Verified in the sandbox on 31 October** (`paypal/deploy/sandbox-spike.json`,
+run by GitHub Actions): a card authorization needs no buyer step; partial
+capture then void ends `VOIDED` with captured + released == authorized;
+`final_capture: true` on a partial capture ends `CAPTURED` and releases the
+rest (a later void is refused), so a single final capture would also settle,
+but settlement keeps the explicit capture-then-void so the release is a
+journaled op of its own; reauthorizing inside the honor period is refused
+(422). The questions were:
 
 1. Orders v2 with `intent: AUTHORIZE` and a sandbox test card returns an
    authorization without a buyer step (as Remit's capture does).

@@ -1,0 +1,50 @@
+{
+  "what": "The day-one spike (paypal/spike.py) on the real PayPal sandbox, run by GitHub Actions with the repository's secrets: https://github.com/Ritapossible/RedLine/actions/runs/41190365378",
+  "run": "spike-70e479a0",
+  "at": "2026-10-31T09:51:23Z",
+  "hold_cents": 2000,
+  "steps": {
+    "partial_capture_then_void": {
+      "order": "4P785813SA805783D",
+      "order_status_on_create": "COMPLETED",
+      "authorization": "1VJ41528S9313674J",
+      "authorized_cents": 2000,
+      "authorization_status": "CREATED",
+      "expires": "2026-11-29T09:51:26Z",
+      "capture": "70M50086LL8779821",
+      "capture_status": "COMPLETED",
+      "captured_cents": 750,
+      "status_after_capture": "PARTIALLY_CAPTURED",
+      "status_after_void": "VOIDED",
+      "void_answer_status": "VOIDED",
+      "released_cents": 1250,
+      "adds_up": true
+    },
+    "final_capture_true_partial": {
+      "authorization": "1G5250266K3000213",
+      "capture": "3W435458PN706044L",
+      "captured_cents": 750,
+      "status_after_final_capture": "CAPTURED",
+      "void_afterwards": "refused: UNPROCESSABLE_ENTITY",
+      "status_at_end": "CAPTURED"
+    },
+    "reauthorize_inside_honor_period": {
+      "result": "refused",
+      "status": 422,
+      "error": "UNPROCESSABLE_ENTITY",
+      "debug_id": "f642682e122a7",
+      "authorization": "0C9119568Y4340433"
+    },
+    "void_whole_hold": {
+      "authorization": "5GW86805E6776242B",
+      "status_at_end": "VOIDED"
+    }
+  },
+  "money_adds_up": true,
+  "findings": [
+    "A sandbox card with intent AUTHORIZE returns a COMPLETED order carrying the authorization: no buyer step.",
+    "Partial capture with final_capture false leaves PARTIALLY_CAPTURED; void then gives VOIDED; captured + released == authorized.",
+    "final_capture true on a partial capture ends the authorization CAPTURED and releases the rest: a later void is refused.",
+    "Reauthorizing inside the 3-day honor period is refused with 422."
+  ]
+}
