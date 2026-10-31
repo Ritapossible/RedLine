@@ -1,0 +1,79 @@
+{
+  "what": "One whole cover through the deployed server (https://redline-paypal-api.onrender.com) on PayPal's real sandbox with the real model panel: pin, hold, cut the refund window, suspected, confirmed, settled.",
+  "date": "2026-10-31",
+  "server": {
+    "mode": "sandbox",
+    "panel": "models",
+    "build": "f55008b"
+  },
+  "steps": [
+    {
+      "step": "held",
+      "state": "active",
+      "check": null
+    },
+    {
+      "step": "check on the original terms",
+      "state": "active",
+      "check": {
+        "seq": 1,
+        "kind": "kept",
+        "decidedBy": "code",
+        "reading": null,
+        "suspected": null,
+        "confirms": null
+      }
+    },
+    {
+      "step": "check after the refund window was cut",
+      "state": "active",
+      "check": {
+        "seq": 2,
+        "kind": "breach",
+        "decidedBy": "panel",
+        "reading": "narrowed",
+        "suspected": true,
+        "confirms": null
+      }
+    },
+    {
+      "step": "confirming check",
+      "state": "breached",
+      "check": {
+        "seq": 3,
+        "kind": "breach",
+        "decidedBy": "panel",
+        "reading": "narrowed",
+        "suspected": null,
+        "confirms": 2
+      }
+    }
+  ],
+  "held_cents": 2000,
+  "settlement": {
+    "vendorCents": 36,
+    "releasedCents": 1964,
+    "asOf": 1793467094,
+    "reason": "cut"
+  },
+  "paypal": {
+    "order": "1BM47796PV9286710",
+    "authorizations": [
+      {
+        "id": "1CL47011X3718961D",
+        "status": "VOIDED"
+      }
+    ],
+    "capture": {
+      "id": "5MM311443U4813222",
+      "status": "COMPLETED",
+      "amountCents": 36
+    },
+    "void": {
+      "id": "1CL47011X3718961D",
+      "status": "VOIDED"
+    }
+  },
+  "browser_run": "paypal/web/scripts/e2e.mjs against https://redline-paypal.vercel.app: 53 checks, all passed (held $20.00, collected $4.23, released $15.77)",
+  "result": "passed"
+}
