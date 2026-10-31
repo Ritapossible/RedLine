@@ -4,6 +4,32 @@
 
 **A prepay that refunds itself when the vendor takes a right away.**
 
+> ### RedLine for PayPal (this branch)
+>
+> **[Open the live demo: redline-paypal.vercel.app](https://redline-paypal.vercel.app)**
+>
+> The same rules on an ordinary PayPal checkout. The customer pins the rights
+> they rely on, word for word, and PayPal **holds** the payment instead of
+> collecting it. RedLine reads the vendor's terms page on a schedule. If the
+> terms hold, the vendor collects in full. If a pinned right is narrowed or
+> removed, and a second check confirms it, PayPal collects only the share the
+> vendor earned up to the first check and releases the rest.
+>
+> - **Live on PayPal's sandbox.** The site runs against the server at
+>   [redline-paypal-api.onrender.com](https://redline-paypal-api.onrender.com/api/health),
+>   with real PayPal authorizations, captures and voids, and a real model panel.
+> - **Shown end to end.** A cover settled through the deployed server
+>   ([`paypal/deploy/live-cover.json`](paypal/deploy/live-cover.json)): $20.00
+>   held, the refund window cut, suspected, confirmed, $0.36 captured and $19.64
+>   released, with PayPal's ids. The browser test passes all 53 checks on the live site.
+> - **The same code as RedLine on GenLayer.** `redline_core`, `redline_text`
+>   and `redline_prompts` are imported unchanged; their 526 tests still pass.
+>
+> Read on: [the server](paypal/README.md) ·
+> [the web app](paypal/web/README.md) ·
+> [the architecture](docs/PAYPAL-ARCHITECTURE.md).
+> The rest of this page is RedLine on GenLayer.
+
 **Live app: [red-line-v0.vercel.app](https://red-line-v0.vercel.app)** - open a cover on GenLayer
 Studio with a one-click burner wallet, or on the Bradbury testnet with your
 own. Docs, from the introduction to the roadmap, are on the site and in

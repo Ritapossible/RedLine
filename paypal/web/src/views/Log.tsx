@@ -26,8 +26,8 @@ export function Log() {
       <p className="eyebrow">Transparency log</p>
       <h1 className="h2">Every decision, on the record.</h1>
       <p className="sub">
-        Each entry stores the hash of the one before it, so editing or deleting any past entry breaks every hash after it. The newest hash is
-        anchored on GenLayer, so even a rewrite that rebuilds the chain no longer matches.
+        Each entry stores the hash of the one before it, so editing or deleting any past entry breaks every hash after it. Anyone can recheck the
+        whole chain here. Next: publishing the newest hash on GenLayer, so even a rewrite that rebuilds the chain would no longer match.
       </p>
       {PREVIEW && <p className="notice amber small" style={{ marginTop: 18 }}>In the preview, the log is this browser's own; the server's log is public.</p>}
       {error && <p className="notice red" role="alert">{error}</p>}
@@ -37,7 +37,7 @@ export function Log() {
             <span className="row">
               <span className={`badge ${data.verifies ? "green" : "red"}`}><i /> {data.verifies ? "Chain verified" : "Chain broken"}</span>
               <span className="muted small">{data.head} entries</span>
-              <span className="badge">{data.anchor.network}: {data.anchor.matches === null || data.anchor.matches === undefined ? "not anchored in the preview" : data.anchor.matches ? "matches" : "does not match"}</span>
+              <span className="badge">{data.anchor.network}: {data.anchor.matches === null || data.anchor.matches === undefined ? (PREVIEW ? "not anchored in the preview" : "anchoring coming next") : data.anchor.matches ? "matches" : "does not match"}</span>
             </span>
             <button className="btn sm" onClick={reload}>Check again</button>
           </div>

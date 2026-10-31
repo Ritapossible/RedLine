@@ -28,21 +28,29 @@ npm run dev                      # http://localhost:5173
 
 node scripts/parity.mjs          # the preview's text rules == redline_text, on every example page
 npm run build && npx vite preview --port 4174 &
-node scripts/e2e.mjs             # a real browser: checkout, every terms version, a settled cut, phone layout
+node scripts/e2e.mjs [url]       # a real browser: checkout, every terms version, a settled cut, phone layout
 ```
 
 ## Host it
 
-Static files; any static host works. On Vercel (the hosted site):
+Static files; any static host works. The hosted site is
+[redline-paypal.vercel.app](https://redline-paypal.vercel.app), on Vercel:
 
 1. Import the repository. Vercel imports the default branch (`main`), which
    has no `paypal/web`, so the first deploy is only a placeholder.
 2. **Settings → Environments → Production → Branch Tracking:** `paypal`.
 3. **Settings → Build and Deployment:** Root Directory `paypal/web`;
    "Include files outside the root directory in the Build Step" **enabled**
-   (the demo vendor's pages come from `examples/`); framework Vite.
-4. Push to `paypal`: every push deploys.
+   (the preview's demo pages come from `examples/`); framework Vite.
+4. **Settings → Environment Variables:** `VITE_API_URL` = the server's URL
+   (`https://redline-paypal-api.onrender.com`), then redeploy. Without it the
+   site is the in-browser preview.
+5. Push to `paypal`: every push deploys.
 
-`vercel.json` sets the build and the security headers. The back end runs on
-Render; once it is up, `/api` is routed to it. Without it, the site runs the
-preview.
+`vercel.json` sets the build and the security headers. The server
+([`../README.md`](../README.md)) allows the site's origin through
+`REDLINE_WEB_ORIGINS`.
+
+The live site passes `scripts/e2e.mjs` against the server on PayPal's sandbox.
+There it holds with the sandbox test card: PayPal's own approval window for
+"Pay with PayPal" is not built yet.

@@ -47,7 +47,7 @@ export function How() {
         <div className="faq">
           <details open><summary>It needs the vendor to opt in</summary><p>PayPal's API cannot hold or release a payment between two other parties. The vendor integrating RedLine is the product, a trust badge they choose to offer.</p></details>
           <details><summary>Covers last at most 28 days</summary><p>A PayPal authorization lasts 29 days. Renewing a cover needs a new approval from you.</p></details>
-          <details><summary>One operator reads the page</summary><p>RedLine's server reads the page and runs the panel. The log stores what was read and each reading, and is anchored on GenLayer, so a ruling can be checked later. RedLine on GenLayer, where independent validators read the page, is the version no single party controls.</p></details>
+          <details><summary>One operator reads the page</summary><p>RedLine's server reads the page and runs the panel. The log stores what was read and each reading in a hash chain anyone can recheck, so a ruling can be checked later; publishing its newest hash on GenLayer is next. RedLine on GenLayer, where independent validators read the page, is the version no single party controls.</p></details>
           <details><summary>It judges the text, not the law</summary><p>RedLine decides whether the page still gives the right you pinned, not whether a change is fair or legal.</p></details>
         </div>
         <p className="sub">

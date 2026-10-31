@@ -136,7 +136,7 @@ export function Home() {
           </div>
           <div>
             <h3><span className="row"><Chain /> Every decision on the record</span></h3>
-            <p>What was read, each model's reading and each PayPal call go into a hash-chained log, anchored on GenLayer so anyone can check it hasn't been rewritten.</p>
+            <p>What was read, each model's reading and each PayPal call go into a hash-chained log that anyone can recheck for rewrites. Publishing its newest hash on GenLayer is next.</p>
           </div>
         </div>
       </section>
