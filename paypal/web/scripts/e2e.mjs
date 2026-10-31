@@ -47,7 +47,7 @@ if (preview) {
   await page.getByRole("button", { name: "Pay with PayPal" }).click();
   await page.getByRole("button", { name: /Approve the hold/ }).click();
 } else {
-  const frame = page.locator('.paypal-buttons iframe[src*="paypal.com"]').first();
+  const frame = page.locator(".rl-paypal iframe").first();
   const shown = await frame.waitFor({ timeout: 20000 }).then(() => true, () => false);
   check("PayPal's own checkout buttons load", shown);
   await page.getByRole("button", { name: /Use a sandbox test card/ }).click();

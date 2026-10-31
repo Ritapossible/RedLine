@@ -379,7 +379,7 @@ function PayPalButtons({ clientId, orderId, disabled, onApprove, onProblem }: {
   }, [clientId, orderId]);
 
   return (
-    <div className="paypal-buttons" aria-busy={state === "loading"} style={disabled ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
+    <div className="rl-paypal" aria-busy={state === "loading"} style={disabled ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
       {state === "loading" && <p className="muted small row"><span className="spinner" /> Loading PayPal…</p>}
       {state === "failed" && <p className="notice amber small">PayPal's window could not load here. Use the sandbox test card below.</p>}
       <div ref={ref} />

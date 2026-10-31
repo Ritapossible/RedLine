@@ -1578,6 +1578,13 @@ main,
 }
 
 /* PayPal's own checkout buttons (rendered in its iframe). */
-.paypal-buttons {
+.rl-paypal {
   min-height: 52px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px 14px 6px;
+}
+.rl-paypal > p {
+  color: #333;
+  margin: 0 0 8px;
 }
