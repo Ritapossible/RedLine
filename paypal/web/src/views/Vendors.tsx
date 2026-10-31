@@ -1,5 +1,4 @@
 import { Mark } from "../components/Logo";
-import { REPO } from "../components/Chrome";
 import { ArrowRight, Code, Shield, Spark } from "../components/icons";
 
 export function Vendors() {
@@ -17,9 +16,6 @@ export function Vendors() {
             you relied on, you are not charged for the rest. PayPal holds the payment; you collect it as your terms hold.
           </p>
           <a className="btn-cta" href="#/demo">See the checkout <ArrowRight /></a>
-          <div className="hero-links">
-            <a href={REPO} target="_blank" rel="noreferrer">Talk to us on GitHub</a>
-          </div>
           <div className="halftone" aria-hidden style={{ height: 200 }} />
         </div>
       </section>

@@ -3,6 +3,7 @@ import { api, ApiError, PREVIEW, type Cover, type CheckoutProblem, type Passage,
 import { ArrowRight, Check, Lock } from "../components/icons";
 import { duration, money } from "../lib/format";
 import { useLoad } from "../lib/hooks";
+import { loadPayPal } from "../lib/paypal";
 import { go, href } from "../lib/router";
 
 const MAX_PINS = 4;
@@ -15,6 +16,8 @@ export function Checkout({ vendorToken }: { vendorToken: string }) {
   const vendor = useLoad(() => api.vendor(vendorToken), [vendorToken]);
   const terms = useLoad(() => api.terms(vendorToken), [vendorToken]);
   const suggestions = useLoad(() => api.suggest(vendorToken), [vendorToken]);
+  const health = useLoad(() => api.health(), []);
+  const clientId = PREVIEW ? null : health.data?.paypalClientId ?? null;
   const [pins, setPins] = useState<Passage[]>([]);
   const [problems, setProblems] = useState<CheckoutProblem[]>([]);
   const [selection, setSelection] = useState("");
@@ -149,9 +152,20 @@ export function Checkout({ vendorToken }: { vendorToken: string }) {
             ) : (
               <div className="stack" style={{ marginTop: 18 }}>
                 <p className="notice green small">Pins verified against the live page. Nothing is held yet.</p>
-                <button className="btn block lg pay-paypal" onClick={() => (PREVIEW ? setApproving(true) : finish("paypal"))} disabled={busy !== ""}>
-                  {busy === "paypal" ? <span className="spinner" /> : null} Pay with PayPal
-                </button>
+                {clientId ? (
+                  <PayPalButtons
+                    clientId={clientId}
+                    orderId={opened.orderId}
+                    disabled={busy !== ""}
+                    onApprove={() => finish("paypal")}
+                    onProblem={setError}
+                  />
+                ) : (
+                  <button className="btn block lg pay-paypal" onClick={() => (PREVIEW ? setApproving(true) : finish("paypal"))} disabled={busy !== "" || health.loading}>
+                    {busy === "paypal" ? <span className="spinner" /> : null} Pay with PayPal
+                  </button>
+                )}
+                {busy === "paypal" && <p className="muted small row"><span className="spinner" /> PayPal approved. Placing the hold…</p>}
                 <button className="btn block" onClick={() => finish("card")} disabled={busy !== ""}>
                   {busy === "card" ? <span className="spinner" /> : null} Use a sandbox test card
                 </button>
@@ -321,6 +335,54 @@ function PayPalApproval({ amount, busy, onApprove, onCancel }: { amount: string;
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** PayPal's own buttons. The order already exists on the server; PayPal's
+ *  window only asks the buyer to approve it. */
+function PayPalButtons({ clientId, orderId, disabled, onApprove, onProblem }: {
+  clientId: string;
+  orderId: string;
+  disabled: boolean;
+  onApprove: () => void;
+  onProblem: (message: string) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [state, setState] = useState<"loading" | "ready" | "failed">("loading");
+  const approve = useRef(onApprove);
+  const problem = useRef(onProblem);
+  approve.current = onApprove;
+  problem.current = onProblem;
+
+  useEffect(() => {
+    let live = true;
+    let buttons: { close?: () => Promise<void> } | null = null;
+    loadPayPal(clientId)
+      .then((paypal) => {
+        if (!live || !ref.current) return;
+        const b = paypal.Buttons({
+          style: { layout: "vertical", color: "gold", shape: "pill", label: "paypal", height: 48 },
+          createOrder: () => orderId,
+          onApprove: async () => approve.current(),
+          onCancel: () => problem.current("You closed PayPal's window. Nothing is held; you can try again."),
+          onError: () => problem.current("PayPal could not complete the approval. Nothing is held; try again or use the test card."),
+        });
+        buttons = b;
+        return b.render(ref.current).then(() => live && setState("ready"));
+      })
+      .catch(() => live && setState("failed"));
+    return () => {
+      live = false;
+      buttons?.close?.().catch(() => undefined);
+    };
+  }, [clientId, orderId]);
+
+  return (
+    <div className="paypal-buttons" aria-busy={state === "loading"} style={disabled ? { opacity: 0.5, pointerEvents: "none" } : undefined}>
+      {state === "loading" && <p className="muted small row"><span className="spinner" /> Loading PayPal…</p>}
+      {state === "failed" && <p className="notice amber small">PayPal's window could not load here. Use the sandbox test card below.</p>}
+      <div ref={ref} />
     </div>
   );
 }

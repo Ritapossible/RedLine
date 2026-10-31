@@ -188,6 +188,8 @@ export interface LogPage {
 export interface Health {
   mode: "preview" | "sandbox";
   build?: string;
+  /** PayPal's public client id, for its checkout window. Absent in the preview. */
+  paypalClientId?: string | null;
 }
 
 export type CheckoutProblem = { passageId?: string; message: string };

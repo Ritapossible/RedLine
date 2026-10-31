@@ -32,6 +32,8 @@ LEASE_SECONDS = 120
 SWEEP_AFTER = 600  # an opening cover older than this is resolved from PayPal's record
 ACCEPT_SECONDS = 3600
 CHECK_NOW_GAP = 3
+OPENING_KINDS = ("create_order", "create_order_card", "authorize")
+OPENING_ATTEMPTS = 6
 
 
 class CoverError(Exception):
@@ -179,6 +181,9 @@ class Covers:
             raise CoverError(409, "That order belongs to another checkout.")
         if c["state"] != "opening":
             return c
+        status = self.paypal.order_status(order_id)
+        if status not in ("APPROVED", "COMPLETED"):
+            raise CoverError(409, "Approve the payment in PayPal's window first. Nothing is held yet.")
         hold = self.op(token, 1, "authorize", "", c["amount_cents"], False,
                        lambda rid: self.paypal.authorize_order(order_id, request_id=rid))
         return self.open(c, hold)
@@ -237,8 +242,14 @@ class Covers:
         """Run one PayPal write through the journal: written before it is sent,
         under a deterministic request id, so a crash or retry never acts twice.
         ``send(request_id)`` returns the PayPal result; its id is recorded."""
-        rid = "rl-%s-%d-%s-%s" % (token[:12], step, kind, (authorization_id or "x")[:17])
-        row = self.db.execute("SELECT state, result_id FROM paypal_ops WHERE request_id = ?", (rid,)).fetchone()
+        base = "rl-%s-%d-%s-%s" % (token[:12], step, kind, (authorization_id or "x")[:17])
+        rid, row = base, None
+        for attempt in range(OPENING_ATTEMPTS):
+            rid = base if attempt == 0 else "%s-r%d" % (base, attempt)
+            row = self.db.execute("SELECT state, result_id FROM paypal_ops WHERE request_id = ?", (rid,)).fetchone()
+            # A refused order or authorization moved no money: the buyer may try again.
+            if not (row and row[0] == "declined" and kind in OPENING_KINDS):
+                break
         if row and row[0] == "done":
             return self.replay(kind, row[1])
         if row and row[0] == "declined":

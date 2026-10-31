@@ -47,11 +47,6 @@ export function Home() {
           <a className="btn-cta" href="#/demo">
             Try the live demo <ArrowRight />
           </a>
-          <div className="hero-links">
-            <span>Two minutes, no account.</span>
-            <a href="#/vendors">For vendors</a>
-            <a href="#/how">How it works</a>
-          </div>
           {PREVIEW && (
             <span className="preview-chip">Preview: PayPal and the AI<span className="wide-only"> panel</span> are simulated<span className="wide-only"> in your browser</span></span>
           )}

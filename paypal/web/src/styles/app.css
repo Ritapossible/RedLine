@@ -1576,3 +1576,8 @@ main,
     font-size: 19px;
   }
 }
+
+/* PayPal's own checkout buttons (rendered in its iframe). */
+.paypal-buttons {
+  min-height: 52px;
+}

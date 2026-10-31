@@ -38,7 +38,7 @@ check("clicking a highlighted passage pins it", (await page.locator("mark.pinned
 await page.getByRole("button", { name: /Remove|Unpin/ }).last().click();
 check("a pin can be removed", (await page.locator("mark.pinned").count()) === 1);
 await page.getByRole("button", { name: /Continue to payment/ }).click();
-await page.getByRole("button", { name: "Pay with PayPal" }).waitFor();
+await page.getByRole("button", { name: /Use a sandbox test card/ }).waitFor();
 check("pins are verified before anything is held", await page.getByText("Pins verified against the live page").isVisible());
 // The preview simulates PayPal's approval window. Against a server on the real
 // sandbox, the hold is made with a sandbox test card.
@@ -47,6 +47,9 @@ if (preview) {
   await page.getByRole("button", { name: "Pay with PayPal" }).click();
   await page.getByRole("button", { name: /Approve the hold/ }).click();
 } else {
+  const frame = page.locator('.paypal-buttons iframe[src*="paypal.com"]').first();
+  const shown = await frame.waitFor({ timeout: 20000 }).then(() => true, () => false);
+  check("PayPal's own checkout buttons load", shown);
   await page.getByRole("button", { name: /Use a sandbox test card/ }).click();
 }
 await page.waitForURL(/#\/cover\//);

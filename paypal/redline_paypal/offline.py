@@ -16,6 +16,7 @@ class FakeSandbox:
         self.ids = itertools.count(1)
         self.orders, self.auths, self.captures, self.seen = {}, {}, {}, {}
         self.honor, self.clock = honor_seconds, clock or (lambda: 0)
+        self.auto_approve = True
 
     def __call__(self, request):
         path, method = request.url.path, request.method
@@ -47,7 +48,8 @@ class FakeSandbox:
         if method == "POST" and path == "/v2/checkout/orders":
             oid = "O%04d" % next(self.ids)
             unit = body["purchase_units"][0]
-            o = {"id": oid, "status": "CREATED", "purchase_units": [{"amount": unit["amount"], "payments": {}}]}
+            # The stand-in's buyer approves at once; a real one approves in PayPal's window.
+            o = {"id": oid, "status": "APPROVED" if self.auto_approve else "CREATED", "purchase_units": [{"amount": unit["amount"], "payments": {}}]}
             if "card" in body.get("payment_source", {}):
                 aid = self.new_auth(unit["amount"])
                 o["status"] = "COMPLETED"

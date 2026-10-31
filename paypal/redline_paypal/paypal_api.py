@@ -124,6 +124,10 @@ class RestPayPal:
             raise PayPalError(0, "NOT_AUTHORIZED", "order %s is %s" % (order_id, r.get("status")))
         return hold(auths[-1])
 
+    def order_status(self, order_id):
+        """CREATED until the buyer approves in PayPal's window; APPROVED after."""
+        return self._call("GET", "/v2/checkout/orders/%s" % order_id, retry=True).get("status", "")
+
     def order_authorization(self, order_id):
         """The order's current authorization, or None if it has none."""
         auths = _authorizations(self._call("GET", "/v2/checkout/orders/%s" % order_id, retry=True))

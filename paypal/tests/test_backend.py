@@ -361,3 +361,34 @@ def test_a_seat_that_fails_is_reported_as_doubt_not_as_same():
     app.covers.tick()
     ch = app.covers.view(app.covers.load(token))["checks"][-1]
     assert ch["kind"] == "kept" and "did not answer" in ch["note"] and "still given" not in ch["note"]
+
+
+def test_pay_with_paypal_needs_the_buyers_approval_and_a_refusal_does_not_lock_the_checkout():
+    app, clock, sandbox = make()
+    sandbox.auto_approve = False
+    v = app.vendors.create_demo()
+    c = app.covers.start_checkout(v, suggested(app, v))
+    for _ in range(2):  # pressed before approving, twice
+        with pytest.raises(CoverError) as e:
+            app.covers.approve(c["token"], c["order_id"])
+        assert e.value.status == 409 and "Approve the payment" in str(e.value)
+    sandbox.orders[c["order_id"]]["status"] = "APPROVED"  # the buyer approves in PayPal's window
+    assert app.covers.approve(c["token"], c["order_id"])["state"] == core.COVER_ACTIVE
+
+
+def test_a_declined_authorization_can_be_tried_again():
+    app, clock, sandbox = make()
+    v = app.vendors.create_demo()
+    c = app.covers.start_checkout(v, suggested(app, v))
+    real = sandbox.route
+
+    def refuse_once(method, path, body):
+        if path.endswith("/authorize") and not refuse_once.done:
+            refuse_once.done = True
+            return httpx.Response(422, json={"name": "UNPROCESSABLE_ENTITY", "message": "x", "details": [{"issue": "INSTRUMENT_DECLINED"}]})
+        return real(method, path, body)
+    refuse_once.done = False
+    sandbox.route = refuse_once
+    with pytest.raises(CoverError):
+        app.covers.approve(c["token"], c["order_id"])
+    assert app.covers.approve(c["token"], c["order_id"])["state"] == core.COVER_ACTIVE

@@ -103,7 +103,9 @@ def create_app(env=os.environ, **kw):
     async def health():
         a = app_()
         return {"mode": "preview" if a.offline else "sandbox", "panel": "stand-in" if a.stand_in_panel else "models",
-                "build": (os.environ.get("RENDER_GIT_COMMIT") or "")[:7] or None}
+                "build": (os.environ.get("RENDER_GIT_COMMIT") or "")[:7] or None,
+                # Public by design: PayPal's checkout window needs it in the browser. The secret never leaves the server.
+                "paypalClientId": None if a.offline else a.env.get("PAYPAL_CLIENT_ID") or None}
 
     @api.post("/api/demo/vendors")
     async def create_vendor():
