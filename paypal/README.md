@@ -51,15 +51,20 @@ money is gone. RedLine for PayPal puts those promises behind the payment:
   reauthorization after PayPal's 3-day honor period; an orphaned hold voided;
   failing, split and partly failing panels.
 - **RedLine's own tests** (526) still pass; the server uses those modules as they are.
-- **Browser test** (`web/scripts/e2e.mjs`) on the live site: 53 checks,
-  including every terms version and a cut settling to the cent.
+- **Browser test** (`web/scripts/e2e.mjs`) on the live site, including
+  PayPal's own buttons loading, every terms version and a cut settling to the cent.
+- **PayPal's approval window, end to end:** a guest card payment approved in
+  PayPal's sandbox window on the live site opened a cover holding $20.00.
 
 ## Try it (two minutes)
 
 1. Open [the demo](https://redline-paypal.vercel.app/#/demo) and start it. You
    are buying prepaid API credit from Acme Data API, a fictional vendor.
-2. Pin the 30-day refund, continue to payment, and choose **Use a sandbox test
-   card**. PayPal holds $20.00.
+2. Pin the 30-day refund and continue to payment. Pay in **PayPal's own
+   window**: the PayPal button (log in with a sandbox personal account) or
+   **Debit or Credit Card** as a guest (sandbox card `4111 1111 1111 1111`,
+   any future expiry, CVV `123`, any US address). Or skip PayPal's window with
+   **Use a sandbox test card**. Either way PayPal holds $20.00; nothing is collected.
 3. Open **Acme's vendor console** and switch the terms to **Refund window cut**.
 4. On the cover, press **Check now**: the cut is only *suspected*, and no
    money moves. A few seconds later press **Run the confirming check**:
@@ -72,8 +77,6 @@ The free server sleeps when idle; the first request can take up to a minute.
 ## Limits, stated plainly
 
 - **Sandbox only.** The code refuses PayPal's live hosts.
-- **"Pay with PayPal" needs PayPal's approval window,** which is not built yet;
-  on the live site, hold with the sandbox test card.
 - **The pin assistant is curated** for the demo vendor; the model-backed one is next.
 - **The log is hash-chained, not yet anchored.** Publishing its newest hash on
   GenLayer is next.

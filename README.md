@@ -17,11 +17,13 @@
 >
 > - **Live on PayPal's sandbox.** The site runs against the server at
 >   [redline-paypal-api.onrender.com](https://redline-paypal-api.onrender.com/api/health),
->   with real PayPal authorizations, captures and voids, and a real model panel.
+>   with PayPal's own checkout window, real authorizations, captures and voids,
+>   and a real model panel.
 > - **Shown end to end.** A cover settled through the deployed server
 >   ([`paypal/deploy/live-cover.json`](paypal/deploy/live-cover.json)): $20.00
 >   held, the refund window cut, suspected, confirmed, $0.36 captured and $19.64
->   released, with PayPal's ids. The browser test passes all 53 checks on the live site.
+>   released, with PayPal's ids. The browser test passes on the live site,
+>   and a payment approved in PayPal's own window opens a cover.
 > - **The same code as RedLine on GenLayer.** `redline_core`, `redline_text`
 >   and `redline_prompts` are imported unchanged; their 526 tests still pass.
 >

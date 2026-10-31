@@ -51,6 +51,9 @@ Static files; any static host works. The hosted site is
 ([`../README.md`](../README.md)) allows the site's origin through
 `REDLINE_WEB_ORIGINS`.
 
-The live site passes `scripts/e2e.mjs` against the server on PayPal's sandbox.
-There it holds with the sandbox test card: PayPal's own approval window for
-"Pay with PayPal" is not built yet.
+On a live server, "Pay with PayPal" is PayPal's own buttons (its JS SDK,
+`intent=authorize`): the server creates the order, the buyer approves it in
+PayPal's window, and the server authorizes it. The client id comes from the
+server's `/api/health`; it is public by design, and the secret never leaves
+the server. The live site passes `scripts/e2e.mjs`, which checks PayPal's
+buttons load and then holds with the sandbox test card.
