@@ -1,0 +1,48 @@
+# Render blueprint for RedLine for PayPal's server (the web app is on Vercel).
+# Free plan: no card, no disk, so covers live in a free Postgres database (Neon).
+# Secrets are entered in Render's dashboard (sync: false), never committed.
+services:
+  - type: web
+    name: redline-paypal-api
+    runtime: docker
+    plan: free
+    branch: paypal
+    dockerfilePath: ./paypal/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - paypal/redline_paypal/**
+        - paypal/requirements.txt
+        - paypal/Dockerfile
+        - contracts/redline_core.py
+        - contracts/redline_text.py
+        - contracts/redline_prompts.py
+        - examples/**
+        - render.yaml
+    envVars:
+      # Covers, checks and the log: a Neon connection string (postgresql://...?sslmode=require).
+      # A database of its own: never Remit's.
+      - key: REDLINE_DB
+        sync: false
+      # This service's own URL (https://<name>.onrender.com); the demo's terms pages live under it.
+      - key: REDLINE_PUBLIC_URL
+        sync: false
+      - key: REDLINE_WEB_ORIGINS
+        value: https://redline-paypal.vercel.app
+      # 1 runs the PayPal stand-in and stand-in models. Set 0 once the keys below are in.
+      - key: REDLINE_OFFLINE
+        value: "1"
+      # A PayPal sandbox REST app (live hosts are refused by the code).
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      # The panel: any OpenAI-compatible API, one model name per seat, comma-separated.
+      - key: REDLINE_MODEL_API_KEY
+        sync: false
+      - key: REDLINE_MODEL_BASE_URL
+        sync: false
+      - key: REDLINE_PANEL_MODELS
+        sync: false

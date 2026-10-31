@@ -1,0 +1,29 @@
+# RedLine for PayPal's tests on every push to the paypal branch: the server
+# offline (the PayPal stand-in, stand-in models), and RedLine's own suite,
+# whose modules the server imports unchanged.
+name: paypal-tests
+
+on:
+  push:
+    branches: [paypal]
+  pull_request:
+    branches: [paypal]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q -r paypal/requirements.txt
+      - name: Server
+        working-directory: paypal
+        run: python -m pytest -q tests
+      - name: RedLine's modules
+        run: python -m pytest -q tests

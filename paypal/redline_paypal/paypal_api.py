@@ -124,6 +124,11 @@ class RestPayPal:
             raise PayPalError(0, "NOT_AUTHORIZED", "order %s is %s" % (order_id, r.get("status")))
         return hold(auths[-1])
 
+    def order_authorization(self, order_id):
+        """The order's current authorization, or None if it has none."""
+        auths = _authorizations(self._call("GET", "/v2/checkout/orders/%s" % order_id, retry=True))
+        return hold(auths[-1]) if auths else None
+
     def get_authorization(self, authorization_id):
         return hold(self._call("GET", "/v2/payments/authorizations/%s" % authorization_id, retry=True))
 

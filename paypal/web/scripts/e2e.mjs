@@ -41,7 +41,9 @@ await page.getByRole("button", { name: /Continue to payment/ }).click();
 await page.getByRole("button", { name: "Pay with PayPal" }).waitFor();
 check("pins are verified before anything is held", await page.getByText("Pins verified against the live page").isVisible());
 await page.getByRole("button", { name: "Pay with PayPal" }).click();
-await page.getByRole("button", { name: /Approve the hold/ }).click();
+// The preview simulates PayPal's approval window; the server is approved in PayPal's own.
+const approve = page.getByRole("button", { name: /Approve the hold/ });
+if (await approve.isVisible({ timeout: 1500 }).catch(() => false)) await approve.click();
 await page.waitForURL(/#\/cover\//);
 const cover = page.url();
 await page.getByText("Watching").first().waitFor();

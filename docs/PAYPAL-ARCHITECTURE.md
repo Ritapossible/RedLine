@@ -547,3 +547,13 @@ The money path is proven before anything is built on it:
    recorded semantics; the checkout and the sweep.
 3. Fetcher and watcher; the panel; the seven cases offline, then on the sandbox.
 4. Pin assistant, the log and its anchor, the web app, hosting, the worker.
+
+Status (31 October): 1 passed on the real sandbox. 2 and 3 are built and
+tested offline (`paypal/tests/test_backend.py`: every demo terms version
+through a whole cover and settled, a dropped suspicion, a cut at the last
+check, a failed void retried without a second capture, reauthorization after
+the honor period, the sweep voiding an orphaned hold, a failing and a split
+panel). The web app passes its browser end-to-end run against the server.
+Still to do from 4: PayPal's own approval window for "Pay with PayPal" on the
+sandbox (the test-card path works today), the model-backed pin assistant (the
+demo vendor's suggestions are curated), and the log's GenLayer anchor.
