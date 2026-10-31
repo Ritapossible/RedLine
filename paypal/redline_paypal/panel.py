@@ -18,25 +18,34 @@ from .core import core, prompts
 
 CUT = core.BREACH_READINGS
 SURE = core.MIN_BREACH_CONFIDENCE
+RETRIES = 1
+RETRY_SECONDS = 2
 
 
 class Panel:
-    def __init__(self, models, quorum=None, timeout=60):
+    def __init__(self, models, quorum=None, timeout=60, sleep=time.sleep):
         if not models:
             raise ValueError("a panel needs at least one model")
         self.models = dict(models)
         self.quorum = int(quorum) if quorum else len(self.models) // 2 + 1
         if not 1 <= self.quorum <= len(self.models):
             raise ValueError("quorum %d is outside 1..%d" % (self.quorum, len(self.models)))
-        self.timeout = timeout
+        self.timeout, self.sleep = timeout, sleep
 
     def _ask(self, name, question):
-        try:
-            answer = prompts.read_answer(self.models[name](question))
-            return {"seat": name, **answer}
-        except Exception as exc:  # an error is doubt, never a cut
-            return {"seat": name, "reading": core.READ_CANNOT_TELL, "confidence": 0, "reason": "",
-                    "error": "%s: %s" % (type(exc).__name__, str(exc)[:120])}
+        """One seat's answer. A seat that errors (a busy API, a timeout) is asked
+        once more; if it fails again, its answer is doubt, never a cut."""
+        exc = None
+        for attempt in range(1 + RETRIES):
+            try:
+                answer = prompts.read_answer(self.models[name](question))
+                return {"seat": name, **answer}
+            except Exception as e:
+                exc = e
+                if attempt < RETRIES:
+                    self.sleep(RETRY_SECONDS)
+        return {"seat": name, "reading": core.READ_CANNOT_TELL, "confidence": 0, "reason": "",
+                "error": "%s: %s" % (type(exc).__name__, str(exc)[:120])}
 
     def read(self, question):
         """``{reading, confidence, contested, votes}`` for one passage."""

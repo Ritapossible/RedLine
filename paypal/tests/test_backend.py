@@ -34,6 +34,7 @@ def make(clock=None, sandbox=None, models=None):
     sandbox = sandbox or FakeSandbox(clock=clock)
     paypal = RestPayPal("id", "secret", transport=httpx.MockTransport(sandbox), sleep=lambda s: None)
     app = App({"REDLINE_OFFLINE": "1", "REDLINE_DB": ":memory:"}, clock=clock, paypal=paypal, models=models)
+    app.panel.sleep = lambda s: None
     return app, clock, sandbox
 
 
@@ -392,3 +393,22 @@ def test_a_declined_authorization_can_be_tried_again():
     with pytest.raises(CoverError):
         app.covers.approve(c["token"], c["order_id"])
     assert app.covers.approve(c["token"], c["order_id"])["state"] == core.COVER_ACTIVE
+
+
+def test_a_seat_that_errors_once_is_asked_again():
+    calls = []
+
+    def flaky(prompt):
+        calls.append(1)
+        if len(calls) == 1:
+            raise RuntimeError("busy")
+        return json.dumps({"reading": "narrowed", "confidence": 95, "reason": ""})
+    yes = lambda p: json.dumps({"reading": "narrowed", "confidence": 100, "reason": ""})  # noqa: E731
+    app, clock, sandbox = make(models={"A": yes, "B": flaky})
+    app.panel.sleep = lambda s: None
+    v, token = opened(app, clock)
+    app.vendors.set_version(v["token"], "narrowed")
+    clock.t += 60
+    app.covers.tick()
+    ch = app.covers.view(app.covers.load(token))["checks"][-1]
+    assert ch["kind"] == "breach" and ch["suspected"] and len(calls) == 2
