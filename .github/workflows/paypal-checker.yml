@@ -1,0 +1,52 @@
+# RedLine for PayPal's scheduled checker: every 15 minutes, the covers longer
+# than a free server stays awake, and the settlement of any cover whose end
+# passed while the server slept. Demo pages are never read here.
+# It lives on main because GitHub runs schedules from the default branch
+# only; it checks out and runs the paypal branch. It does nothing until the
+# REDLINE_DB secret is set.
+name: paypal-checker
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: paypal-checker
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      REDLINE_DB: ${{ secrets.REDLINE_DB }}
+      REDLINE_PUBLIC_URL: ${{ vars.REDLINE_PUBLIC_URL || 'https://redline-paypal-api.onrender.com' }}
+      REDLINE_OFFLINE: ${{ vars.REDLINE_OFFLINE || '0' }}
+      REDLINE_ALLOWED_HOSTS: ${{ vars.REDLINE_ALLOWED_HOSTS }}
+      PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+      PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+      REDLINE_MODEL_API_KEY: ${{ secrets.REDLINE_MODEL_API_KEY }}
+      REDLINE_MODEL_BASE_URL: ${{ secrets.REDLINE_MODEL_BASE_URL }}
+      REDLINE_PANEL_MODELS: ${{ secrets.REDLINE_PANEL_MODELS }}
+    steps:
+      - name: Not configured yet
+        if: env.REDLINE_DB == ''
+        run: echo "REDLINE_DB is not set; nothing to check."
+      - uses: actions/checkout@v4
+        if: env.REDLINE_DB != ''
+        with:
+          ref: paypal
+      - uses: actions/setup-python@v5
+        if: env.REDLINE_DB != ''
+        with:
+          python-version: "3.12"
+      - name: Check and settle
+        if: env.REDLINE_DB != ''
+        working-directory: paypal
+        run: |
+          pip install -q -r requirements.txt
+          python -m redline_paypal.worker --once
