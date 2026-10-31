@@ -342,7 +342,14 @@ class Covers:
             if asked and asked["contested"]:
                 record["note"] = "The panel disagreed. Disagreement is not a cut: kept, and asked again next check."
             elif asked:
-                record["note"] = "The wording changed; the panel reads the right as still given."
+                failed = sum(1 for v in asked["votes"] if v.get("error"))
+                if asked["reading"] == core.READ_SAME:
+                    record["note"] = "The wording changed; the panel reads the right as still given."
+                elif failed:
+                    record["note"] = ("%d of %d panel seats did not answer. Doubt is not a cut: kept, and asked again "
+                                      "next check." % (failed, len(asked["votes"])))
+                else:
+                    record["note"] = "The panel was not sure enough to call it a cut. Doubt is not a cut: kept."
             else:
                 record["note"] = "Every pinned passage is on the page word for word, its surroundings unchanged. No model asked."
             if dropped:

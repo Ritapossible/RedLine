@@ -95,6 +95,10 @@ def create_app(env=os.environ, **kw):
         return asyncio.to_thread(fn, *args)
 
     # ------------------------------------------------------------- routes
+    @api.get("/")
+    async def root():
+        return {"service": "RedLine for PayPal API", "app": "https://redline-paypal.vercel.app", "health": "/api/health"}
+
     @api.get("/api/health")
     async def health():
         a = app_()

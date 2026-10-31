@@ -348,3 +348,16 @@ def test_http_down_page_and_errors(http):
     assert http.get("/api/vendors/%s/terms" % v["token"]).status_code == 503
     assert http.put("/api/demo/vendors/%s/version" % v["token"], json={"version": "bogus"}).status_code == 422
     assert http.post("/api/checkout", content=b"[1]", headers={"Content-Type": "application/json"}).status_code == 400
+
+
+def test_a_seat_that_fails_is_reported_as_doubt_not_as_same():
+    def broken(prompt):
+        raise RuntimeError("404 model not found")
+    yes = lambda p: json.dumps({"reading": "narrowed", "confidence": 100, "reason": ""})  # noqa: E731
+    app, clock, sandbox = make(models={"A": yes, "B": broken})
+    v, token = opened(app, clock)
+    app.vendors.set_version(v["token"], "narrowed")
+    clock.t += 60
+    app.covers.tick()
+    ch = app.covers.view(app.covers.load(token))["checks"][-1]
+    assert ch["kind"] == "kept" and "did not answer" in ch["note"] and "still given" not in ch["note"]
