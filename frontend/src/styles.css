@@ -1654,3 +1654,63 @@ textarea {
 .docs .small a {
   color: var(--red-text);
 }
+
+/* ------------------------------------------------------- spotlight */
+/* A product built on RedLine, linked from the landing page. */
+.spotlight {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  padding: 32px 24px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(217, 45, 50, 0.32);
+  background: radial-gradient(120% 140% at 100% 0%, rgba(217, 45, 50, 0.16), transparent 55%), var(--panel);
+}
+.spotlight h2 {
+  margin: 14px 0 0;
+  font-size: clamp(28px, 3.6vw, 42px);
+  line-height: 1.08;
+  font-weight: 560;
+  letter-spacing: -0.035em;
+}
+.spotlight p {
+  color: var(--muted);
+  margin: 14px 0 0;
+  max-width: 620px;
+}
+.spotlight-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.spotlight-actions .btn-cta {
+  margin-top: 0;
+}
+@media (min-width: 900px) {
+  .spotlight {
+    padding: 44px 48px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 40px;
+  }
+  .spotlight-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .spotlight-actions a {
+    justify-content: center;
+  }
+}
+@media (max-width: 640px) {
+  .spotlight-actions .btn-ghost-pill {
+    width: 100%;
+    justify-content: center;
+  }
+  .spotlight-actions .btn-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+}

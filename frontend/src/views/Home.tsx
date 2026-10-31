@@ -3,6 +3,7 @@ import { href, useApp } from "../state";
 import { ArrowRight, Coins, Doc, Eye, Handshake, Pin, Scale, Shield } from "../components/icons";
 import { rows, studio, summary } from "../lib/record";
 import { formatGen } from "../lib/money";
+import { PAYPAL_URL } from "../components/Header";
 
 const PINNED =
   "You may cancel at any time within 30 days of purchase and receive a full refund of any unused prepaid credit, with no questions asked.";
@@ -50,6 +51,29 @@ export function Home() {
         <video controls playsInline preload="none" poster="media/redline-intro-poster.jpg" aria-label="RedLine intro video">
           <source src="media/redline-intro.mp4" type="video/mp4" />
         </video>
+      </section>
+
+      <section className="wrap section">
+        <aside className="spotlight" aria-labelledby="spotlight-title">
+          <div>
+            <p className="eyebrow plain">New · RedLine for PayPal</p>
+            <h2 id="spotlight-title">
+              Pay for the terms you were promised. <span className="dim">Only while they hold.</span>
+            </h2>
+            <p>
+              The same rules at a PayPal checkout. PayPal holds the payment; if the vendor narrows or removes a right you pinned, it collects
+              only what it earned, and the rest is released.
+            </p>
+          </div>
+          <div className="spotlight-actions">
+            <a className="btn-cta" href={PAYPAL_URL} target="_blank" rel="noreferrer">
+              Visit RedLine for PayPal <ArrowRight />
+            </a>
+            <a className="btn-ghost-pill" href={href({ name: "docs", page: "paypal" })}>
+              How it works
+            </a>
+          </div>
+        </aside>
       </section>
 
       <section className="wrap section">

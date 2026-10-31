@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { APP_ROUTES, href, useApp } from "./state";
-import { AppBar, SiteHeader } from "./components/Header";
+import { AppBar, PAYPAL_URL, SiteHeader } from "./components/Header";
 import { Logo } from "./components/Logo";
 import { Home } from "./views/Home";
 import { Covers } from "./views/Covers";
@@ -50,12 +50,16 @@ export function App() {
             <a href={href({ name: "covers" })}>Covers</a>
             <a href={href({ name: "new" })}>Open a cover</a>
             <a href="#/#how">How it works</a>
+            <a href={PAYPAL_URL} target="_blank" rel="noreferrer">
+              RedLine for PayPal ↗
+            </a>
           </div>
           <div>
             <h4>Docs</h4>
             <a href={href({ name: "docs", page: "introduction" })}>Introduction</a>
             <a href={href({ name: "docs", page: "user-guide" })}>User guide</a>
             <a href={href({ name: "docs", page: "integration" })}>Integration</a>
+            <a href={href({ name: "docs", page: "paypal" })}>RedLine for PayPal</a>
             <a href={href({ name: "docs", page: "roadmap" })}>Roadmap</a>
           </div>
           <div>

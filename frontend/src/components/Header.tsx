@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { APP_ROUTES, href, useApp } from "../state";
 import { Logo } from "./Logo";
+
+/** RedLine for PayPal: the same rules, at a PayPal checkout. */
+export const PAYPAL_URL = "https://redline-paypal.vercel.app";
 import { ArrowUpRight } from "./icons";
 import { NETWORKS, type NetworkId } from "../chain/networks";
 import { balanceOf, createBurner, forgetBurner, fundFromFaucet } from "../chain/wallet";
@@ -24,6 +27,9 @@ export function SiteHeader() {
           <a href="#/#record">On chain</a>
           <a href={href({ name: "covers" })} aria-current={inApp ? "page" : undefined}>
             Covers
+          </a>
+          <a href={PAYPAL_URL} target="_blank" rel="noreferrer">
+            For PayPal
           </a>
         </nav>
         <a className="btn-ghost-pill" href={inApp ? href({ name: "new" }) : href({ name: "covers" })}>

@@ -10,6 +10,7 @@ import threatModel from "../../../docs/THREAT-MODEL.md?raw";
 import deployment from "../../../docs/DEPLOYMENT.md?raw";
 import faq from "../../../docs/FAQ.md?raw";
 import roadmap from "../../../docs/ROADMAP.md?raw";
+import paypal from "../../../docs/REDLINE-FOR-PAYPAL.md?raw";
 
 // The documentation lives in docs/*.md in the repository and is rendered here,
 // so there is one source. Links between the files become links between pages;
@@ -24,6 +25,7 @@ const PAGES = [
   { slug: "threat-model", file: "THREAT-MODEL.md", title: "Threat model", md: threatModel },
   { slug: "deployment", file: "DEPLOYMENT.md", title: "Build and deploy", md: deployment },
   { slug: "faq", file: "FAQ.md", title: "FAQ", md: faq },
+  { slug: "paypal", file: "REDLINE-FOR-PAYPAL.md", title: "RedLine for PayPal", md: paypal },
   { slug: "roadmap", file: "ROADMAP.md", title: "Roadmap", md: roadmap },
 ];
 const BY_FILE = new Map(PAGES.map((p) => [p.file, p.slug]));
