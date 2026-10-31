@@ -1,0 +1,24 @@
+{
+  "what": "One whole cover through RedLine's HTTP API on PayPal's real sandbox: pin, hold, cut the refund window, suspected, confirmed, settled; then PayPal's record read back.",
+  "run": "https://github.com/Ritapossible/RedLine/actions/runs/41198268945",
+  "commit": "19e6eb0",
+  "date": "2026-10-31",
+  "server": {"mode": "sandbox", "panel": "stand-in"},
+  "panel_note": "No model key was in the repository's secrets, so the panel was the stand-in models. PayPal was real.",
+  "steps": [
+    {"step": "held", "state": "active"},
+    {"step": "check on the original terms", "seq": 1, "kind": "kept", "decidedBy": "code"},
+    {"step": "check after the refund window was cut", "seq": 2, "kind": "breach", "decidedBy": "panel", "reading": "narrowed", "suspected": true},
+    {"step": "confirming check", "seq": 3, "kind": "breach", "decidedBy": "panel", "reading": "narrowed", "confirms": 2, "state": "breached"}
+  ],
+  "held_cents": 2000,
+  "settlement": {"vendorCents": 26, "releasedCents": 1974, "reason": "cut"},
+  "settlement_note": "The vendor earned 8 seconds of a 10-minute cover before the cut it confirmed; the rest was released.",
+  "paypal": {
+    "order": "4GF53068903529945",
+    "authorization": {"id": "61T80474YE0242626", "status": "VOIDED"},
+    "capture": {"id": "50982244RB204684N", "status": "COMPLETED", "amountCents": 26}
+  },
+  "read_back_from_paypal": {"authorization_status": "VOIDED", "authorized_cents": 2000, "capture_status": "COMPLETED", "captured_cents": 26},
+  "result": "passed"
+}
