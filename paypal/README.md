@@ -155,8 +155,9 @@ GitHub Actions secrets for the scheduled checker. Nothing secret is committed.
 
 - **Server:** Render, from `render.yaml` at the repository root (Docker, free plan).
 - **Database:** Neon Postgres, so covers survive the free server sleeping.
-- **Scheduled checker:** `.github/workflows/paypal-checker.yml` on `main`
-  (GitHub runs schedules from the default branch only). Every 15 minutes it
+- **Scheduled checker:** [`paypal-checker.yml`](https://github.com/Ritapossible/RedLine/blob/main/.github/workflows/paypal-checker.yml),
+  on the `main` branch, not this one: GitHub runs scheduled workflows only from
+  the default branch. Every 15 minutes it
   runs `python -m redline_paypal.worker --once` on this branch: covers longer
   than the server stays awake, and settlements that fell due while it slept.
   Demo pages are only ever read by the server itself.
