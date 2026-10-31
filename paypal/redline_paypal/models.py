@@ -32,6 +32,23 @@ def retry_after(response):
     return wait if wait <= MAX_WAIT else None
 
 
+class ModelError(Exception):
+    """The API refused: its status and its own one-line message (never the prompt)."""
+
+    def __init__(self, status, message):
+        super().__init__("HTTP %d: %s" % (status, message))
+        self.status = status
+
+
+def api_message(r):
+    try:
+        e = r.json().get("error", {})
+        msg = e.get("message") if isinstance(e, dict) else str(e)
+    except Exception:
+        msg = ""
+    return " ".join(str(msg or r.reason_phrase).split())[:160]
+
+
 class ChatModel:
     """A callable: prompt in, the model's answer text out. Temperature 0."""
 
@@ -52,5 +69,6 @@ class ChatModel:
                 break
             self.sleep(wait)
             r = self.http.post("/chat/completions", json=body)
-        r.raise_for_status()
+        if r.status_code >= 400:
+            raise ModelError(r.status_code, api_message(r))
         return without_thinking(r.json()["choices"][0]["message"]["content"])
