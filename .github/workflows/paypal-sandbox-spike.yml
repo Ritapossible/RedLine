@@ -1,0 +1,54 @@
+# The day-one PayPal sandbox spike (paypal/spike.py): hold, partial capture,
+# void, and captured + released == authorized, read back from PayPal.
+# Runs when the spike or the PayPal client changes, or by hand. The keys are
+# repository secrets; the record it prints holds ids, statuses and amounts
+# only, never PayPal's response bodies.
+name: PayPal sandbox spike
+
+on:
+  push:
+    branches: [paypal]
+    paths:
+      - paypal/spike.py
+      - paypal/redline_paypal/paypal_api.py
+      - .github/workflows/paypal-sandbox-spike.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paypal-sandbox-spike
+  cancel-in-progress: false
+
+jobs:
+  spike:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r paypal/requirements.txt
+      - name: Run the spike on the PayPal sandbox
+        working-directory: paypal
+        env:
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+        run: |
+          python spike.py sandbox-spike.json
+      - name: Summary
+        if: always()
+        working-directory: paypal
+        run: |
+          if [ -f sandbox-spike.json ]; then
+            { echo '### PayPal sandbox spike'; echo '```json'; cat sandbox-spike.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sandbox-spike
+          path: paypal/sandbox-spike.json
+          if-no-files-found: ignore
