@@ -40,10 +40,15 @@ check("a pin can be removed", (await page.locator("mark.pinned").count()) === 1)
 await page.getByRole("button", { name: /Continue to payment/ }).click();
 await page.getByRole("button", { name: "Pay with PayPal" }).waitFor();
 check("pins are verified before anything is held", await page.getByText("Pins verified against the live page").isVisible());
-await page.getByRole("button", { name: "Pay with PayPal" }).click();
-// The preview simulates PayPal's approval window; the server is approved in PayPal's own.
-const approve = page.getByRole("button", { name: /Approve the hold/ });
-if (await approve.isVisible({ timeout: 1500 }).catch(() => false)) await approve.click();
+// The preview simulates PayPal's approval window. Against a server on the real
+// sandbox, the hold is made with a sandbox test card.
+const preview = (await page.locator(".badge", { hasText: "Preview" }).count()) > 0;
+if (preview) {
+  await page.getByRole("button", { name: "Pay with PayPal" }).click();
+  await page.getByRole("button", { name: /Approve the hold/ }).click();
+} else {
+  await page.getByRole("button", { name: /Use a sandbox test card/ }).click();
+}
 await page.waitForURL(/#\/cover\//);
 const cover = page.url();
 await page.getByText("Watching").first().waitFor();
