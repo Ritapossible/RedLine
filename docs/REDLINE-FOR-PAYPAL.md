@@ -5,9 +5,10 @@ the terms you were promised, and only while they hold.**
 
 **[Open RedLine for PayPal](https://redline-paypal.vercel.app)**: buy from a
 fictional vendor, pin the rights you rely on, then become the vendor and cut
-one yourself. The site runs as a preview while its server is built: PayPal and
-the model panel are simulated in your browser, and every screen says so. The
-rules are the real ones.
+one yourself. It runs on PayPal's sandbox: the hold, the capture and the void
+are real PayPal calls, and a panel of models reads the page when its words
+change. A whole cover, from pin to capture and void, is recorded in
+[`paypal/deploy/live-cover.json`](https://github.com/Ritapossible/RedLine/blob/paypal/paypal/deploy/live-cover.json).
 
 ## How it works
 
@@ -30,9 +31,9 @@ RedLine for PayPal is built on this project, not beside it.
   `redline_prompts` (the question put to the models) are imported unchanged.
 - **The same tests.** Those modules keep their tests; the web app's preview
   is checked against `redline_text` on every example page.
-- **The log is anchored on GenLayer.** Every check, reading and PayPal call
-  goes into a hash-chained log whose newest hash is published to an
-  Intelligent Contract on GenLayer.
+- **A log anyone can recheck.** Every check, reading and PayPal call goes
+  into a hash-chained log. Publishing its newest hash to an Intelligent
+  Contract on GenLayer is next.
 
 The difference is who reads the page and who holds the money. On GenLayer,
 validators run by different people each read the page and must agree, and a
@@ -44,5 +45,5 @@ afterwards.
 
 - [The architecture](https://github.com/Ritapossible/RedLine/blob/paypal/docs/PAYPAL-ARCHITECTURE.md):
   memory, the settlement journal, scheduling, security and the decisions behind them.
-- [The code](https://github.com/Ritapossible/RedLine/tree/paypal/paypal), on the
-  `paypal` branch.
+- [The code and how to try it](https://github.com/Ritapossible/RedLine/tree/paypal/paypal),
+  on the `paypal` branch.
