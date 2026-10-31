@@ -1,3 +1,4 @@
+import { PREVIEW } from "../api";
 import { ArrowRight, Eye, Lock, Pin, Return, Scale, Shield, Chain } from "../components/icons";
 
 const FAQ: [string, string][] = [
@@ -30,32 +31,35 @@ const FAQ: [string, string][] = [
 export function Home() {
   return (
     <main id="main" tabIndex={-1}>
-      <section className="hero">
-        <div className="wrap hero-grid">
-          <div>
-            <span className="pill">
-              <i /> Terms-backed checkout on PayPal
-            </span>
-            <h1 className="display">
-              Pay for the terms you were promised. <span className="dim">Only while they hold.</span>
-            </h1>
-            <p className="lede">
-              Pin the rights you are paying for, word for word. PayPal holds the payment. If the vendor narrows or removes one, you are not
-              charged from that day on, and PayPal releases the rest.
-            </p>
-            <div className="hero-actions">
-              <a className="btn primary lg" href="#/demo">
-                Try the live demo <ArrowRight />
-              </a>
-              <a className="btn lg" href="#/vendors">
-                For vendors
-              </a>
-            </div>
-            <p className="hero-note">Two minutes, no account. You play the customer and the vendor.</p>
+      <section className="hero center">
+        <div className="wrap">
+          <span className="eyebrow-pill">
+            <i /> Terms-backed checkout on PayPal
+          </span>
+          <h1 className="display">
+            Pay for the terms you were promised.
+            <span className="dim">Only while they hold.</span>
+          </h1>
+          <p className="lede">
+            Pin the rights you are paying for, word for word. PayPal holds the payment. If the vendor narrows or removes one, you are not
+            charged from that day on, and PayPal releases the rest.
+          </p>
+          <a className="btn-cta" href="#/demo">
+            Try the live demo <ArrowRight />
+          </a>
+          <div className="hero-links">
+            <span>Two minutes, no account.</span>
+            <a href="#/vendors">For vendors</a>
+            <a href="#/how">How it works</a>
           </div>
-          <HeroVisual />
+          {PREVIEW && (
+            <span className="preview-chip">Preview: PayPal and the AI<span className="wide-only"> panel</span> are simulated<span className="wide-only"> in your browser</span></span>
+          )}
+          <div className="halftone" aria-hidden />
+          <div className="hero-visual">
+            <HeroVisual />
+          </div>
         </div>
-        <div className="glow" aria-hidden />
       </section>
 
       <section className="wrap section">
@@ -197,7 +201,7 @@ function HeroVisual() {
             <span className="muted small" style={{ display: "block" }}>Confirmed by a second check</span>
           </span>
           <span style={{ textAlign: "right" }}>
-            <span className="small muted" style={{ display: "block" }}>Released to you</span>
+            <span className="small muted nowrap" style={{ display: "block" }}>Released to you</span>
             <b className="green">$12.00</b>
           </span>
         </div>

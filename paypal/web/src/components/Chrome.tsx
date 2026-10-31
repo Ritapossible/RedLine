@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PREVIEW } from "../api";
 import { href, type Route } from "../lib/router";
 import { Logo } from "./Logo";
-import { Close, Menu } from "./icons";
+import { ArrowUpRight, Close, Menu } from "./icons";
 
 const NAV: [Route, string][] = [
   [{ name: "how" }, "How it works"],
@@ -13,8 +13,9 @@ const NAV: [Route, string][] = [
 
 export const REPO = "https://github.com/Ritapossible/RedLine/tree/paypal";
 
-export function PreviewBar() {
-  if (!PREVIEW) return null;
+/** In app pages only: the marketing pages say it in the hero. */
+export function PreviewBar({ route }: { route: Route }) {
+  if (!PREVIEW || ["home", "vendors", "how"].includes(route.name)) return null;
   return (
     <div className="preview-bar" role="note">
       <div className="wrap">
@@ -26,27 +27,28 @@ export function PreviewBar() {
   );
 }
 
+/** The floating pill, as on RedLine's GenLayer site. */
 export function Header({ route }: { route: Route }) {
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [route]);
   const current = (r: Route) =>
     r.name === route.name || (r.name === "demo" && ["checkout", "cover", "console"].includes(route.name));
   return (
-    <header className="site-head">
-      <div className="wrap">
+    <header className="nav-float">
+      <div className="nav-pill">
         <a href="#/" aria-label="RedLine, home">
           <Logo />
         </a>
-        <nav className="site-nav" aria-label="Main">
+        <nav className="nav-links" aria-label="Main">
           {NAV.map(([r, label]) => (
             <a key={label} href={href(r)} aria-current={current(r) ? "page" : undefined}>
               {label}
             </a>
           ))}
         </nav>
-        <div className="head-actions">
-          <a className="btn sm primary head-cta" href="#/demo">
-            Try the demo
+        <div className="end">
+          <a className="btn-ghost-pill" href="#/demo">
+            Try the demo <ArrowUpRight />
           </a>
           <button className="icon-btn menu-btn" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
             {open ? <Close /> : <Menu />}
@@ -54,7 +56,8 @@ export function Header({ route }: { route: Route }) {
         </div>
       </div>
       {open && (
-        <nav className="sheet" aria-label="Mobile">
+        <nav className="nav-sheet" aria-label="Mobile">
+          <a href="#/">Home</a>
           {NAV.map(([r, label]) => (
             <a key={label} href={href(r)}>
               {label}

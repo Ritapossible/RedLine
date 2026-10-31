@@ -5,22 +5,23 @@ import { ArrowRight, Code, Shield, Spark } from "../components/icons";
 export function Vendors() {
   return (
     <main id="main" tabIndex={-1}>
-      <section className="hero">
+      <section className="hero center">
         <div className="wrap">
-          <span className="pill"><i /> For vendors</span>
-          <h1 className="display" style={{ maxWidth: 900 }}>
-            Your terms are a promise. <span className="dim">Back them, and new customers will pay.</span>
+          <span className="eyebrow-pill"><i /> For vendors</span>
+          <h1 className="display">
+            Your terms are a promise.
+            <span className="dim">Back them, and new customers will pay.</span>
           </h1>
           <p className="lede">
             Customers hesitate to prepay a vendor they don't know yet. RedLine lets you say what no competitor's checkout can: if we cut a right
             you relied on, you are not charged for the rest. PayPal holds the payment; you collect it as your terms hold.
           </p>
-          <div className="hero-actions">
-            <a className="btn primary lg" href="#/demo">See the checkout <ArrowRight /></a>
-            <a className="btn lg" href={`${REPO}`} target="_blank" rel="noreferrer">Talk to us on GitHub</a>
+          <a className="btn-cta" href="#/demo">See the checkout <ArrowRight /></a>
+          <div className="hero-links">
+            <a href={REPO} target="_blank" rel="noreferrer">Talk to us on GitHub</a>
           </div>
+          <div className="halftone" aria-hidden style={{ height: 200 }} />
         </div>
-        <div className="glow" aria-hidden />
       </section>
 
       <section className="wrap section">

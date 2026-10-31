@@ -44,7 +44,8 @@ export function App() {
   return (
     <>
       <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
-      <PreviewBar />
+      <div className="grid-lines" aria-hidden />
+      <PreviewBar route={route} />
       <Header route={route} />
       {view}
       <Footer />

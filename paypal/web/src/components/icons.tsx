@@ -71,3 +71,8 @@ export const Check = () => (
     <path d="m5 12 5 5 9-10" />
   </svg>
 );
+export const ArrowUpRight = () => (
+  <svg {...S} width={16} height={16}>
+    <path d="M7 17 17 7M8 7h9v9" />
+  </svg>
+);
