@@ -1,0 +1,53 @@
+# One whole cover on PayPal's real sandbox: the server started here with the
+# repository's sandbox keys (offline mode off), then paypal/sandbox_cover.py
+# clicks through it - pin, hold, cut, confirm, settle - and reads PayPal's
+# record back. The panel is the real models when their secrets are set, the
+# stand-ins otherwise; the record says which. Ids, statuses, amounts only.
+name: PayPal sandbox cover
+
+on:
+  push:
+    branches: [paypal]
+    paths:
+      - paypal/sandbox_cover.py
+      - paypal/redline_paypal/**
+      - .github/workflows/paypal-sandbox-cover.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paypal-sandbox-cover
+  cancel-in-progress: false
+
+jobs:
+  cover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+      PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+      REDLINE_MODEL_API_KEY: ${{ secrets.REDLINE_MODEL_API_KEY }}
+      REDLINE_MODEL_BASE_URL: ${{ secrets.REDLINE_MODEL_BASE_URL }}
+      REDLINE_PANEL_MODELS: ${{ secrets.REDLINE_PANEL_MODELS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q -r paypal/requirements.txt
+      - name: Start the server on the sandbox
+        working-directory: paypal
+        run: |
+          if [ -z "$REDLINE_MODEL_API_KEY" ]; then export REDLINE_STAND_IN_PANEL=1; fi
+          REDLINE_OFFLINE=0 REDLINE_DB=/tmp/redline.sqlite3 REDLINE_TICK=0 \
+            nohup uvicorn redline_paypal.web:app --port 8000 > /tmp/server.log 2>&1 &
+          for i in $(seq 30); do curl -sf localhost:8000/api/health && exit 0; sleep 1; done
+          cat /tmp/server.log; exit 1
+      - name: One cover, pin to settlement
+        working-directory: paypal
+        run: python sandbox_cover.py http://localhost:8000
+      - name: Server log
+        if: always()
+        run: cat /tmp/server.log

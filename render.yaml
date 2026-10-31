@@ -31,9 +31,10 @@ services:
         sync: false
       - key: REDLINE_WEB_ORIGINS
         value: https://redline-paypal.vercel.app
-      # 1 runs the PayPal stand-in and stand-in models. Set 0 once the keys below are in.
+      # 0: the real PayPal sandbox and the real panel. The server refuses to start
+      # without the keys below, so a missing key is a failed deploy, never a silent fake.
       - key: REDLINE_OFFLINE
-        value: "1"
+        value: "0"
       # A PayPal sandbox REST app (live hosts are refused by the code).
       - key: PAYPAL_CLIENT_ID
         sync: false

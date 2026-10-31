@@ -98,7 +98,7 @@ def create_app(env=os.environ, **kw):
     @api.get("/api/health")
     async def health():
         a = app_()
-        return {"mode": "preview" if a.offline else "sandbox",
+        return {"mode": "preview" if a.offline else "sandbox", "panel": "stand-in" if a.stand_in_panel else "models",
                 "build": (os.environ.get("RENDER_GIT_COMMIT") or "")[:7] or None}
 
     @api.post("/api/demo/vendors")

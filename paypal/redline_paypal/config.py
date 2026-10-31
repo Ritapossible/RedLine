@@ -13,6 +13,7 @@ here (Render's dashboard, or GitHub Actions secrets), never from the repository.
     REDLINE_PANEL_QUORUM       default: a strict majority of the seats
     REDLINE_ALLOWED_HOSTS      comma-separated hosts the checker may fetch (vendors' terms pages)
     REDLINE_OFFLINE=1          the PayPal stand-in and stand-in models: no keys needed
+    REDLINE_STAND_IN_PANEL=1   real PayPal, stand-in models (sandbox evidence runs with no model key)
 """
 
 import os
@@ -67,8 +68,9 @@ class App:
             else:
                 from .paypal_api import RestPayPal
                 paypal = RestPayPal(env.get("PAYPAL_CLIENT_ID", ""), env.get("PAYPAL_CLIENT_SECRET", ""))
+        self.stand_in_panel = models is None and (self.offline or env.get("REDLINE_STAND_IN_PANEL") == "1")
         if models is None:
-            if self.offline:
+            if self.stand_in_panel:
                 models = demo.stand_in_models()
             else:
                 from .models import ChatModel
