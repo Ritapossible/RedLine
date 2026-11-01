@@ -6,6 +6,9 @@
 - **API:** [redline-paypal-api.onrender.com](https://redline-paypal-api.onrender.com/api/health)
   (PayPal sandbox, real model panel)
 - **Design:** [docs/PAYPAL-ARCHITECTURE.md](../docs/PAYPAL-ARCHITECTURE.md)
+- **Demo video (2:38):** [youtu.be/fiuQy1DmkWw](https://youtu.be/fiuQy1DmkWw)
+
+[![Watch the RedLine for PayPal demo (2:38)](https://img.youtube.com/vi/fiuQy1DmkWw/maxresdefault.jpg)](https://youtu.be/fiuQy1DmkWw)
 
 A customer prepays a vendor because of what its terms page promises: a 30-day
 refund, a deletion promise. Weeks later the page says something else, and the

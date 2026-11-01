@@ -6,7 +6,8 @@
 
 > ### RedLine for PayPal (this branch)
 >
-> **[Open the live demo: redline-paypal.vercel.app](https://redline-paypal.vercel.app)**
+> **[Open the live demo: redline-paypal.vercel.app](https://redline-paypal.vercel.app)** ·
+> **[Watch the demo video (2:38)](https://youtu.be/fiuQy1DmkWw)**
 >
 > The same rules on an ordinary PayPal checkout. The customer pins the rights
 > they rely on, word for word, and PayPal **holds** the payment instead of
