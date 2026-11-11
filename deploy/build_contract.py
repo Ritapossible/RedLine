@@ -33,6 +33,8 @@ RUNNER_VERSION = "v0.2.0"
 BUILDS = {
     "redline": (["redline_text.py", "redline_core.py", "treasury_shell.py"], "RedLine"),
     "redline_watcher": (["redline_text.py", "redline_core.py", "redline_prompts.py", "watcher_shell.py"], "RedLineWatcher"),
+    # RedLine's rules for a prepay held in an escrow on another chain (docs/INTERNET-COURT.md).
+    "redline_escrow": (["redline_text.py", "redline_core.py", "escrow_shell.py"], "RedLineEscrow"),
 }
 
 # The runner header must be followed IMMEDIATELY by code. Any comment line

@@ -35,7 +35,7 @@ def watcher(treasury):
     return read("redline_watcher.py")
 
 
-@pytest.fixture(scope="module", params=[("redline", "RedLine"), ("redline_watcher", "RedLineWatcher")])
+@pytest.fixture(scope="module", params=[("redline", "RedLine"), ("redline_watcher", "RedLineWatcher"), ("redline_escrow", "RedLineEscrow")])
 def pair(request, treasury):
     name, root = request.param
     return read(name + ".py"), read(name + ".min.py"), root
