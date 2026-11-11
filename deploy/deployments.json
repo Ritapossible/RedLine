@@ -7,7 +7,12 @@
     "appeal_seconds": 300,
     "release": "redline/2",
     "watcher_release": "redline-watcher/3",
-    "at": "2026-10-23T07:11:23.821Z"
+    "at": "2026-10-23T07:11:23.821Z",
+    "escrow_ledger": "0xbC504dA78C28B6d26eFc79F8566CD4dbcdD37358",
+    "escrow_ledger_tx": "0x90dfcabe5ace4eb2499d49ee35049ad2c139bf1dde00c972d7c3a4fc7763d223",
+    "escrow_ledger_release": "redline-escrow/1",
+    "escrow_ledger_appeal_seconds": 300,
+    "escrow_ledger_at": "2026-11-11T13:06:53.625Z"
   },
   "studionext": {
     "treasury": "0xAFBD64bcAb01FBEA0DAB0fCe0FdfC0039b69cf1A",

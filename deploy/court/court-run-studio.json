@@ -1,0 +1,118 @@
+{
+  "network": "studio",
+  "steps": [
+    {
+      "step": "escrow locked on Base Sepolia",
+      "at": "2026-11-11T19:18:15.141Z",
+      "escrow": "0x4222bfd0a0857d00001eb34270e872a08cbd6ef2c8aa394ea88bee902ddf19ff",
+      "tx": "0x276498e229ac8a7b44672b6fabfa407995fbbd8962f874fa46ed4752e08019ab",
+      "amount_wei": "500000000000000"
+    },
+    {
+      "step": "cover opened on GenLayer",
+      "at": "2026-11-11T19:18:23.498Z",
+      "cover": 0,
+      "tx": "0x1d4a5f3ac73602fafa4857b61f64d268f039b8960e32b1f048df8cfc1777f573"
+    },
+    {
+      "step": "validators found the pinned passage on the page",
+      "at": "2026-11-11T19:18:30.987Z",
+      "state": "offered"
+    },
+    {
+      "step": "vendor accepted on Base Sepolia",
+      "at": "2026-11-11T19:18:31.896Z",
+      "fulfillment": "0x78b35eeb60c44975f11c57d7bfa7e4d018dc203cfc39aa7c02ecf6fa69bbcf32",
+      "tx": "0x0249d313eef00b9e0193ee63e8f9db2630f90e7aa7ce0c8fd19adb89159a7cda"
+    },
+    {
+      "step": "vendor accepted on GenLayer; the cover is running",
+      "at": "2026-11-11T19:18:38.614Z",
+      "tx": "0x77140faf299c2253fbb6136fbe985a50b0cf7e870d7326b648001ca3b50650bf"
+    },
+    {
+      "step": "check 1: terms unchanged",
+      "at": "2026-11-11T19:19:59.228Z",
+      "tx": "0x0f15a3237b7d3abb589b19b751a09e7a71a125bc2df4c62c8bf7ba91032004ca",
+      "kind": "kept",
+      "reading": "",
+      "confidence": 100,
+      "page": "read"
+    },
+    {
+      "step": "vendor narrowed its refund terms",
+      "at": "2026-11-11T19:23:23.027Z",
+      "page": "https://raw.githubusercontent.com/Ritapossible/redline/live/live/court.html"
+    },
+    {
+      "step": "check 2: GenLayer validators read the change",
+      "at": "2026-11-11T19:24:43.533Z",
+      "tx": "0xf1af624280737f71e674a1aaf146b4b175191ba789b3bc8582bfd41d3e74c77f",
+      "kind": "breach",
+      "reading": "narrowed",
+      "confidence": 100,
+      "page": "read"
+    },
+    {
+      "step": "the escrow paid out as ruled",
+      "at": "2026-11-11T19:30:16.179Z",
+      "ruling": {
+        "cover": 0,
+        "state": "breached",
+        "final": true,
+        "started": true,
+        "amount": 500000000000000,
+        "vendor": "0x3d4bc0d9a445cc2d435072cc2d96bac488478f2f",
+        "buyer": "0x656a3137a6b894d0c11cb9aafa19fa57e881d539",
+        "vendor_amount": 100277777777777,
+        "buyer_amount": 399722222222223,
+        "as_of": 1794425073,
+        "chain_id": 84532,
+        "escrow": "0x4222bfd0a0857d00001eb34270e872a08cbd6ef2c8aa394ea88bee902ddf19ff",
+        "arbiter": "0x264fefd1b4af4ca3bfc094ebf1ea24e45f71cbc5",
+        "fulfillment": "0x78b35eeb60c44975f11c57d7bfa7e4d018dc203cfc39aa7c02ecf6fa69bbcf32"
+      },
+      "arbitrate_tx": "0x2e78b7c5f775e7ca23d7b39e473a33a4ad523efb27c3167c953f8ca3c6d255db",
+      "payout_tx": "0x2df9c4a0031da829d7fff9713297fa7968e7252c8885f5621ae33e1694893d4b",
+      "vendor_received_wei": "100277777777777",
+      "buyer_received_wei": "399722222222223",
+      "paid_as_ruled": true,
+      "adds_up": true,
+      "payout": "https://sepolia.basescan.org/tx/0x2df9c4a0031da829d7fff9713297fa7968e7252c8885f5621ae33e1694893d4b"
+    }
+  ],
+  "escrow": "0x4222bfd0a0857d00001eb34270e872a08cbd6ef2c8aa394ea88bee902ddf19ff",
+  "cover": 0,
+  "pinned": true,
+  "fulfillment": "0x78b35eeb60c44975f11c57d7bfa7e4d018dc203cfc39aa7c02ecf6fa69bbcf32",
+  "accepted": true,
+  "kept": true,
+  "cut": true,
+  "breach": true,
+  "paid": true,
+  "result": {
+    "ruling": {
+      "cover": 0,
+      "state": "breached",
+      "final": true,
+      "started": true,
+      "amount": 500000000000000,
+      "vendor": "0x3d4bc0d9a445cc2d435072cc2d96bac488478f2f",
+      "buyer": "0x656a3137a6b894d0c11cb9aafa19fa57e881d539",
+      "vendor_amount": 100277777777777,
+      "buyer_amount": 399722222222223,
+      "as_of": 1794425073,
+      "chain_id": 84532,
+      "escrow": "0x4222bfd0a0857d00001eb34270e872a08cbd6ef2c8aa394ea88bee902ddf19ff",
+      "arbiter": "0x264fefd1b4af4ca3bfc094ebf1ea24e45f71cbc5",
+      "fulfillment": "0x78b35eeb60c44975f11c57d7bfa7e4d018dc203cfc39aa7c02ecf6fa69bbcf32"
+    },
+    "arbitrate_tx": "0x2e78b7c5f775e7ca23d7b39e473a33a4ad523efb27c3167c953f8ca3c6d255db",
+    "payout_tx": "0x2df9c4a0031da829d7fff9713297fa7968e7252c8885f5621ae33e1694893d4b",
+    "vendor_received_wei": "100277777777777",
+    "buyer_received_wei": "399722222222223",
+    "paid_as_ruled": true,
+    "adds_up": true,
+    "payout": "https://sepolia.basescan.org/tx/0x2df9c4a0031da829d7fff9713297fa7968e7252c8885f5621ae33e1694893d4b"
+  }
+}
