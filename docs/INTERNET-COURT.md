@@ -58,6 +58,8 @@ prepay pro rata to the time the right stood.
 | Watcher | already deployed, **unchanged** | Reads the page and asks the jury. It serves the ledger exactly as it serves the treasury. |
 | Alkahest client | `deploy/court/alkahest.mjs` | Locks the prepay, makes the vendor's fulfillment, and verifies an escrow on Base Sepolia. |
 | Relayer | `deploy/court/relayer.mjs` | Carries a final ruling to the splitter. |
+| Commands | `deploy/court/cli.mjs` | The deal one step at a time: `lock`, `open`, `accept`, `check`, `status`, `carry`, `reclaim`. |
+| Agent skill | `skills/redline-escrow/SKILL.md` | How an agent uses those commands; loads beside Internet Court's skill. |
 | End-to-end run | `deploy/court/run.mjs` | One whole deal on both public test networks, recorded in `deploy/court/court-run-studio.json`. |
 
 The treasury and watcher builds are byte-for-byte what they were: the
@@ -91,6 +93,12 @@ One whole deal on both public networks, 11 November 2026
 The vendor kept about 20%: the share of the cover that ran before the check
 that found the cut.
 
+A second deal, driven one command at a time with `deploy/court/cli.mjs`
+(cover 1): the terms did not change, the check read **kept**, the cover ran to
+its end, and the escrow paid the vendor in full:
+[payout](https://sepolia.basescan.org/tx/0xfee71a6b2a81c09e1f592b2c323882efaa7de8ee356899db78065fbfecbdec9d).
+Carrying the same ruling a second time is refused: the escrow is already spent.
+
 ## Run it yourself
 
 You need Node 20+, three funded test keys and a clone of this repository's
@@ -107,10 +115,11 @@ REDLINE_KEYS=keys LIVE_CLONE=../../redline-live node court/run.mjs studio
 
 It takes about fifteen minutes; the waits are real (the public page's CDN and
 the ledger's 300-second appeal window). It is resumable: run it again after
-any stop. To carry one cover's ruling by hand:
+any stop. To run a deal of your own one step at a time, follow
+[`skills/redline-escrow/SKILL.md`](../skills/redline-escrow/SKILL.md):
 
 ```bash
-REDLINE_KEYS=keys node court/relayer.mjs studio <cover id>
+REDLINE_KEYS=keys node court/cli.mjs lock --amount-wei 500000000000000
 ```
 
 The tests need no network:
