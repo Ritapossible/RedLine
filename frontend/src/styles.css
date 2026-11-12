@@ -1714,3 +1714,204 @@ textarea {
     font-size: 16px;
   }
 }
+
+/* ---------------------------------------------------------------- Court
+   One Internet Court deal: Arkhai's escrow beside the GenLayer cover. */
+.court {
+  padding-top: 132px;
+  padding-bottom: 72px;
+}
+.court-head {
+  max-width: 820px;
+  margin-bottom: 30px;
+}
+.court-head .h2 {
+  margin: 10px 0 14px;
+}
+.court-lede {
+  color: var(--muted);
+  font-size: 18px;
+  margin: 0;
+}
+.court-steps {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.court-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--dim);
+  font-size: 14px;
+  background: var(--bg-2);
+}
+.court-steps b {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  border: 1px solid var(--line-2);
+}
+.court-steps li.now {
+  color: var(--text);
+  border-color: var(--red);
+  box-shadow: 0 0 24px var(--red-soft);
+}
+.court-steps li.now b {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.court-steps li.done {
+  color: var(--text);
+}
+.court-steps li.done b {
+  background: var(--green);
+  border-color: var(--green);
+  color: #04130c;
+}
+.court-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.court-side {
+  min-width: 0;
+}
+.court-amount {
+  font-size: 44px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.court-amount span {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.court-state {
+  margin: 6px 0 18px;
+  font-weight: 600;
+}
+.court-state.green,
+.court-payout.green {
+  color: var(--green);
+}
+.court-state.red {
+  color: var(--red-text);
+}
+.court-pin {
+  margin: 0 0 10px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--green);
+  border-radius: 0 12px 12px 0;
+  background: var(--panel-2);
+  font-size: 15px;
+  line-height: 1.5;
+  transition: border-color 0.4s, background 0.4s;
+}
+.court-pin .label {
+  display: block;
+  margin-bottom: 4px;
+}
+.court-pin.cut {
+  border-left-color: var(--red);
+  background: var(--red-soft);
+}
+.court-url {
+  margin: 0 0 14px;
+  overflow-wrap: anywhere;
+}
+.court-checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.court-checks li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.court-checks li.kept .court-kind {
+  color: var(--green);
+  font-weight: 600;
+}
+.court-checks li.breach,
+.court-checks li.gone {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+.court-checks li.breach .court-kind,
+.court-checks li.gone .court-kind {
+  color: var(--red-text);
+  font-weight: 600;
+}
+.court-ruling {
+  margin-top: 18px;
+}
+.court-ruling.final {
+  border-color: var(--line-2);
+  box-shadow: 0 0 40px var(--red-soft);
+}
+.court-split {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 14px;
+}
+.court-split > div {
+  display: grid;
+  gap: 2px;
+}
+.court-split .right {
+  text-align: right;
+}
+.court-split b {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+.court-why {
+  margin: 16px 0 0;
+  color: var(--muted);
+}
+.court-payout {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+.court-foot {
+  margin-top: 18px;
+}
+@media (max-width: 820px) {
+  .court {
+    padding-top: 108px;
+  }
+  .court-grid {
+    grid-template-columns: 1fr;
+  }
+  .court-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+  .court-amount {
+    font-size: 36px;
+  }
+  .court-split b {
+    font-size: 22px;
+  }
+}

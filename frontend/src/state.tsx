@@ -9,6 +9,7 @@ export type Route =
   | { name: "covers" }
   | { name: "cover"; id: number }
   | { name: "new" }
+  | { name: "court"; id: number }
   | { name: "docs"; page: string; anchor?: string };
 
 export const APP_ROUTES = new Set(["covers", "cover", "new"]);
@@ -17,6 +18,8 @@ export function parseRoute(hash: string): Route {
   const path = hash.replace(/^#/, "").split("?")[0] || "/";
   const m = path.match(/^\/app\/cover\/(\d+)$/);
   if (m) return { name: "cover", id: Number(m[1]) };
+  const court = path.match(/^\/court(?:\/(\d+))?\/?$/);
+  if (court) return { name: "court", id: Number(court[1] ?? 0) };
   if (path === "/app" || path === "/app/") return { name: "covers" };
   if (path === "/app/new") return { name: "new" };
   const doc = path.match(/^\/docs(?:\/([a-z0-9-]+))?(?:\/([^/]+))?\/?$/);
@@ -34,6 +37,8 @@ export function href(r: Route): string {
       return `#/app/cover/${r.id}`;
     case "new":
       return "#/app/new";
+    case "court":
+      return `#/court/${r.id}`;
     case "docs":
       return `#/docs/${r.page}${r.anchor ? `/${encodeURIComponent(r.anchor)}` : ""}`;
   }

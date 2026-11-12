@@ -11,6 +11,11 @@ Nobody files a dispute. The vendor's own page is the evidence.
 Built for the [Internet Court](https://internetcourt.org) Builders Working
 Group mission: an Internet Court partner (Arkhai) combined with GenLayer.
 
+**See a real deal, read live from both chains:**
+[red-line-v0.vercel.app/#/court/0](https://red-line-v0.vercel.app/#/court/0)
+(a cut right, split 20/80) and
+[/#/court/1](https://red-line-v0.vercel.app/#/court/1) (terms held, vendor paid in full).
+
 ## How it works
 
 ```
@@ -60,6 +65,7 @@ prepay pro rata to the time the right stood.
 | Relayer | `deploy/court/relayer.mjs` | Carries a final ruling to the splitter. |
 | Commands | `deploy/court/cli.mjs` | The deal one step at a time: `lock`, `open`, `accept`, `check`, `status`, `carry`, `reclaim`. |
 | Agent skill | `skills/redline-escrow/SKILL.md` | How an agent uses those commands; loads beside Internet Court's skill. |
+| Deal view | `frontend/src/views/Court.tsx` | A read-only page showing one deal from both chains: the escrow, the checks, the ruling, the payout. |
 | End-to-end run | `deploy/court/run.mjs` | One whole deal on both public test networks, recorded in `deploy/court/court-run-studio.json`. |
 
 The treasury and watcher builds are byte-for-byte what they were: the

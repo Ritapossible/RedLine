@@ -11,6 +11,7 @@ import deployment from "../../../docs/DEPLOYMENT.md?raw";
 import faq from "../../../docs/FAQ.md?raw";
 import roadmap from "../../../docs/ROADMAP.md?raw";
 import paypal from "../../../docs/REDLINE-FOR-PAYPAL.md?raw";
+import court from "../../../docs/INTERNET-COURT.md?raw";
 
 // The documentation lives in docs/*.md in the repository and is rendered here,
 // so there is one source. Links between the files become links between pages;
@@ -26,6 +27,7 @@ const PAGES = [
   { slug: "deployment", file: "DEPLOYMENT.md", title: "Build and deploy", md: deployment },
   { slug: "faq", file: "FAQ.md", title: "FAQ", md: faq },
   { slug: "paypal", file: "REDLINE-FOR-PAYPAL.md", title: "RedLine for PayPal", md: paypal },
+  { slug: "internet-court", file: "INTERNET-COURT.md", title: "RedLine × Arkhai (Internet Court)", md: court },
   { slug: "roadmap", file: "ROADMAP.md", title: "Roadmap", md: roadmap },
 ];
 const BY_FILE = new Map(PAGES.map((p) => [p.file, p.slug]));

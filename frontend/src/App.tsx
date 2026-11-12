@@ -9,6 +9,8 @@ import { CoverView } from "./views/CoverView";
 import { Spinner } from "./components/ui";
 
 // The docs carry the markdown renderer and every document; load them on demand.
+// The Internet Court deal view carries its own Base Sepolia reader; load it on demand.
+const Court = lazy(() => import("./views/Court").then((m) => ({ default: m.Court })));
 const Docs = lazy(() => import("./views/Docs").then((m) => ({ default: m.Docs })));
 
 const REPO = "https://github.com/Ritapossible/RedLine";
@@ -29,6 +31,11 @@ export function App() {
         {route.name === "docs" && (
           <Suspense fallback={<div className="empty"><Spinner /></div>}>
             <Docs />
+          </Suspense>
+        )}
+        {route.name === "court" && (
+          <Suspense fallback={<div className="empty"><Spinner /></div>}>
+            <Court id={route.id} />
           </Suspense>
         )}
         {inApp && (
