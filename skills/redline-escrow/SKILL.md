@@ -76,8 +76,9 @@ node court/cli.mjs lock --amount-wei 500000000000000 [--oracle 0xRELAYER] [--hou
 ```
 
 Returns `escrow` (its id) and `expires_at`. The escrow can be paid out only by
-Alkahest's splitter, on the named oracle's ruling. Make it outlive the cover:
-cover length plus acceptance time plus ten minutes, at least.
+Alkahest's splitter, on the named oracle's ruling. It must outlive the cover:
+acceptance time plus cover length plus fifteen minutes (the appeal window and
+time for the relayer). `open` and `accept` refuse an escrow that is too short.
 
 ### 2. Buyer: open the cover (GenLayer)
 
@@ -92,7 +93,9 @@ node court/cli.mjs open --escrow 0xESCROW --vendor 0xVENDOR \
 The amount is read from the escrow itself. The command waits while validators
 fetch the page and returns `pinned: true` when every passage is on it. If a
 passage is not on the page the cover is refunded at once (`state: refunded`,
-with `why`): fix the quote and open a new cover on the same escrow.
+with `why`): fix the quote and open a new cover on the same escrow. A cover
+that never started claims nothing; once the vendor has accepted a cover, that
+escrow belongs to it and no other cover can be paid from it.
 
 The URL must be `https`, with no query string and no fragment. Pin the final
 URL of the terms page, not one that redirects.
@@ -103,8 +106,16 @@ URL of the terms page, not one that redirects.
 node court/cli.mjs accept --cover 7
 ```
 
-Accepts on both chains: a fulfillment of the escrow on Base Sepolia, then the
-cover on GenLayer. The cover starts now; `end` is when it finishes.
+First it checks the escrow on Base Sepolia, and refuses (`not accepted: ...`)
+unless the escrow exists, is unspent, was locked by the cover's buyer, holds
+the cover's amount, was made for this ledger, lasts long enough, and is not
+already claimed by an earlier cover. Then it accepts on both chains: a
+fulfillment of the escrow on Base Sepolia, then the cover on GenLayer. The
+cover starts now; `end` is when it finishes.
+
+The reply names the escrow's `oracle`. The vendor is trusting that oracle to
+carry the ledger's ruling: tell the vendor which address it is. To require a
+particular one, add `--oracle 0xRELAYER`.
 
 ### 4. Anyone: check the page
 
@@ -112,7 +123,7 @@ cover on GenLayer. The cover starts now; `end` is when it finishes.
 node court/cli.mjs check --cover 7
 ```
 
-Validators read the page now. `kind` is:
+Needs no key (`REDLINE_KEYS` may be unset). Validators read the page now. `kind` is:
 
 | kind | meaning | what happens |
 | --- | --- | --- |
@@ -132,7 +143,7 @@ before the end.
 node court/cli.mjs status --cover 7
 ```
 
-`ruling.final` is false until the cover has closed. Then
+Needs no key. `ruling.final` is false until the cover has closed. Then
 `ruling.vendor_amount + ruling.buyer_amount == ruling.amount`, and it never
 changes.
 
@@ -148,6 +159,7 @@ node court/cli.mjs carry --cover 7
 | `not_final` | the cover has not closed: wait for its end, or for the appeal window after a breach (300 s), and run it again |
 | `not_started` | it closed before the vendor accepted: the buyer runs `reclaim` once the escrow expires |
 | `refused` | the escrow is not what the cover describes; `problems` says why. Nothing was signed |
+| `superseded` | an earlier accepted cover (`by`) already claims this escrow. Nothing was signed |
 
 ### If the vendor never accepts
 
@@ -155,8 +167,10 @@ The cover refunds itself at its acceptance deadline. The buyer takes the
 escrow back once it has expired:
 
 ```bash
-node court/cli.mjs reclaim --cover 7
+node court/cli.mjs reclaim --cover 7      # or --escrow 0xESCROW
 ```
+
+Before the expiry it answers how many seconds are left.
 
 ## Reporting to the user
 
@@ -184,6 +198,12 @@ Never report a payout before `carry` returns `paid`.
   shows validators one page and customers another is a known limit; see the
   repository's threat model.
 - **Someone must ask for checks and for the payout.** Nothing runs by itself.
+- **The payout has a deadline.** Alkahest lets the buyer reclaim an escrow
+  once it expires. If the relayer has not carried the ruling by then, the
+  buyer can take everything back, whatever the ruling says. That is why the
+  escrow must outlive the cover with a margin, and why the relayer should
+  carry a ruling as soon as it is final.
+- **Amounts are test ETH, in wei.** They are handled exactly at any size.
 
 ## Reference
 

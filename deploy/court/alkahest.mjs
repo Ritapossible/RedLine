@@ -93,11 +93,12 @@ export async function readEscrow(escrowUid) {
 }
 
 /**
- * Why a ruling may NOT be carried to this escrow ([] if it may). The ledger
- * cannot see Base Sepolia, so everything it was told about the escrow is
- * checked here, on the escrow's own chain, before the oracle key signs.
+ * Why this escrow does NOT back this cover ([] if it does). The ledger cannot
+ * see Base Sepolia, so everything it was told about the escrow is checked
+ * here, on the escrow's own chain. `oracle` is checked when given;
+ * `lastsUntil` (Unix seconds) when the escrow must outlive something.
  */
-export async function escrowProblems({ ruling, ledger, oracle, now }) {
+export async function escrowProblems({ ruling, ledger, oracle, now, lastsUntil }) {
   const problems = [];
   if (Number(ruling.chain_id) !== CHAIN_ID) problems.push(`the cover names chain ${ruling.chain_id}, not Base Sepolia`);
   if (!same(ruling.arbiter, ADDR.splitter)) problems.push("the cover names another arbiter");
@@ -106,19 +107,53 @@ export async function escrowProblems({ ruling, ledger, oracle, now }) {
   if (!same(e.attestation.attester, ADDR.escrow)) problems.push("not a native-token Alkahest escrow");
   if (e.revoked) problems.push("the escrow was already paid out or reclaimed");
   if (e.expiresAt && e.expiresAt <= now) problems.push("the escrow has expired");
+  else if (lastsUntil && e.expiresAt && e.expiresAt < lastsUntil) problems.push(`the escrow expires ${lastsUntil - e.expiresAt}s before the cover could be settled: the buyer could reclaim it first`);
   if (!same(e.creator, ruling.buyer)) problems.push("the escrow was not created by the cover's buyer");
   if (!same(e.arbiter, ADDR.splitter)) problems.push("the escrow is not paid out by the splitter");
   if (e.amount !== BigInt(ruling.amount)) problems.push(`the escrow holds ${e.amount}, the cover says ${ruling.amount}`);
-  if (!same(e.oracle, oracle)) problems.push("the escrow names another oracle");
+  if (oracle && !same(e.oracle, oracle)) problems.push("the escrow names another oracle");
   if (e.tag !== ledgerTag(ledger)) problems.push("the escrow was not made for this ledger");
-  if (!/^0x[0-9a-f]{64}$/.test(ruling.fulfillment)) return [...problems, "the vendor named no fulfillment"];
+  return problems;
+}
+
+/** Why this fulfillment is NOT the vendor's acceptance of this escrow ([] if it is). */
+export async function fulfillmentProblems(ruling) {
+  if (!/^0x[0-9a-f]{64}$/.test(ruling.fulfillment)) return ["the vendor named no fulfillment"];
+  const problems = [];
   const f = await pub.readContract({ address: ADDR.eas, abi: easAbi, functionName: "getAttestation", args: [ruling.fulfillment] });
-  if (f.uid === ZERO32) return [...problems, "no such fulfillment on Base Sepolia"];
+  if (f.uid === ZERO32) return ["no such fulfillment on Base Sepolia"];
   if (!same(f.refUID, ruling.escrow)) problems.push("the fulfillment is for another escrow");
   if (!same(f.recipient, ADDR.splitter)) problems.push("the fulfillment is not addressed to the splitter");
   const fulfiller = await pub.readContract({ address: ADDR.splitter, abi: splitterAbi, functionName: "fulfillers", args: [ruling.fulfillment] });
   if (!same(fulfiller, ruling.vendor)) problems.push("the fulfillment was not made by the cover's vendor");
   return problems;
+}
+
+/**
+ * A contract's JSON view, with integers too large for a JS number kept as
+ * strings (wrap in BigInt to use). A prepay in wei passes 2^53 at 0.009 ETH;
+ * JSON.parse would round it and the split would no longer add up.
+ */
+export function parseLossless(raw) {
+  if (typeof raw !== "string") return raw;
+  let out = "", inString = false;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (inString) {
+      out += ch;
+      if (ch === "\\") out += raw[++i];
+      else if (ch === '"') inString = false;
+    } else if (ch === '"') { inString = true; out += ch; }
+    else if (/[0-9]/.test(ch) && !/[0-9.eE+-]/.test(raw[i - 1] ?? "")) {
+      let j = i;
+      while (j < raw.length && /[0-9]/.test(raw[j])) j++;
+      const digits = raw.slice(i, j);
+      const plainInteger = !/[.eE]/.test(raw[j] ?? "");
+      out += plainInteger && digits.length > 15 ? `"${digits}"` : digits;
+      i = j - 1;
+    } else out += ch;
+  }
+  return JSON.parse(out);
 }
 
 /** Oracle: record the ruling's split, then pay the escrow out. */

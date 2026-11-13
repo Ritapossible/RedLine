@@ -10,8 +10,26 @@
 // `carry()`: it signs nothing until the ruling is final on GenLayer and the
 // escrow on Base Sepolia is the one the cover describes.
 import fs from "node:fs";
-import { clientFor, readView, sendTx, KEYDIR } from "../lib.mjs";
-import { escrowProblems, payOut, walletFromFile, pub } from "./alkahest.mjs";
+import { clientFor, retry, sendTx, KEYDIR } from "../lib.mjs";
+import { escrowProblems, fulfillmentProblems, payOut, walletFromFile, parseLossless, pub } from "./alkahest.mjs";
+
+/** A ledger or watcher view, amounts kept exact. */
+export const readJson = async (client, address, functionName, args = []) =>
+  parseLossless(await retry(functionName, () => client.readContract({ address, functionName, args }), 4));
+
+/**
+ * The earlier cover that already claims this escrow, or -1. One escrow backs
+ * one cover: the first, by id, that its creator opened and the vendor
+ * accepted. A cover that closed before it started (a bad quote, a vendor
+ * that never accepted) claims nothing, so the buyer may open another.
+ */
+export async function claimedBy(client, ledger, ruling) {
+  for (let id = 0; id < Number(ruling.cover); id++) {
+    const earlier = await readJson(client, ledger, "ruling_of", [id]);
+    if (earlier.escrow === ruling.escrow && earlier.buyer === ruling.buyer && earlier.started) return id;
+  }
+  return -1;
+}
 
 export function ledgerAddress(network) {
   const all = JSON.parse(fs.readFileSync(new URL("../deployments.json", import.meta.url), "utf8"));
@@ -25,27 +43,24 @@ export function ledgerAddress(network) {
  *   "not_final"   the cover has not closed; nothing to carry yet
  *   "not_started" it closed before the vendor accepted: the buyer reclaims the escrow at its expiry
  *   "refused"     the escrow is not what the cover describes (`problems`)
- *   "superseded"  an earlier cover by the same buyer already claims this escrow
+ *   "superseded"  an earlier accepted cover by the same buyer already claims this escrow
  *   "paid"        the split was recorded and paid (`arbitrate`, `collect`: Base Sepolia transactions)
  */
 export async function carry(network, coverId, { settle = true } = {}) {
   const gen = clientFor(network, "oracle");
   const ledger = ledgerAddress(network);
   const oracle = walletFromFile(`${KEYDIR}/oracle.key`);
-  let ruling = await readView(gen, ledger, "ruling_of", [coverId]);
+  let ruling = await readJson(gen, ledger, "ruling_of", [coverId]);
   if (!ruling.final && settle) {
     await sendTx(gen, ledger, "settle", [coverId], "settle"); // anyone may; it only applies the cover's clocks
-    ruling = await readView(gen, ledger, "ruling_of", [coverId]);
+    ruling = await readJson(gen, ledger, "ruling_of", [coverId]);
   }
   if (!ruling.final) return { status: "not_final", ruling };
   if (!ruling.started) return { status: "not_started", ruling };
-  // One escrow backs one cover: the first the escrow's creator opened.
-  for (let id = 0; id < coverId; id++) {
-    const earlier = await readView(gen, ledger, "ruling_of", [id]);
-    if (earlier.escrow === ruling.escrow && earlier.buyer === ruling.buyer) return { status: "superseded", by: id, ruling };
-  }
+  const by = await claimedBy(gen, ledger, ruling);
+  if (by >= 0) return { status: "superseded", by, ruling };
   const now = Number((await pub.getBlock()).timestamp);
-  const problems = await escrowProblems({ ruling, ledger, oracle: oracle.account.address, now });
+  const problems = [...(await escrowProblems({ ruling, ledger, oracle: oracle.account.address, now })), ...(await fulfillmentProblems(ruling))];
   if (problems.length) return { status: "refused", problems, ruling };
   if (BigInt(ruling.vendor_amount) + BigInt(ruling.buyer_amount) !== BigInt(ruling.amount)) {
     return { status: "refused", problems: ["the ruling does not add up to the escrow"], ruling };

@@ -77,7 +77,14 @@ export function Court({ id }: { id: number }) {
         setCover(c); setRuling(r); setEscrow(e); setError("");
         if (rec && Number(rec.seq) > 0) setChecks((list) => (list.some((x) => Number(x.seq) === Number(rec.seq)) ? list : [...list, rec].sort((a, b) => Number(a.seq) - Number(b.seq))));
       } catch (e) {
-        if (live) setError(/unknown cover/.test(String(e)) ? `There is no cover ${id} on the escrow ledger.` : "The networks did not answer; trying again.");
+        if (!live) return;
+        const text = [e, (e as { message?: string })?.message, (e as { details?: string })?.details, (e as { cause?: unknown })?.cause].map(String).join(" ");
+        const count = await gen.readContract({ address: LEDGER as `0x${string}`, functionName: "status", args: [] as never })
+          .then((raw) => Number(parseLossless<{ covers: number }>(raw).covers)).catch(() => -1);
+        if (!live) return;
+        setError(/unknown cover/i.test(text) || (count >= 0 && id >= count)
+          ? `There is no cover ${id} on the escrow ledger${count > 0 ? `: the newest is ${count - 1}` : ""}.`
+          : "The networks did not answer; trying again.");
       }
     };
     once();
@@ -115,7 +122,7 @@ export function Court({ id }: { id: number }) {
         <section className="card court-side" aria-label="The escrow on Base Sepolia">
           <p className="card-title">Base Sepolia · Arkhai Alkahest escrow</p>
           <div className="court-amount">{eth(amount)} <span>test ETH</span></div>
-          <p className={`court-state ${paid ? "green" : ""}`}>{paid ? "Paid out as ruled" : escrow?.spent ? "Spent" : escrow ? "Locked. Only the ruling can release it." : "Escrow not found"}</p>
+          <p className={`court-state ${paid ? "green" : ""}`}>{paid ? "Paid out as ruled" : escrow?.spent ? (ruling.started ? "Spent" : "Paid out or reclaimed, not under this cover") : escrow ? "Locked. Only the ruling can release it." : "Escrow not found"}</p>
           <dl className="facts">
             <dt>Escrow</dt><dd><a className="mono" href={`https://base-sepolia.easscan.org/attestation/view/${ruling.escrow}`} target="_blank" rel="noreferrer">{shortHash(ruling.escrow)}</a></dd>
             <dt>Buyer (agent)</dt><dd className="mono">{shortAddr(ruling.buyer)}</dd>
@@ -158,14 +165,14 @@ export function Court({ id }: { id: number }) {
         </div>
         <div className="court-split">
           <div><span className="label">Vendor {ruling.final ? "is paid" : "has earned"}</span><b>{eth(vendorNow, 7)}</b><span className="muted small">{pct.toFixed(1)}% · {shortAddr(ruling.vendor)}</span></div>
-          <div className="right"><span className="label">{ruling.final ? "Returned to the agent" : "Still at stake"}</span><b>{eth(amount - vendorNow, 7)}</b><span className="muted small">{(100 - pct).toFixed(1)}% · {shortAddr(ruling.buyer)}</span></div>
+          <div className="right"><span className="label">{ruling.final ? (ruling.started ? "Returned to the agent" : "Not owed to the vendor") : "Still at stake"}</span><b>{eth(amount - vendorNow, 7)}</b><span className="muted small">{(100 - pct).toFixed(1)}% · {shortAddr(ruling.buyer)}</span></div>
         </div>
         <p className="court-why">
           {!ruling.final && cover.state === "active" && "The vendor earns the prepay second by second while every pinned right stands."}
           {!ruling.final && cover.state !== "active" && "No ruling yet: the cover has not started."}
           {ruling.final && cover.state === "breached" && `GenLayer's validators found a pinned right cut. The vendor keeps what it earned up to ${clock(Number(ruling.as_of))}; the rest goes back.`}
           {ruling.final && cover.state === "completed" && "The pinned rights stood for the whole cover. The vendor earned all of it."}
-          {ruling.final && cover.state === "refunded" && "The cover closed before the vendor accepted. The agent reclaims the escrow when it expires."}
+          {ruling.final && cover.state === "refunded" && `This cover closed before it started${cover.why ? ` (${cover.why})` : ""}. It claims nothing from the escrow: the agent may open another cover on it, or reclaim it when it expires.`}
         </p>
         {ruling.final && ruling.started && (
           <p className={`court-payout ${paid ? "green" : ""}`}>

@@ -5,18 +5,19 @@
 //
 //   lock     buyer   lock a prepay in an Alkahest escrow on Base Sepolia
 //   open     buyer   open a RedLine cover on that escrow (GenLayer)
-//   accept   vendor  accept the escrow (Base Sepolia) and the cover (GenLayer)
+//   accept   vendor  check the escrow, then accept it (Base Sepolia) and the cover (GenLayer)
 //   check    anyone  ask GenLayer's validators to read the terms page now
 //   status   anyone  the cover, its last check, its ruling and the escrow
 //   carry    oracle  carry a final ruling to the escrow, which pays out
-//   reclaim  buyer   take back an escrow that expired unpaid
+//   reclaim  buyer   take back an escrow that expired unpaid (--cover <id> or --escrow <uid>)
 //
 // Keys: buyer.key, vendor.key, oracle.key, one private key per file. A command
 // reads only the key of the role that runs it. Never commit a key.
 import fs from "node:fs";
-import { clientFor, accountFor, readView, sendTx, readUntil, KEYDIR } from "../lib.mjs";
-import { ADDR, CHAIN_ID, EXPLORER, lockPrepay, acceptEscrow, reclaim, readEscrow, walletFromFile, pub } from "./alkahest.mjs";
-import { carry, ledgerAddress } from "./relayer.mjs";
+import { createClient, createAccount, generatePrivateKey } from "genlayer-js";
+import { clientFor, accountFor, sendTx, readUntil, KEYDIR, CHAINS } from "../lib.mjs";
+import { ADDR, CHAIN_ID, EXPLORER, lockPrepay, acceptEscrow, reclaim, readEscrow, escrowProblems, walletFromFile, pub } from "./alkahest.mjs";
+import { carry, claimedBy, ledgerAddress, readJson as readView } from "./relayer.mjs";
 
 const [command, ...rest] = process.argv.slice(2);
 const flags = {};
@@ -28,13 +29,22 @@ function fail(message) { console.log(JSON.stringify({ ok: false, error: message 
 const need = (name) => flags[name] ?? fail(`--${name} is required`);
 const done = (data) => { console.log(JSON.stringify({ ok: true, ...data }, null, 2)); process.exit(0); };
 
-if (!KEYDIR) fail("set REDLINE_KEYS to the directory holding your .key files");
+const READ_ONLY = new Set(["status", "check"]);
+if (!KEYDIR && !READ_ONLY.has(command)) fail("set REDLINE_KEYS to the directory holding your .key files");
 const network = flags.network ?? "studio";
-const hasKey = (role) => fs.existsSync(`${KEYDIR}/${role}.key`);
+const hasKey = (role) => !!KEYDIR && fs.existsSync(`${KEYDIR}/${role}.key`);
 const role = (r) => (hasKey(r) ? r : fail(`this command needs ${KEYDIR}/${r}.key`));
-const anyRole = () => ["oracle", "buyer", "vendor"].find(hasKey) ?? fail(`no key found in ${KEYDIR}`);
+// Reading needs no key of yours, and on Studio (no fees) neither does asking for a check:
+// a throwaway account is the sender.
+const reader = () => {
+  const mine = ["oracle", "buyer", "vendor"].find(hasKey);
+  return mine ? clientFor(network, mine) : createClient({ chain: CHAINS[network], account: createAccount(generatePrivateKey()) });
+};
 const ledger = ledgerAddress(network);
-const watcher = JSON.parse(fs.readFileSync(new URL("../deployments.json", import.meta.url), "utf8"))[network].watcher;
+const deployed = JSON.parse(fs.readFileSync(new URL("../deployments.json", import.meta.url), "utf8"))[network];
+const watcher = deployed.watcher;
+// After a cover ends, its ruling needs the appeal window, and the relayer needs time to carry it.
+const SETTLE_MARGIN = Number(deployed.escrow_ledger_appeal_seconds ?? 300) + 600;
 const applied = (o, label) => (o.applied ? o : fail(`${label} was not applied on GenLayer: ${o.consensus} ${o.leader}`));
 
 try {
@@ -55,6 +65,11 @@ try {
     const passages = flags["passages-file"] ? JSON.parse(fs.readFileSync(flags["passages-file"], "utf8"))
       : [{ id: flags.id ?? "right", text: need("passage") }];
     const coverSeconds = Number(flags["cover-seconds"] ?? 1800), acceptSeconds = Number(flags["accept-seconds"] ?? 900), gap = Number(flags["gap-seconds"] ?? 60);
+    const now = Number((await pub.getBlock()).timestamp);
+    const needsUntil = now + acceptSeconds + coverSeconds + SETTLE_MARGIN;
+    if (e.revoked) fail("that escrow was already paid out or reclaimed");
+    if (e.creator.toLowerCase() !== accountFor("buyer").address.toLowerCase()) fail("that escrow was locked by another address: only its creator's cover can be paid from it");
+    if (e.expiresAt < needsUntil) fail(`the escrow expires ${needsUntil - e.expiresAt}s too soon for this cover: lock one that lasts longer (lock --hours), or shorten the cover`);
     const before = (await readView(gen, ledger, "status")).covers;
     const o = applied(await sendTx(gen, ledger, "open_cover",
       [need("vendor"), need("url"), JSON.stringify(passages), e.amount, coverSeconds, acceptSeconds, gap, CHAIN_ID, escrow, ADDR.splitter], "open_cover"), "open_cover");
@@ -77,15 +92,24 @@ try {
     const ruling = await readView(gen, ledger, "ruling_of", [cover]);
     const c = await readView(gen, ledger, "get_cover", [cover]);
     if (c.state !== "offered") fail(`the cover is ${c.state}, not offered`);
+    // The vendor's own check of the escrow, on its chain, before it commits to anything.
+    const now = Number((await pub.getBlock()).timestamp);
+    const problems = await escrowProblems({ ruling, ledger, oracle: flags.oracle, now, lastsUntil: now + Number(c.coverage_seconds) + SETTLE_MARGIN });
+    const by = await claimedBy(gen, ledger, ruling);
+    if (by >= 0) problems.push(`cover ${by} already claims this escrow`);
+    if (problems.length) fail("not accepted: " + problems.join("; "));
+    const escrow = await readEscrow(ruling.escrow);
     const f = await acceptEscrow(walletFromFile(`${KEYDIR}/vendor.key`), { escrowUid: ruling.escrow, statement: `RedLine escrow ledger ${ledger}, cover ${cover}: terms at ${c.url}` });
     const o = applied(await sendTx(gen, ledger, "accept", [cover, f.uid], "accept"), "accept");
     const started = await readView(gen, ledger, "get_cover", [cover]);
-    done({ cover, fulfillment: f.uid, base_tx: f.hash, genlayer_tx: o.hash, state: started.state, start: started.start, end: started.end });
+    done({ cover, fulfillment: f.uid, base_tx: f.hash, genlayer_tx: o.hash, state: started.state, start: started.start, end: started.end,
+      escrow_checked: { amount_wei: escrow.amount.toString(), oracle: escrow.oracle, expires_at: escrow.expiresAt },
+      note: "The escrow pays out on the named oracle's ruling. Accept only if you trust that oracle to carry the ledger's ruling." });
   }
 
   if (command === "check") {
     const cover = Number(need("cover"));
-    const gen = clientFor(network, anyRole());
+    const gen = reader();
     const before = await readView(gen, watcher, "record_of", [ledger, cover]);
     const o = await sendTx(gen, watcher, "check", [ledger, cover], "check");
     if (o.refused) fail("the watcher refused the check (too soon after the last one, too close to the end, or the cover is not running)");
@@ -97,7 +121,7 @@ try {
 
   if (command === "status") {
     const cover = Number(need("cover"));
-    const gen = clientFor(network, anyRole());
+    const gen = reader();
     const [c, record, ruling] = await Promise.all([readView(gen, ledger, "get_cover", [cover]), readView(gen, watcher, "record_of", [ledger, cover]), readView(gen, ledger, "ruling_of", [cover])]);
     const e = await readEscrow(ruling.escrow);
     done({ cover, state: c.state, url: c.url, passages: c.passages, start: c.start, end: c.end, now: c.now, last_check: record.seq ? record : null, ruling,
@@ -111,9 +135,15 @@ try {
   }
 
   if (command === "reclaim") {
-    const gen = clientFor(network, role("buyer"));
-    const ruling = await readView(gen, ledger, "ruling_of", [Number(need("cover"))]);
-    const r = await reclaim(walletFromFile(`${KEYDIR}/buyer.key`), ruling.escrow);
+    role("buyer");
+    const gen = reader();
+    const escrow = flags.escrow ?? (await readView(gen, ledger, "ruling_of", [Number(need("cover"))])).escrow;
+    const e = await readEscrow(escrow);
+    if (!e) fail("no such escrow on Base Sepolia");
+    if (e.revoked) fail("that escrow was already paid out or reclaimed");
+    const now = Number((await pub.getBlock()).timestamp);
+    if (now < e.expiresAt) fail(`the escrow has not expired yet: it can be reclaimed in ${e.expiresAt - now}s`);
+    const r = await reclaim(walletFromFile(`${KEYDIR}/buyer.key`), escrow);
     done({ tx: r.hash, explorer: `${EXPLORER}/tx/${r.hash}` });
   }
 

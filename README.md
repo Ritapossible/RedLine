@@ -120,6 +120,18 @@ cover what they buy; shared covers and a badge for vendors; and mainnet
 under published caps. The plan, with every checklist and exit test, is in
 [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PLAN.md](docs/PLAN.md).
 
+## RedLine × Arkhai, for Internet Court
+
+The same rules, with the prepay held in an [Arkhai](https://www.arkhai.io)
+Alkahest escrow on Base Sepolia instead of RedLine's treasury: GenLayer's
+validators rule on the vendor's terms, and the ruling splits the escrow
+between the vendor and the buyer. A third contract (the escrow ledger) beside
+the treasury and the watcher, which are unchanged. See a real deal, read live
+from both chains, at
+[red-line-v0.vercel.app/#/court/0](https://red-line-v0.vercel.app/#/court/0);
+how it works and how to run it: [docs/INTERNET-COURT.md](docs/INTERNET-COURT.md);
+for agents: [skills/redline-escrow/SKILL.md](skills/redline-escrow/SKILL.md).
+
 ## Design decisions
 
 **Still there is not enough.** A reviewer found that a vendor could leave the

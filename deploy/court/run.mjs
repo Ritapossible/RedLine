@@ -14,9 +14,9 @@
 // page's CDN and the ledger's appeal window are real waits.
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
-import { clientFor, accountFor, readView, sendTx, readUntil, KEYDIR } from "../lib.mjs";
+import { clientFor, accountFor, sendTx, readUntil, KEYDIR } from "../lib.mjs";
 import { ADDR, CHAIN_ID, EXPLORER, lockPrepay, acceptEscrow, walletFromFile, pub } from "./alkahest.mjs";
-import { carry, ledgerAddress } from "./relayer.mjs";
+import { carry, ledgerAddress, readJson as readView } from "./relayer.mjs";
 
 const network = process.argv[2] || "studio";
 const LIVE = process.env.LIVE_CLONE;

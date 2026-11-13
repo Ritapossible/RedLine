@@ -105,6 +105,21 @@ its end, and the escrow paid the vendor in full:
 [payout](https://sepolia.basescan.org/tx/0xfee71a6b2a81c09e1f592b2c323882efaa7de8ee356899db78065fbfecbdec9d).
 Carrying the same ruling a second time is refused: the escrow is already spent.
 
+A third run tried the awkward cases, all on the public networks:
+
+| Tried | Result |
+| --- | --- |
+| Opening a cover on an escrow that expires before the cover could settle | refused before anything was opened |
+| A quote that is not on the page (90 days, where the page says 30) | validators did not find it; the cover closed at once, nothing owed |
+| A second cover, correctly quoted, on the same escrow | accepted, ran to its end, [paid the vendor](https://sepolia.basescan.org/tx/0xed7b96bdaf8adbdfcfedf8dd0d245494ffbea8f351c72dbefbeeb797f9a940c2) |
+| Someone else opening a cover on that escrow | the vendor's `accept` refused it: "the escrow was not created by the cover's buyer"; the relayer paid it nothing |
+| Reclaiming an escrow before it expired, and one already reclaimed | refused, with the seconds left; then refused as already spent |
+| A prepay of 12,345,678,901,234,567,890 wei through the ledger | read back exactly (JavaScript numbers lose precision past 9 x 10^15) |
+
+The ledger on Studio is byte-for-byte `contracts/build/redline_escrow.min.py`
+at commit `b1a3cbe` (its code read from the chain and compared), and the
+watcher it uses is the frozen build.
+
 ## Run it yourself
 
 You need Node 20+, three funded test keys and a clone of this repository's
@@ -140,11 +155,16 @@ The ledger cannot see Base Sepolia, so the relayer checks the escrow on its
 own chain before the oracle key signs anything. It carries a ruling only if:
 
 - the cover has closed on GenLayer and its two amounts add up to the prepay;
-- the escrow exists, is unspent and unexpired, and holds exactly the cover's amount;
+- the escrow exists, is unspent and unexpired, and holds exactly the cover's amount
+  (compared exactly: amounts are never passed through a JavaScript number);
 - the escrow was created by the cover's buyer, is paid out by the splitter,
   names this relayer as its oracle, and was made for this ledger;
 - the fulfillment was made by the cover's vendor, for this escrow;
-- no earlier cover by the same buyer already claims the escrow.
+- no earlier cover that the vendor accepted already claims the escrow (a
+  cover that closed before it started claims nothing).
+
+The vendor's `accept` command makes the same checks of the escrow before the
+vendor commits to anything, and also that the escrow outlives the cover.
 
 A cover that closed before the vendor accepted has nothing to pay against:
 the buyer reclaims the escrow when it expires.
@@ -160,6 +180,13 @@ the buyer reclaims the escrow when it expires.
 - **Test networks only**: GenLayer Studio and Base Sepolia.
 - **Someone has to ask for each check and for the payout.** `run.mjs` does;
   RedLine's planned keeper will.
+- **The payout has a deadline.** Alkahest lets the buyer reclaim an escrow
+  once it expires. A ruling the relayer has not carried by then can be
+  outrun: the buyer takes everything back. The commands refuse an escrow that
+  does not outlive its cover by the appeal window plus ten minutes.
+- **The ledger trusts what it is told about the escrow.** Anyone can open a
+  cover naming any escrow. Such a cover moves no money: the vendor's command
+  and the relayer both check the escrow on Base Sepolia first.
 - **Native test ETH only.** Alkahest also has an ERC-20 splitter; a
   stablecoin prepay is the same flow with a different escrow contract.
 - Everything in RedLine's own [limits](../README.md#limits-stated-plainly)
