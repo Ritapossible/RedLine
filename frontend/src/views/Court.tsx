@@ -32,6 +32,47 @@ const easAbi = parseAbi([
   "function getAttestation(bytes32 uid) view returns (Attestation)",
 ]);
 const base = createPublicClient({ chain: baseSepolia, transport: http("https://sepolia.base.org") });
+// The default Base Sepolia RPC searches logs only 200 blocks at a time; this
+// public one allows the search from a browser. Used only to find the payout.
+const logs = createPublicClient({ chain: baseSepolia, transport: http("https://base-sepolia-rpc.publicnode.com") });
+const splitterAbi = parseAbi([
+  "struct Split { address recipient; uint256 amount; }",
+  "event EscrowCollectedAndDistributed(bytes32 indexed escrowUid, bytes32 indexed fulfillmentUid, address indexed fulfiller, Split[] splits)",
+]);
+
+/** The block produced at about `t` (Unix seconds): interpolated from block
+ *  timestamps, since Base Sepolia's block time is not a constant to rely on. */
+async function blockAt(t: number): Promise<bigint> {
+  const head = await logs.getBlock();
+  let a = { n: head.number - 1_000_000n, t: Number((await logs.getBlock({ blockNumber: head.number - 1_000_000n })).timestamp) };
+  let b = { n: head.number, t: Number(head.timestamp) };
+  let n = head.number;
+  for (let i = 0; i < 6; i++) {
+    const rate = (b.t - a.t) / Number(b.n - a.n); // seconds per block
+    n = b.n - BigInt(Math.round((b.t - t) / rate));
+    if (n < 0n) n = 0n;
+    if (n > head.number) n = head.number;
+    const at = Number((await logs.getBlock({ blockNumber: n })).timestamp);
+    if (Math.abs(at - t) <= 30) break;
+    a = b;
+    b = { n, t: at };
+    if (a.n === b.n) break;
+  }
+  return n;
+}
+
+/** The payout transaction: the splitter's event for this escrow, searched around when the escrow was spent. */
+async function findPayout(escrow: `0x${string}`, spentAt: number): Promise<`0x${string}` | null> {
+  const center = await blockAt(spentAt);
+  for (const span of [2000n, 9000n]) {
+    const found = await logs.getLogs({
+      address: SPLITTER, event: splitterAbi[0], args: { escrowUid: escrow },
+      fromBlock: center > span ? center - span : 0n, toBlock: center + span,
+    }).catch(() => []);
+    if (found.length) return found[0].transactionHash;
+  }
+  return null;
+}
 
 async function readEscrow(uid: `0x${string}`): Promise<Escrow | null> {
   const a = await base.readContract({ address: EAS, abi: easAbi, functionName: "getAttestation", args: [uid] });
@@ -61,11 +102,12 @@ export function Court({ id }: { id: number }) {
   const [escrow, setEscrow] = useState<Escrow | null>(null);
   const [checks, setChecks] = useState<CheckRecord[]>([]);
   const [error, setError] = useState("");
+  const [payoutTx, setPayoutTx] = useState<`0x${string}` | null>(null);
   const skew = useRef(0);
 
   useEffect(() => {
     let live = true;
-    setCover(null); setRuling(null); setEscrow(null); setChecks([]); setError("");
+    setCover(null); setRuling(null); setEscrow(null); setChecks([]); setError(""); setPayoutTx(null);
     const once = async () => {
       try {
         const c = await readCover(gen, LEDGER, id);
@@ -91,6 +133,14 @@ export function Court({ id }: { id: number }) {
     const t = setInterval(once, POLL_MS);
     return () => { live = false; clearInterval(t); };
   }, [gen, id]);
+
+  const spentAt = escrow?.spent ? escrow.spentAt : 0;
+  useEffect(() => {
+    if (!ruling || !spentAt || !ruling.started || payoutTx) return;
+    let live = true;
+    findPayout(ruling.escrow, spentAt).then((tx) => live && setPayoutTx(tx)).catch(() => undefined);
+    return () => { live = false; };
+  }, [ruling?.escrow, ruling?.started, spentAt, payoutTx]);
 
   if (!cover || !ruling) {
     return (
@@ -143,6 +193,9 @@ export function Court({ id }: { id: number }) {
             </blockquote>
           ))}
           <p className="muted small court-url">on <a href={cover.url} target="_blank" rel="noreferrer">{cover.url.replace(/^https:\/\//, "")}</a></p>
+          {/raw\.githubusercontent\.com\/ritapossible\/redline\/live\//i.test(cover.url) && (
+            <p className="muted small court-url">A demo: Acme is fictional, and this terms page is a test file in RedLine's own repository, edited to play the vendor.</p>
+          )}
           <ul className="court-checks">
             {checks.length === 0 && <li className="muted small">No check yet. Anyone may ask the validators to read the page.</li>}
             {checks.length > 0 && Number(checks[0].seq) > 1 && <li className="muted small">Earlier checks: kept. The chain keeps only the latest.</li>}
@@ -176,7 +229,10 @@ export function Court({ id }: { id: number }) {
         </p>
         {ruling.final && ruling.started && (
           <p className={`court-payout ${paid ? "green" : ""}`}>
-            {paid ? <>Arkhai's escrow paid exactly this at {clock(escrow!.spentAt)}. <a href={`${BASESCAN}/address/${ruling.vendor}#internaltx`} target="_blank" rel="noreferrer">See it on Base Sepolia ↗</a></>
+            {paid ? <>Arkhai's escrow paid exactly this at {clock(escrow!.spentAt)}.{" "}
+              <a href={payoutTx ? `${BASESCAN}/tx/${payoutTx}` : `${BASESCAN}/address/${ruling.vendor}#internaltx`} target="_blank" rel="noreferrer">
+                {payoutTx ? `The payout, ${shortHash(payoutTx)}, on Base Sepolia ↗` : "See it on Base Sepolia ↗"}
+              </a></>
               : "Waiting for the relayer to carry this ruling to Base Sepolia."}
           </p>
         )}
