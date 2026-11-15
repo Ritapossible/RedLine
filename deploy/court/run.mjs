@@ -6,7 +6,7 @@
 //   Base Sepolia   the relayer carries the ruling; the escrow pays the vendor what
 //                  it earned and returns the rest to the buyer
 //
-//   REDLINE_KEYS=<dir: buyer.key vendor.key oracle.key> LIVE_CLONE=<clone of the live branch> \
+//   REDLINE_KEYS=<dir: buyer.key vendor.key oracle.key> LIVE_CLONE=<a clone of any GitHub repo you can push to> \
 //     node run.mjs [studio]
 //
 // Resumable: state is kept in court-run-<network>.json; run it again after any
@@ -20,9 +20,16 @@ import { carry, ledgerAddress, readJson as readView } from "./relayer.mjs";
 
 const network = process.argv[2] || "studio";
 const LIVE = process.env.LIVE_CLONE;
-if (!LIVE) throw new Error("set LIVE_CLONE to a clone of this repository's live branch");
+if (!LIVE) throw new Error("set LIVE_CLONE to a clone of a GitHub repository you can push to (it plays the vendor's terms page)");
 const PAGE = "court";
-const URL_ = `https://raw.githubusercontent.com/Ritapossible/redline/live/live/${PAGE}.html`;
+// The vendor's terms page: a file in LIVE_CLONE, served by GitHub. Any repository
+// you can push to works (a fork of this one, or an empty repo of your own).
+const gitIn = (...a) => execFileSync("git", ["-C", LIVE, ...a], { stdio: "pipe" }).toString().trim();
+const remote = gitIn("remote", "get-url", "origin").match(/github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/);
+if (!remote) throw new Error("LIVE_CLONE must be a clone of a GitHub repository you can push to");
+const BRANCH = gitIn("rev-parse", "--abbrev-ref", "HEAD");
+fs.mkdirSync(`${LIVE}/live`, { recursive: true });
+const URL_ = `https://raw.githubusercontent.com/${remote[1]}/${remote[2]}/${BRANCH}/live/${PAGE}.html`;
 const EXAMPLES = new URL("../../examples/", import.meta.url);
 const example = (name) => fs.readFileSync(new URL(name, EXAMPLES), "utf8");
 const PASSAGES = JSON.parse(example("pinned-passages.json")).filter((p) => p.id === "refund");
@@ -50,7 +57,7 @@ function publish(name, message) {
   if (!git("status", "--porcelain").trim()) return;
   git("-c", "user.name=RedLine", "-c", "user.email=redline@users.noreply.github.com", "commit", "-q", "-m", message);
   for (let i = 0; ; i++) {
-    try { git("pull", "-q", "--rebase", "origin", "live"); git("push", "-q", "origin", "live"); break; } catch (e) { if (i >= 4) throw e; }
+    try { git("pull", "-q", "--rebase", "origin", BRANCH); git("push", "-q", "origin", BRANCH); break; } catch (e) { if (i >= 4) throw e; }
   }
 }
 async function served(name) {

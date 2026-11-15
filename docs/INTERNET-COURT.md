@@ -99,6 +99,11 @@ One whole deal on both public networks, 11 November 2026
 The vendor kept about 20%: the share of the cover that ran before the check
 that found the cut.
 
+The same run, repeated after the script was changed to take any repository
+as the vendor's page (cover 6, `deploy/court/court-run-studio-cover6.json`):
+kept, then narrowed (confidence 99), then
+[paid as ruled](https://sepolia.basescan.org/tx/0xa842c01a38a58796d05b683a2d4ac14903bb58c562bc195f4d89034d1a5aebac).
+
 A second deal, driven one command at a time with `deploy/court/cli.mjs`
 (cover 1): the terms did not change, the check read **kept**, the cover ran to
 its end, and the escrow paid the vendor in full:
@@ -122,26 +127,36 @@ watcher it uses is the frozen build.
 
 ## Run it yourself
 
-You need Node 20+, three funded test keys and a clone of this repository's
-`live` branch (the public test page the "vendor" edits).
+You need Node 20+, three test keys with a little Base Sepolia ETH, and a
+GitHub repository you can push to: it plays the vendor's terms page (a fork of
+this one, or an empty repository of your own).
 
 ```bash
-cd deploy && npm install
-mkdir keys   # buyer.key, vendor.key, oracle.key: one private key per file
-             # each needs a little Base Sepolia ETH (the buyer about 0.001)
-git clone --branch live https://github.com/Ritapossible/RedLine ../../redline-live
+git clone https://github.com/Ritapossible/RedLine && cd RedLine/deploy && npm install
+mkdir -m 700 keys   # buyer.key, vendor.key, oracle.key: one private key per file
+                    # Base Sepolia ETH: the buyer about 0.001, the others about 0.0003
+git clone https://github.com/<you>/<your-repo> ../../vendor-page   # any repo you can push to
 
-REDLINE_KEYS=keys LIVE_CLONE=../../redline-live node court/run.mjs studio
+REDLINE_KEYS=keys LIVE_CLONE=../../vendor-page node court/run.mjs studio
 ```
 
-It takes about fifteen minutes; the waits are real (the public page's CDN and
-the ledger's 300-second appeal window). It is resumable: run it again after
-any stop. To run a deal of your own one step at a time, follow
-[`skills/redline-escrow/SKILL.md`](../skills/redline-escrow/SKILL.md):
+`run.mjs` publishes the vendor's original terms to that repository, locks the
+escrow, opens and accepts the cover, has the validators check the page, then
+publishes the narrowed terms (the vendor's cut), has them check again, and
+carries the ruling to the escrow. It takes about fifteen minutes; the waits are
+real (GitHub's cache of the page and the ledger's 300-second appeal window).
+It is resumable: run it again after any stop (`RESET=1` starts a new deal).
+GenLayer Studio charges no fees.
+
+To run a deal one step at a time, against any vendor's real terms page,
+follow [`skills/redline-escrow/SKILL.md`](../skills/redline-escrow/SKILL.md):
 
 ```bash
 REDLINE_KEYS=keys node court/cli.mjs lock --amount-wei 500000000000000
 ```
+
+Reading a deal needs no key: `node court/cli.mjs status --cover 0`, or the
+[deal page](https://red-line-v0.vercel.app/#/court/0).
 
 The tests need no network:
 
