@@ -25,6 +25,9 @@ export function SiteHeader() {
         <nav className="nav-links" aria-label="Main">
           <a href="#/#how">How it works</a>
           <a href="#/#record">On chain</a>
+          <a href={href({ name: "court", id: 0 })} aria-current={route.name === "court" ? "page" : undefined}>
+            Internet Court
+          </a>
           <a href={href({ name: "covers" })} aria-current={inApp ? "page" : undefined}>
             Covers
           </a>

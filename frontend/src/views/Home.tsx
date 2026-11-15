@@ -54,6 +54,29 @@ export function Home() {
       </section>
 
       <section className="wrap section">
+        <aside className="spotlight" aria-labelledby="court-spotlight-title">
+          <div>
+            <p className="eyebrow plain">New · Internet Court · Arkhai × GenLayer</p>
+            <h2 id="court-spotlight-title">
+              A prepay in Arkhai's escrow. <span className="dim">GenLayer rules how it splits.</span>
+            </h2>
+            <p>
+              An agent locks test ETH in an Arkhai Alkahest escrow on Base Sepolia. GenLayer's validators watch the vendor's terms page; if a
+              pinned right is cut, their ruling splits the escrow: the vendor keeps what it earned, the agent gets the rest.
+            </p>
+          </div>
+          <div className="spotlight-actions">
+            <a className="btn-cta" href={href({ name: "court", id: 0 })}>
+              See a real deal <ArrowRight />
+            </a>
+            <a className="btn-ghost-pill" href={href({ name: "docs", page: "internet-court" })}>
+              How it works
+            </a>
+          </div>
+        </aside>
+      </section>
+
+      <section className="wrap section">
         <aside className="spotlight" aria-labelledby="spotlight-title">
           <div>
             <p className="eyebrow plain">New · RedLine for PayPal</p>

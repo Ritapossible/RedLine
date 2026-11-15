@@ -9,6 +9,13 @@ Studio with a one-click burner wallet, or on the Bradbury testnet with your
 own. Docs, from the introduction to the roadmap, are on the site and in
 [docs/](docs/README.md).
 
+**New: [RedLine × Arkhai, for Internet Court](docs/INTERNET-COURT.md)** - an
+agent's prepay sits in an Arkhai Alkahest escrow on Base Sepolia, and
+GenLayer's ruling splits it when the vendor cuts a pinned right.
+[See a real deal](https://red-line-v0.vercel.app/#/court/0) ·
+[agent skill](skills/redline-escrow/SKILL.md) ·
+[details below](#redline--arkhai-for-internet-court).
+
 [![Watch the RedLine intro (10 seconds, with sound)](docs/media/watch-redline.jpg)](https://red-line-v0.vercel.app/media/redline-intro.mp4)
 
 <sub>Tap the image to play it in your browser ([direct link](https://red-line-v0.vercel.app/media/redline-intro.mp4)). It also plays on the [live site](https://red-line-v0.vercel.app), under the hero.</sub>
