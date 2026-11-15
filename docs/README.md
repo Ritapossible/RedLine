@@ -61,4 +61,8 @@ the passages you pinned.
 - [Architecture](ARCHITECTURE.md) and [Threat model](THREAT-MODEL.md): how it
   is built and what stops each way of cheating it.
 - [Build and deploy](DEPLOYMENT.md): tests, deployment, the on-chain runs.
+- [RedLine for PayPal](REDLINE-FOR-PAYPAL.md): the same rules at a PayPal
+  checkout.
+- [RedLine × Arkhai, for Internet Court](INTERNET-COURT.md): the prepay in an
+  Arkhai Alkahest escrow, split by GenLayer's ruling; an agent skill drives it.
 - [FAQ](FAQ.md) and the [Roadmap](ROADMAP.md).

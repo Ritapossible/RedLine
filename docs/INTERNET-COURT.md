@@ -188,9 +188,13 @@ the buyer reclaims the escrow when it expires.
 
 - **The relayer is a trusted key.** Whoever holds `oracle.key` could sign a
   split the ledger never ruled. This is Internet Court's "trusted watcher"
-  connector pattern: right for a demonstration, not for real money. The
-  production path is a GenLayer-to-EVM bridge whose message the arbiter
-  verifies, so that no key stands between the ruling and the payout.
+  connector pattern: right for a demonstration, not for real money.
+  GenLayer's Studio bridge does not remove it: its relay service also holds
+  a relayer key. The way to remove it is to keep the escrow on GenLayer's own
+  chain (Bradbury), where the ledger contract itself is the escrow's oracle
+  and sends the split as an EVM call, with no key and no bridge between the
+  ruling and the payout. That waits on Alkahest being deployed there again
+  (Bradbury's October reset erased Arkhai's deployment) and on test GEN.
 - **Arkhai marks its splitter contracts as not yet manually audited.**
 - **Test networks only**: GenLayer Studio and Base Sepolia.
 - **Someone has to ask for each check and for the payout.** `run.mjs` does;

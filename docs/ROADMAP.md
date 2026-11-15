@@ -108,6 +108,12 @@ accepted; stage 1 is under way. Details and checklists are in
 - **SDKs** in TypeScript and Python, and an **agent tool (MCP)** so an AI
   agent buying an API or a dataset can open and watch a cover by itself,
   within limits its owner sets.
+- **Escrow held elsewhere.** Done on test networks: an
+  [Internet Court integration](INTERNET-COURT.md) where the prepay sits in an
+  Arkhai Alkahest escrow on Base Sepolia and GenLayer's ruling splits it,
+  with an agent skill (`skills/redline-escrow`). Next: no trusted relayer,
+  by settling on GenLayer's own chain with the ledger contract as the
+  escrow's oracle.
 
 ### 5. Vendors and scale
 
